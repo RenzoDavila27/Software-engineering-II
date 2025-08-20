@@ -1,0 +1,10 @@
+Requisitos Funcionales:
+. Gestión de Clientes
+. Gestión de Venta
+. Gestión de Productos
+- Gestión de Proveedores
+
+Requisitos No Funcionales:
+. Interfaz intuitiva
+. Velocidad
+. Consistencia Máxima
