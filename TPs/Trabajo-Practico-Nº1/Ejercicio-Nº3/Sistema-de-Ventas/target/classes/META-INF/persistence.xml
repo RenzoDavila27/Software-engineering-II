@@ -8,10 +8,10 @@
   <persistence-unit name="SistemaVentasPU" transaction-type="RESOURCE_LOCAL">
 
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/SistemaVentas"/>
-      <property name="javax.persistence.jdbc.user" value="postgres"/>
-      <property name="javax.persistence.jdbc.password" value="1234"/>
-      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/SistemaVentas"/>
+      <property name="javax.persistence.jdbc.user" value="root"/>
+      <property name="javax.persistence.jdbc.password" value="tupassword"/>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
       <property name="javax.persistence.schema.generation.database.action" value="create"/>
       <property name="hibernate.hbm2ddl.auto" value = "update"/>
     </properties>
