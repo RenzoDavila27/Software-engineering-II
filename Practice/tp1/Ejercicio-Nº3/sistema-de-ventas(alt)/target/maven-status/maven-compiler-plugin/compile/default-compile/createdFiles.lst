@@ -1,0 +1,7 @@
+org/Main.class
+org/entitys/Factura.class
+org/entitys/Articulo.class
+org/entitys/Cliente.class
+org/entitys/Categoria.class
+org/entitys/DetalleFactura.class
+org/entitys/Domicilio.class

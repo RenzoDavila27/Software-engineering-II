@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+             https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd" version="3.2">
+
+    <persistence-unit name="FioripersistencePU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>org.entitys.Cliente</class>
+        <class>org.entitys.Articulo</class>
+        <class>org.entitys.Categoria</class>
+        <class>org.entitys.DetalleFactura</class>
+        <class>org.entitys.Domicilio</class>
+        <class>org.entitys.Factura</class>
+
+        <properties>
+
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/insert_nameDB"/>
+            <property name="jakarta.persistence.jdbc.user" value="root" />
+            <property name="jakarta.persistence.jdbc.password" value="inser_password" />
+            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+
+            <property name="hibernate.archive.autodetection" value="class, hbm"/>
+            <property name="hibernate.ejb.resource_scanning" value="all"/>
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+        </properties>
+    </persistence-unit>
+
+</persistence>
