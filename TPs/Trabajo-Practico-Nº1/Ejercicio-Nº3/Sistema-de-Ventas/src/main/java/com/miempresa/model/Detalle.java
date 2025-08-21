@@ -30,9 +30,6 @@ public class Detalle implements Serializable {
     @Column(name = "Cantidad")
     private Integer cantidad;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "fk_cliente")
-    private Cliente cliente;
 
     //CONSTRUCTORES
     public Detalle(){
@@ -46,24 +43,12 @@ public class Detalle implements Serializable {
         
     }
 
-    public Detalle(Integer subtotal,Integer cantidad,Cliente cliente){
-
-        this.cantidad = cantidad;
-        this.subtotal = subtotal;
-        this.cliente = cliente;
-        
-    }
-
     //GETTERS Y SETTERS
     public Long getId(){
         return this.id;
 
     }
 
-    public Cliente getCliente(){
-        return this.cliente;
-
-    }
 
     public Integer getSubTotal(){
         return this.subtotal;
@@ -73,10 +58,6 @@ public class Detalle implements Serializable {
      public Integer getCantidad(){
         return this.cantidad;
 
-    }
-
-    public void setCliente(Cliente cliente){
-        this.cliente = cliente;
     }
 
     public void setSubtotal(Integer subtotal){
