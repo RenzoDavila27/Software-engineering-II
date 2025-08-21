@@ -1,10 +1,11 @@
-Requisitos Funcionales:
-. Gestión de Clientes
-. Gestión de Venta
-. Gestión de Productos
-- Gestión de Proveedores
+Requisitos Funcionales: 
+- Que haya un apartado para poder generar una factura para contrastar una venta
+- Que haya un apartado para poder realizar pedidos a proveedores
+- Que cuando se realice una venta o un pedido a proveedor, las cantidades que ingresan/salen vean impacto en el stock
+
 
 Requisitos No Funcionales:
-. Interfaz intuitiva
-. Velocidad
-. Consistencia Máxima
+- Seguridad de los datos de los clientes/proveedores
+- Velocidad al momento de usar el sistema / que el sistema se sienta fluido 
+- Consistencia en la base de datos
+...
