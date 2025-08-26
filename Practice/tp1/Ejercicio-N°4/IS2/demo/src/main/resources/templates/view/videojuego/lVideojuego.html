@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container my-4">
+        <h2 class="mb-4 text-center">Gestión de VideoJuegos</h2>
+
+        <!-- Botones de acción -->
+        <div class="mb-8 d-flex justify-content-between">
+            <div>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalVideojuego" ><i class="bi bi-plus-circle"></i> Agregar VideoJuego</button>
+            </div>
+            <div>
+                <input type="text" id="videojuego" placeholder="Buscar por titulo">
+            </div>
+        </div>
+
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Titulo</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Oferta</th>
+                    <th scope="col">Lanzamiento</th>
+                    <th scope="col">En Stock</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaClientes">
+                  <tr th:each="videojuego : ${listaVideojuego}"> <!-- RECORRE LA LISTA DE LOS VIDEO JUEGOS-->
+
+                      <td th:text="${videojuego.id}"></td>
+                      <td th:text="${videojuego.titulo}"></td>
+                      <td th:text="${videojuego.precio}"></td>   <!--RELLENA LA INFORMACION-->
+                      <td th:text="${videojuego.cantidad}"></td>
+                      <td th:text="${videojuego.descripcion}"></td>
+                      <td th:text="${videojuego.oferta}"></td>
+                      <td th:text="${videojuego.fechalanzamiento}"></td>
+                      <td th:text="${videojuego.activo}"></td>
+                      <td>
+                        <button class="btn btn-warning" role="button"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+                        <button class="btn btn-danger" role="button"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                      </td> <!--SI USO btn-sm al lado de danger se hace mas pequeño-->
+
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    <!-- Modal Agregar Videojuego -->
+    <div class="modal fade" id="modalVideojuego" tabindex="-1" aria-labelledby="modalVideojuegoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalVideojuegoLabel">Agregar Videojuego</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+            <form th:action="@{/videojuego/guardar}" th:object="${videojuego}" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Título</label>
+                <input type="text" th:field="*{titulo}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ruta Imagen</label>
+                <input type="text" th:field="*{rutaimg}" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Precio</label>
+                <input type="number" step="0.01" th:field="*{precio}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Cantidad</label>
+                <input type="number" th:field="*{cantidad}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea th:field="*{descripcion}" class="form-control"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Oferta</label>
+                <select th:field="*{oferta}" class="form-select">
+                    <option th:value="true">Sí</option>
+                    <option th:value="false">No</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Fecha Lanzamiento</label>
+                <input type="text" th:field="*{fechalanzamiento}" class="form-control">
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+            </form>
+        </div>
+
+        </div>
+    </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
