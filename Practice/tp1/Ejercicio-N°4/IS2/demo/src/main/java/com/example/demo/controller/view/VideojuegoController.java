@@ -3,10 +3,13 @@ package com.example.demo.controller.view;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.example.demo.business.domain.Videojuego;
+import com.example.demo.business.domain.Categoria;
 import com.example.demo.business.logic.error.ErrorServiceException;
 import com.example.demo.business.logic.service.VideojuegoService;
+import com.example.demo.business.logic.service.CategoriaService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -18,6 +21,8 @@ public class VideojuegoController {
 
     @Autowired
    	private VideojuegoService videojuegoService;
+    @Autowired
+    private CategoriaService categoriaService;
 
     private String viewList = "view/videojuego/lVideojuego";
 	private String redirectList = "redirect:/videojuego/listaVideojuego";
@@ -28,7 +33,7 @@ public class VideojuegoController {
 		try {
 			  
 		  Collection<Videojuego> listaVideojuego = videojuegoService.listarVideojuegoActivo();
-		  
+          Collection<Categoria> categorias = categoriaService.listarCategoriaActiva();
 		  /*
 		   * Transferencia de datos a la vista: En Spring MVC, la interfaz Model (de org.springframework.ui.Model), las clases ModelMap y ModelAndView 
 		   * se utilizan para transferir datos del controlador a la vista.
@@ -40,6 +45,7 @@ public class VideojuegoController {
 		   */
 		  model.addAttribute("listaVideojuego", listaVideojuego);
 		  model.addAttribute("videojuego", new Videojuego());
+          model.addAttribute("categorias", categorias);
 
 		}catch(ErrorServiceException e) {	
 		  model.addAttribute("msgError", e.getMessage());  
@@ -56,21 +62,21 @@ public class VideojuegoController {
 			
 		  if (result.hasErrors()){		
 			model.addAttribute("msgError", "Error de Sistema");
-			return viewList;       //"view/pais/ePais.html"
+			return viewList;
 		  }
 		 
 		  if (juego.getId() == null)
-		   videojuegoService.crearVideojuego(juego.getTitulo(),juego.getRutaimg(),juego.getPrecio(),juego.getCantidad(),juego.getDescripcion(),juego.getOferta(),juego.getFechalanzamiento());
+		   videojuegoService.crearVideojuego(juego.getTitulo(),juego.getRutaimg(),juego.getPrecio(),juego.getCantidad(),juego.getDescripcion(),juego.getOferta(),juego.getFechalanzamiento(),juego.getCategoria());
 			  
 		  attributes.addFlashAttribute("msgExito", "La acción fue realizada correctamente.");
-		  return redirectList;      //"redirect:/pais/listPais"
+		  return redirectList;
 		  
 		}catch(ErrorServiceException e) {	
 			  model.addAttribute("msgError", e.getMessage());
-			  return viewList; //"view/pais/ePais.html"
+			  return viewList;
 		}catch(Exception e) {
 			  model.addAttribute("msgError", "Error de Sistema");
-			  return viewList; //"view/pais/ePais.html"
+			  return viewList;
 		}
 		
 
@@ -81,5 +87,11 @@ public class VideojuegoController {
     	model.addAttribute("videojuego", new Videojuego());
     	return "view/videojuego/lVideojuego"; // o la vista donde está el modal
 	}
+
+    @GetMapping("/videojuego/eliminar/{id}")
+    public String eliminarVideojuego(@PathVariable Long id) throws ErrorServiceException {
+        videojuegoService.eliminarVideojuego(id);
+        return redirectList;
+    }
 	
 }

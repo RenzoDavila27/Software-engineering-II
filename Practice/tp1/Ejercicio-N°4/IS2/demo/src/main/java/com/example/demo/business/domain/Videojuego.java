@@ -138,14 +138,21 @@ public class Videojuego implements Serializable {
         return this.fechalanzamiento;
     }
 
-    public Boolean getActivo() {
-        return this.activo;
+    public Boolean getActivo() {return this.activo;}
+
+    public Estudio getEstudio() {
+        return estudio;
     }
 
+    public void setEstudio(Estudio estudio) {
+        this.estudio = estudio;
+    }
 
+    public Categoria getCategoria() {
+        return categoria;
+    }
 
-
-
-
-    
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 }

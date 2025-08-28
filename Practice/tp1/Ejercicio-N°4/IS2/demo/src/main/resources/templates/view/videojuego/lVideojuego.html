@@ -27,6 +27,7 @@
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Titulo</th>
+                    <th scope="col">Categoria</th>
                     <th scope="col">Precio</th>
                     <th scope="col">Cantidad</th>
                     <th scope="col">Description</th>
@@ -41,6 +42,7 @@
 
                       <td th:text="${videojuego.id}"></td>
                       <td th:text="${videojuego.titulo}"></td>
+                      <td th:text="${videojuego.categoria.nombre}"></td>
                       <td th:text="${videojuego.precio}"></td>   <!--RELLENA LA INFORMACION-->
                       <td th:text="${videojuego.cantidad}"></td>
                       <td th:text="${videojuego.descripcion}"></td>
@@ -48,8 +50,12 @@
                       <td th:text="${videojuego.fechalanzamiento}"></td>
                       <td th:text="${videojuego.activo}"></td>
                       <td>
-                        <button class="btn btn-warning" role="button"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
-                        <button class="btn btn-danger" role="button"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                          <button class="btn btn-warning" role="button"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+                          <a th:href="@{/videojuego/eliminar/{id}(id=${videojuego.id})}"
+                             class="btn btn-danger"
+                             onclick="return confirm('¿Seguro que deseas eliminar este videojuego?');">
+                              <i class="bi bi-trash"></i>
+                          </a>
                       </td> <!--SI USO btn-sm al lado de danger se hace mas pequeño-->
 
                 </tr>
@@ -61,7 +67,7 @@
     <div class="modal fade" id="modalVideojuego" tabindex="-1" aria-labelledby="modalVideojuegoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-        
+
         <div class="modal-header">
             <h5 class="modal-title" id="modalVideojuegoLabel">Agregar Videojuego</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -106,6 +112,16 @@
             <div class="mb-3">
                 <label class="form-label">Fecha Lanzamiento</label>
                 <input type="text" th:field="*{fechalanzamiento}" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-laber">Categoría</label>
+                <select th:field="*{categoria}" class="form-control">
+                    <option th:each="cat : ${categorias}"
+                            th:value="${cat.id}"
+                            th:text="${cat.nombre}">
+                    </option>
+                </select>
             </div>
 
             <div class="modal-footer">

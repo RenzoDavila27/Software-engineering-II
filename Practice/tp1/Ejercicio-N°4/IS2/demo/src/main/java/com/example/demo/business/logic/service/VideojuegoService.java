@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.business.domain.Videojuego;
+import com.example.demo.business.domain.Categoria;
 import com.example.demo.business.logic.error.ErrorServiceException;
 import com.example.demo.business.persistence.repository.VideojuegoRepository;
 import java.util.Collection;
@@ -22,13 +23,13 @@ public class VideojuegoService {
 
     @Transactional
     public void crearVideojuego(String titulo, String rutaimg, float precio, Short cantidad, String descripcion,
-     Boolean oferta,String fechalanzamiento) throws ErrorServiceException{
+     Boolean oferta,String fechalanzamiento,Categoria categoria) throws ErrorServiceException{
         try{
             validar(titulo);
             try {
             	Videojuego VideojuegoAux = repository.buscarVideojuegoPorNombre(titulo);
             	if (VideojuegoAux != null && !VideojuegoAux.getActivo()) {
-                 throw new ErrorServiceException("Existe un país con el nombre indicado");
+                 throw new ErrorServiceException("Existe un videojuego con el nombre indicado");
             	} 
             } catch (NoResultException ex) {}
 
@@ -40,6 +41,8 @@ public class VideojuegoService {
             juego.setDescripcion(descripcion);
             juego.setOferta(oferta);
             juego.setFechalanzamiento(fechalanzamiento);
+            juego.setActivo(true);
+            juego.setCategoria(categoria);
             repository.save(juego);
             
 
@@ -70,7 +73,7 @@ public class VideojuegoService {
 
     @Transactional
     public void editarVideojuego(Long id,String titulo, String rutaimg, float precio, Short cantidad, String descripcion,
-        Boolean oferta,String fechalanzamiento) throws ErrorServiceException {
+        Boolean oferta,String fechalanzamiento, Categoria categoria) throws ErrorServiceException {
         try{
             
             Videojuego videojuego = buscarVideojuego(id);
@@ -95,6 +98,7 @@ public class VideojuegoService {
             if (fechalanzamiento != null && !fechalanzamiento.isBlank()) {
                 videojuego.setFechalanzamiento(fechalanzamiento);
             }
+            videojuego.setCategoria(categoria);
             repository.save(videojuego);
 
         } catch (ErrorServiceException e){
@@ -110,7 +114,7 @@ public class VideojuegoService {
         try {
             
             if (id == null) {
-                throw new ErrorServiceException("Debe indicar el país");
+                throw new ErrorServiceException("Debe indicar el videojuego");
             }
 
             /* El método findById heredado de JpaRepository para buscar la entidad por su ID.
@@ -135,7 +139,7 @@ public class VideojuegoService {
                  * Si es así, registra un mensaje de error y lanza una RuntimeException.
                  */
     			if (!videojuego.getActivo()){
-                    throw new ErrorServiceException("No se encuentra el país indicado");
+                    throw new ErrorServiceException("No se encuentra el videojuego indicado");
                 }
     		}
             
