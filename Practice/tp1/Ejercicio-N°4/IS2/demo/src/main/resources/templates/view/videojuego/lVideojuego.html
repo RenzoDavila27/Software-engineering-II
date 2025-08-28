@@ -28,6 +28,7 @@
                     <th scope="col">ID</th>
                     <th scope="col">Titulo</th>
                     <th scope="col">Categoria</th>
+                    <th scope="col">Estudio</th>
                     <th scope="col">Precio</th>
                     <th scope="col">Cantidad</th>
                     <th scope="col">Description</th>
@@ -43,6 +44,7 @@
                       <td th:text="${videojuego.id}"></td>
                       <td th:text="${videojuego.titulo}"></td>
                       <td th:text="${videojuego.categoria.nombre}"></td>
+                      <td th:text="${videojuego.estudio.nombre}"></td>
                       <td th:text="${videojuego.precio}"></td>   <!--RELLENA LA INFORMACION-->
                       <td th:text="${videojuego.cantidad}"></td>
                       <td th:text="${videojuego.descripcion}"></td>
@@ -120,6 +122,16 @@
                     <option th:each="cat : ${categorias}"
                             th:value="${cat.id}"
                             th:text="${cat.nombre}">
+                    </option>
+                </select>
+            </div>
+                
+            <div class="mb-3">
+                <label class="form-laber">Estudio</label>
+                <select th:field="*{estudio}" class="form-control">
+                    <option th:each="est : ${estudios}"
+                            th:value="${est.id}"
+                            th:text="${est.nombre}">
                     </option>
                 </select>
             </div>

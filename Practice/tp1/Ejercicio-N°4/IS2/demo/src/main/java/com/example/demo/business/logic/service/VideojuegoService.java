@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.business.domain.Videojuego;
 import com.example.demo.business.domain.Categoria;
+import com.example.demo.business.domain.Estudio;
 import com.example.demo.business.logic.error.ErrorServiceException;
 import com.example.demo.business.persistence.repository.VideojuegoRepository;
 import java.util.Collection;
@@ -23,7 +24,7 @@ public class VideojuegoService {
 
     @Transactional
     public void crearVideojuego(String titulo, String rutaimg, float precio, Short cantidad, String descripcion,
-     Boolean oferta,String fechalanzamiento,Categoria categoria) throws ErrorServiceException{
+     Boolean oferta,String fechalanzamiento,Categoria categoria, Estudio estudio) throws ErrorServiceException{
         try{
             validar(titulo);
             try {
@@ -43,6 +44,7 @@ public class VideojuegoService {
             juego.setFechalanzamiento(fechalanzamiento);
             juego.setActivo(true);
             juego.setCategoria(categoria);
+            juego.setEstudio(estudio);
             repository.save(juego);
             
 
@@ -73,7 +75,7 @@ public class VideojuegoService {
 
     @Transactional
     public void editarVideojuego(Long id,String titulo, String rutaimg, float precio, Short cantidad, String descripcion,
-        Boolean oferta,String fechalanzamiento, Categoria categoria) throws ErrorServiceException {
+        Boolean oferta,String fechalanzamiento, Categoria categoria, Estudio estudio) throws ErrorServiceException {
         try{
             
             Videojuego videojuego = buscarVideojuego(id);
@@ -99,6 +101,7 @@ public class VideojuegoService {
                 videojuego.setFechalanzamiento(fechalanzamiento);
             }
             videojuego.setCategoria(categoria);
+            videojuego.setEstudio(estudio);
             repository.save(videojuego);
 
         } catch (ErrorServiceException e){

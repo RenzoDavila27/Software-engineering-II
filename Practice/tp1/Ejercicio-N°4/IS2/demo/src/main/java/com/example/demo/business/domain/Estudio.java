@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -13,7 +15,8 @@ import jakarta.persistence.Table;
 public class Estudio implements Serializable {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name="Nombre")
     private String nombre;
@@ -30,7 +33,7 @@ public class Estudio implements Serializable {
         this.activo = activo;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -48,5 +51,9 @@ public class Estudio implements Serializable {
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+    
+    public Boolean getActivo(){
+        return this.activo;
     }
 }
