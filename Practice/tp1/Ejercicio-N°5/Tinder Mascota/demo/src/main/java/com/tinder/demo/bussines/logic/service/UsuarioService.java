@@ -130,7 +130,7 @@ public class UsuarioService {
             Usuario usuario = null;
             try{
                 usuario = repository.buscarUsuarioPorMail(mail);
-                if (usuario.getClave()==clave){
+                if (usuario.getClave().equals(clave)){
                     return usuario;
                 }else{
                     throw new ErrorServiceException("Su contraseña o mail son equivocadas");

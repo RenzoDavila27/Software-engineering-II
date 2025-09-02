@@ -19,13 +19,19 @@ public class InicioController {
 	public String inicio() {
 		return "index_1";
 	}
+	@GetMapping("/registro")
+	public String registro(Model model) throws ErrorServiceException{
+		 model.addAttribute("zonas", zonaService.buscarZonasActivas());
+		return "registro";
+	}
 
 	@GetMapping("/login")
 	public String login(){
 		return "login";
 	}
 
-	@GetMapping("/registro")
+	/* 
+	@GetMapping("/registro/cargar")
 	public String registro(Model model)throws ErrorServiceException{
 
 		Usuario usuario = new Usuario();
@@ -33,4 +39,5 @@ public class InicioController {
         model.addAttribute("zonas", zonaService.buscarZonasActivas());
         return "registro";
 	}
+	*/
 }

@@ -34,10 +34,10 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/registro">Registro</a>
+            <a class="nav-link" href="registro">Registro</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/login">Log In</a>
+            <a class="nav-link" href="login">Log In</a>
           </li>
         </ul>
       </div>
@@ -49,7 +49,7 @@
       <div class="container">
         <h1 class="masthead-heading mb-0">Tinder de Mascota</h1>
         <h2 class="masthead-subheading mb-0">Encontrale pareja a tu choco.</h2>
-        <a href="/registro" class="btn btn-primary btn-xl rounded-pill mt-5">¡Registrate!</a>
+        <a href="registro" class="btn btn-primary btn-xl rounded-pill mt-5">¡Registrate!</a>
       </div>
     </div>
     <div class="bg-circle-1 bg-circle"></div>
@@ -69,24 +69,24 @@
         <div class="col-lg-6 order-lg-1">
           <div class="p-5">
             <h2 class="display-4">Registrate</h2>
-            <form action="/usuario/guardar" method="POST" enctype="multipart/form-data">
+            <form action="/usuario/guardar" method="POST"  enctype="multipart/form-data">
                 
-               <p th:if="${error != null}" th:text="${error}" style="color:red;"></p> 
+               <p th:if="${error != null}" th:text="${error}" th:object= "${usuario}" style="color:red;"></p> 
                 
               <label>Nombre</label>
-              <input type="text" class="form-control" name="nombre" th:value="${nombre}"/>
+              <input type="text" class="form-control" name="nombre" th:value="*{nombre}"/>
 
               <label>Apellido</label>
-              <input type="text" class="form-control" name="apellido" th:value="${apellido}"/>
+              <input type="text" class="form-control" name="apellido" th:value="*{apellido}"/>
               
               <label>E-Mail</label>
-              <input type="email" class="form-control" name="mail" th:value="${mail}"/>
+              <input type="email" class="form-control" name="mail" th:value="*{mail}"/>
                      
               <label>Foto</label>
-              <input type="file" class="form-control" name="archivo"th:value="${archivo}"/>
+              <input type="file" class="form-control" name="foto"th:value="*{foto}"/>
               
               <label>Zona</label>
-              <select class="form-control" name="idZona"> 
+              <select class="form-control" name="zona"> 
                    <option th:each="zona : ${zonas}" th:value="${zona.id}" th:text="${zona.nombre}"></option> 
               </select>
               
