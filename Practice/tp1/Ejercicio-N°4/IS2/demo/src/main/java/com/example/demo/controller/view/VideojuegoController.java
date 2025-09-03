@@ -62,6 +62,35 @@ public class VideojuegoController {
 		return viewList;    //"redirect:/pais/listPais"
 	}
 
+@GetMapping("/")
+	public String listarVideojuegoMenu(Model model) {
+		try {
+			  
+		  Collection<Videojuego> listaVideojuego = videojuegoService.listarVideojuegoActivo();
+          Collection<Categoria> categorias = categoriaService.listarCategoriaActiva();
+          Collection<Estudio> estudios = estudioService.listarEstudioActivo();
+		  /* 
+		   * Transferencia de datos a la vista: En Spring MVC, la interfaz Model (de org.springframework.ui.Model), las clases ModelMap y ModelAndView 
+		   * se utilizan para transferir datos del controlador a la vista.
+           * Model: Esta interfaz proporciona una forma sencilla de añadir atributos (pares clave-valor) al modelo, a los que se puede acceder desde la vista.
+           * ModelMap: Esta clase extiende Model y ofrece una funcionalidad similar, pero con una estructura similar a la de un mapa, lo que permite una 
+           *           gestión de atributos más flexible.
+           * ModelAndView: Esta clase actúa como contenedor de los datos del modelo y del nombre de la vista, lo que permite que se devuelvan juntos desde 
+           *               un método del controlador.
+		   */
+		  model.addAttribute("listaVideojuego", listaVideojuego);
+		  model.addAttribute("videojuego", new Videojuego());
+          model.addAttribute("categorias", categorias);
+          model.addAttribute("estudios", estudios);
+
+		}catch(ErrorServiceException e) {	
+		  model.addAttribute("msgError", e.getMessage());  
+		}catch(Exception e) {
+		  model.addAttribute("msgError", "Error de Sistema");  
+		}
+		return "view/index";    //"redirect:/pais/listPais"
+	}
+
 	@PostMapping("/videojuego/guardar")
 	public String guardarVideojuego(Videojuego juego, BindingResult result, RedirectAttributes attributes, Model model){
 		
