@@ -65,7 +65,7 @@
           <div class="p-5">
             <form action="/usuario/actualizar-perfil" method="POST" enctype="multipart/form-data">
                 
-               <p th:if="${error != null}" th:text="${error}" style="color:red;"></p> 
+               <p th:if="${error != null}" th:text="${error}" style="color:red;"></p>
                
                <input type="hidden" name="id" th:value="${perfil.id}"/>
                 
@@ -79,11 +79,11 @@
               <input type="email" class="form-control" name="mail" th:value="${perfil.mail}"/>
                      
               <label>Foto</label>
-              <input type="file" class="form-control" name="archivo"/>
+                <input type="file" class="form-control" name="foto" th:value="${perfil.foto}"/>
               
               <label>Zona</label>
               <select class="form-control" name="idZona"> 
-                   <option th:each="zona : ${zonas}" th:value="${zona.id}" th:text="${zona.nombre}" th:selected="${perfil.zona != null && zona.id == perfil.zona.id}"></option> 
+                   <option th:each="zona : ${zonas}" th:value="${zona.id}" th:text="${zona.nombre}" th:selected="${perfil.zona != null && zona.id == perfil.zona.id}"></option>
               </select>
               
               
@@ -97,6 +97,9 @@
             </form>
           </div>
         </div>
+          <div th:if="${exito}" class="alert alert-success">
+              <p th:text="${exito}"></p>
+          </div>
       </div>
     </div>
   </section>

@@ -188,4 +188,25 @@ public class UsuarioService {
 
     }
 
+    public Usuario buscarUsuarioPorId(Long id) throws ErrorServiceException{
+
+        try{
+            Usuario usuario = null;
+            try{
+                usuario = repository.buscarUsuarioPorId(id);
+
+            }catch (NoResultException e){
+                throw new ErrorServiceException("No se encontro el usuario");
+            }
+
+            return usuario;
+
+
+        }catch(Exception ex){
+            ex.printStackTrace();
+            throw new ErrorServiceException("Error de sistemas");
+        }
+
+    }
+
 }

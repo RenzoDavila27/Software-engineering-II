@@ -70,7 +70,7 @@
           <div class="p-5">
             <h2 class="display-4">Ingresá a Tinder</h2>
 			
-            <form action="/usuario/loginUsuario" method="get">
+            <form action="/usuario/loginUsuario" method="post">
 				
                <p th:if="${error != null}" th:text="${error}" style="color:red"></p>
                <p th:if="${logout != null}" th:text="${logout}" style="color:green"></p> 
@@ -87,6 +87,7 @@
 			
           </div>
       </div>
+    </div>
     </div>
   </section>
 

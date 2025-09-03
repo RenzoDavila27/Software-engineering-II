@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import jakarta.servlet.http.HttpSession;
 
 import com.tinder.demo.bussines.domain.Usuario;
 import com.tinder.demo.bussines.logic.error.ErrorServiceException;
@@ -40,4 +41,16 @@ public class InicioController {
         return "registro";
 	}
 	*/
+
+    @GetMapping("/inicio")
+    public String inicio(HttpSession session, Model model) {
+        Usuario usuario = (Usuario) session.getAttribute("usuariosession");
+
+        if (usuario == null) {
+            return "redirect:/login"; // no está logueado
+        }
+
+        model.addAttribute("usuario", usuario);
+        return "inicio";
+    }
 }

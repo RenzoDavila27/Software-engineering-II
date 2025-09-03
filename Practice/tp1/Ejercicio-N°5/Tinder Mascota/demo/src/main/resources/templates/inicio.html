@@ -46,7 +46,7 @@
       <div class="container">
         <h1 class="masthead-heading mb-0">Usuario Logueado</h1>
          <h2 class="masthead-subheading mb-0" th:if="${session.usuariosession != null}" th:text="${session.usuariosession.nombre + ' ' + session.usuariosession.apellido}"></h2> 
-        <a th:href="@{/usuario/editar-perfil(id=__${session.usuariosession.id}__)}" class="btn btn-primary btn-xl rounded-pill mt-5">¡Configura tu Perfil!</a>
+        <a th:href="@{/perfil(id=__${session.usuariosession.id}__)}" class="btn btn-primary btn-xl rounded-pill mt-5">¡Configura tu Perfil!</a>
         <a th:href="@{/mascota/mis-mascotas}" class="btn btn-primary btn-xl rounded-pill mt-5">¡Mis Mascotas!</a>
       </div>
     </div>
