@@ -35,7 +35,14 @@
                       <td th:text="${categoria.id}"></td>
                       <td th:text="${categoria.nombre}"></td> <!--RELLENA LA INFORMACION-->
                       <td>
-                          <button class="btn btn-warning" role="button"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+                          <button class="btn btn-warning" 
+                                  role="button"
+                                  data-bs-toggle="modal" 
+                                  data-bs-target="#modalEditarCategoria"
+                                  th:attr="data-id=${categoria.id}, data-nombre=${categoria.nombre}"
+                                  onclick="cargarEditarCategoria(this)">
+                              <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                          </button>
                           <a th:href="@{/categoria/eliminar/{id}(id=${categoria.id})}"
                              class="btn btn-danger"
                              onclick="return confirm('¿Seguro que deseas eliminar esta categoria?');">
@@ -63,7 +70,7 @@
 
             <div class="mb-3">
                 <label class="form-label">Nombre</label>
-                <input type="text" th:field="*{Nombre}" class="form-control" required>
+                <input type="text" th:field="*{nombre}" class="form-control" required>
             </div>
 
             <div class="modal-footer">
@@ -76,9 +83,50 @@
         </div>
     </div>
     </div>
+    <!-- Modal Editar Categoria -->
+<div class="modal fade" id="modalEditarCategoria" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Categoria</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Notá: sin th:object aquí, para que no haya dudas en el binding -->
+        <form id="formEditarCategoria" th:action="@{/categoria/editar}" method="post">
+          <input type="hidden" name="id" id="editCategoriaId">
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="nombre" id="editCategoriaNombre" class="form-control" required>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+function cargarEditarCategoria(button) {
+    const id = button.getAttribute("data-id");
+    const nombre = button.getAttribute("data-nombre");
+
+    document.getElementById("editCategoriaId").value = id;
+    document.getElementById("editCategoriaNombre").value = nombre;
+}
+</script>
+
 </body>
 </html>
