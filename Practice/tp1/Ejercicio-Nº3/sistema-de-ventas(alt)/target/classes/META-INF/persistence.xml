@@ -16,9 +16,9 @@
         <properties>
 
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/base_prueba"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/insert_nameDB"/>
             <property name="jakarta.persistence.jdbc.user" value="root" />
-            <property name="jakarta.persistence.jdbc.password" value="Fioritech123." />
+            <property name="jakarta.persistence.jdbc.password" value="inser_password" />
             <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
 
             <property name="hibernate.archive.autodetection" value="class, hbm"/>
