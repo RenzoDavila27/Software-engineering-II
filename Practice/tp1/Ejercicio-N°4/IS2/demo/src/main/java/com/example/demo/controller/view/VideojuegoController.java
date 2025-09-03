@@ -17,12 +17,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Collection;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class VideojuegoController {
 
     @Autowired
-   	private VideojuegoService videojuegoService;
+    private VideojuegoService videojuegoService;
     @Autowired
     private CategoriaService categoriaService;
     @Autowired
@@ -87,6 +88,36 @@ public class VideojuegoController {
 		
 
 	}
+        
+    
+    @PostMapping("/videojuego/editar")
+public String editarVideojuegoSubmit(
+        @RequestParam("id") Long id,
+        @RequestParam("titulo") String titulo,
+        @RequestParam("rutaimg") String rutaimg,
+        @RequestParam("precio") float precio,
+        @RequestParam("cantidad") Short cantidad,
+        @RequestParam("descripcion") String descripcion,
+        @RequestParam("oferta") Boolean oferta,
+        @RequestParam("fechalanzamiento") String fechalanzamiento,
+        @RequestParam("categoria") Categoria categoria,
+        @RequestParam("estudio") Estudio estudio,
+        RedirectAttributes attributes,
+        Model model) {
+
+    try {
+        videojuegoService.editarVideojuego(id, titulo, rutaimg, precio, cantidad, descripcion,
+                oferta, fechalanzamiento,  categoria,  estudio);
+        attributes.addFlashAttribute("msgExito", "Videojuego actualizado correctamente.");
+        return "redirect:/videojuego/listaVideojuego";
+    } catch (ErrorServiceException e) {
+        model.addAttribute("msgError", e.getMessage());
+        return "view/videojuego/lVideojuego";
+    } catch (Exception e) {
+        model.addAttribute("msgError", "Error de Sistema");
+        return "view/videojuego/lVideojuego";
+    }
+}
 
 	@GetMapping("/videojuego/nuevo")
 	public String nuevoVideojuego(Model model) {

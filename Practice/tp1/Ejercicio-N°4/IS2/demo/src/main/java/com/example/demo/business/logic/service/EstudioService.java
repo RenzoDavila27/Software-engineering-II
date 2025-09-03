@@ -80,40 +80,26 @@ public class EstudioService {
         }
     }
     
-    public Estudio buscarEstudio(Long id) throws ErrorServiceException {
-
-        try {
-            
-            if (id == null) {
-                throw new ErrorServiceException("Debe indicar el estudio");
-            }
-            
-            Optional<Estudio> optional = repository.findById(id);
-            Estudio estudio = null;
-            if (optional.isPresent()) {
-            	
-            	/*
-            	 * Si la entidad se encuentra, se obtiene de Optional usando get()
-            	 */
-            	estudio = optional.get();
-            	
-            	/* Verifica si la entidad está marcada como eliminada lógicamente (entity.isEliminado()).
-                 * Si es así, registra un mensaje de error y lanza una RuntimeException.
-                 */
-    			if (!estudio.getActivo()){
-                    throw new ErrorServiceException("No se encuentra el país indicado");
-                }
-    		}
-            
-            return estudio;
-            
-        } catch (ErrorServiceException ex) {  
-            throw ex;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new ErrorServiceException("Error de sistema");
+public Estudio buscarEstudio(Long id) throws ErrorServiceException {
+    try {
+        if (id == null) {
+            throw new ErrorServiceException("Debe indicar el estudio");
         }
+
+        var optional = repository.findById(id);
+        if (optional.isEmpty() || !optional.get().isActivo()) {
+            throw new ErrorServiceException("No se encuentra el estudio indicado");
+        }
+
+        return optional.get();
+
+    } catch (ErrorServiceException e) {
+        throw e;
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        throw new ErrorServiceException("Error de sistema");
     }
+}
     
     @Transactional
     public void eliminarEstudio(Long id) throws ErrorServiceException {  

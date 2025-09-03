@@ -14,6 +14,7 @@ import java.util.Collection;
 import org.springframework.ui.Model;
 
 import com.example.demo.business.logic.service.EstudioService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class EstudioController {
@@ -77,6 +78,27 @@ public class EstudioController {
 
 
     }
+    
+    @PostMapping("/estudio/editar")
+public String editarEstudioSubmit(
+        @RequestParam("id") Long id,
+        @RequestParam("nombre") String nombre,
+        RedirectAttributes attributes,
+        Model model) {
+
+    try {
+        estudioService.editarEstudio(id, nombre);
+        attributes.addFlashAttribute("msgExito", "Estudio actualizado correctamente.");
+        return "redirect:/estudio/listaEstudio";
+    } catch (ErrorServiceException e) {
+        model.addAttribute("msgError", e.getMessage());
+        return "view/estudio/lEstudio";
+    } catch (Exception e) {
+        model.addAttribute("msgError", "Error de Sistema");
+        return "view/estudio/lEstudio";
+    }
+}
+
 
     @GetMapping("/estudio/nuevo")
     public String nuevoEstudio(Model model) {
