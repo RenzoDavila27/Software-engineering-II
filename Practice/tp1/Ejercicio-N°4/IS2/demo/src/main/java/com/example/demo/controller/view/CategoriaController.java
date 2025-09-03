@@ -113,4 +113,22 @@ public String editarCategoriaSubmit(
         return redirectList;
     }
 
+    @GetMapping("/categoria/buscar")
+    public String buscarCategoria(Model model, @RequestParam(value = "query", required = false) String query) {
+        try {
+            Collection<Categoria> listaCategoria = categoriaService.buscarCategoriaPorNombre(query);
+            model.addAttribute("listaCategoria", listaCategoria);
+            model.addAttribute("categoria", new Categoria());
+            return "view/categoria/lCategoria";
+        } catch (ErrorServiceException e) {
+            model.addAttribute("msgError", e.getMessage());
+            model.addAttribute("categoria", new Categoria());
+            return "view/categoria/lCategoria";
+        } catch (Exception e) {
+            model.addAttribute("msgError", "Error de Sistema");
+            model.addAttribute("categoria", new Categoria());
+            return "view/categoria/lCategoria";
+        }
+    }
+
 }

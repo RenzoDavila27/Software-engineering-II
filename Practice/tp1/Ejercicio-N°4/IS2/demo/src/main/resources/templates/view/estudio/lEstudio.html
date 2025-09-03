@@ -17,9 +17,10 @@
             <div>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalEstudio" ><i class="bi bi-plus-circle"></i> Agregar Estudio</button>
             </div>
-            <div>
-                <input type="text" id="estudio" placeholder="Buscar por nombre">
-            </div>
+            <form class="d-flex" th:action="@{/estudio/buscar}" method="get" role="search">
+                <input class="form-control me-2" type="search" name="query" placeholder="Buscar por nombre" aria-label="Buscar">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
         </div>
 
         <table class="table table-hover">

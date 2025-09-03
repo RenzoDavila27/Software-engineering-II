@@ -11,6 +11,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.List;
 
 
 @Service
@@ -92,6 +93,24 @@ public Estudio buscarEstudio(Long id) throws ErrorServiceException {
         }
 
         return optional.get();
+
+    } catch (ErrorServiceException e) {
+        throw e;
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        throw new ErrorServiceException("Error de sistema");
+    }
+}
+
+@Transactional
+public Collection<Estudio> buscarEstudioPorNombre(String nombre) throws ErrorServiceException {
+    try {
+        if (nombre == null || nombre.isEmpty()) {
+            throw new ErrorServiceException("Debe indicar el nombre");
+        }
+
+        Collection<Estudio> listaEstudio = List.of(repository.buscarEstudioPorNombre(nombre));
+        return listaEstudio;
 
     } catch (ErrorServiceException e) {
         throw e;

@@ -45,9 +45,11 @@ public class EstudioController {
             model.addAttribute("estudio", new Estudio());
 
         }catch(ErrorServiceException e) {
-            model.addAttribute("msgError", e.getMessage());
+                model.addAttribute("msgError", e.getMessage());
+                model.addAttribute("estudio", new Estudio());
         }catch(Exception e) {
-            model.addAttribute("msgError", "Error de Sistema");
+                model.addAttribute("msgError", "Error de Sistema");
+                model.addAttribute("estudio", new Estudio());
         }
         return viewList;    //"redirect:/estudio/listaEstudio"
     }
@@ -59,6 +61,7 @@ public class EstudioController {
 
             if (result.hasErrors()){
                 model.addAttribute("msgError", "Error de Sistema");
+                model.addAttribute("estudio", new Estudio());
                 return viewList;       //"view/pais/ePais.html"
             }
 
@@ -70,9 +73,11 @@ public class EstudioController {
 
         }catch(ErrorServiceException e) {
             model.addAttribute("msgError", e.getMessage());
+            model.addAttribute("estudio", new Estudio());
             return viewList; //"view/pais/ePais.html"
         }catch(Exception e) {
             model.addAttribute("msgError", "Error de Sistema");
+            model.addAttribute("estudio", new Estudio());
             return viewList; //"view/pais/ePais.html"
         }
 
@@ -80,24 +85,26 @@ public class EstudioController {
     }
     
     @PostMapping("/estudio/editar")
-public String editarEstudioSubmit(
+    public String editarEstudioSubmit(
         @RequestParam("id") Long id,
         @RequestParam("nombre") String nombre,
         RedirectAttributes attributes,
         Model model) {
 
-    try {
-        estudioService.editarEstudio(id, nombre);
-        attributes.addFlashAttribute("msgExito", "Estudio actualizado correctamente.");
-        return "redirect:/estudio/listaEstudio";
-    } catch (ErrorServiceException e) {
-        model.addAttribute("msgError", e.getMessage());
-        return "view/estudio/lEstudio";
-    } catch (Exception e) {
-        model.addAttribute("msgError", "Error de Sistema");
-        return "view/estudio/lEstudio";
+            try {
+                estudioService.editarEstudio(id, nombre);
+                attributes.addFlashAttribute("msgExito", "Estudio actualizado correctamente.");
+                return "redirect:/estudio/listaEstudio";
+            } catch (ErrorServiceException e) {
+                model.addAttribute("msgError", e.getMessage());
+                model.addAttribute("estudio", new Estudio());
+                return "view/estudio/lEstudio";
+            } catch (Exception e) {
+                model.addAttribute("msgError", "Error de Sistema");
+                model.addAttribute("estudio", new Estudio());
+                return "view/estudio/lEstudio";
+            }
     }
-}
 
 
     @GetMapping("/estudio/nuevo")
@@ -112,4 +119,21 @@ public String editarEstudioSubmit(
         return redirectList;
     }
 
+    @GetMapping("/estudio/buscar")
+    public String buscarEstudio(Model model, @RequestParam(value = "query", required = false) String query) {
+        try {
+            Collection<Estudio> listaEstudio = estudioService.buscarEstudioPorNombre(query);
+            model.addAttribute("listaEstudio", listaEstudio);
+            model.addAttribute("estudio", new Estudio());
+            return "view/estudio/lEstudio";
+        } catch (ErrorServiceException e) {
+            model.addAttribute("msgError", e.getMessage());
+            model.addAttribute("estudio", new Estudio());
+            return "view/estudio/lEstudio";
+        } catch (Exception e) {
+            model.addAttribute("msgError", "Error de Sistema");
+            model.addAttribute("estudio", new Estudio());
+            return "view/estudio/lEstudio";
+        }
+    }
 }

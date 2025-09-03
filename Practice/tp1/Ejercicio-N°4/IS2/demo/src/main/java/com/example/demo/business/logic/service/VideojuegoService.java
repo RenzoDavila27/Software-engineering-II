@@ -12,6 +12,7 @@ import com.example.demo.business.logic.error.ErrorServiceException;
 import com.example.demo.business.persistence.repository.VideojuegoRepository;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.List;
 
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
@@ -112,26 +113,45 @@ public class VideojuegoService {
         }
     }
 
-public Videojuego buscarVideojuego(Long id) throws ErrorServiceException {
-    try {
-        if (id == null) {
-            throw new ErrorServiceException("Debe indicar la categoría");
+    public Videojuego buscarVideojuego(Long id) throws ErrorServiceException {
+        try {
+            if (id == null) {
+                throw new ErrorServiceException("Debe indicar la categoría");
+            }
+
+            var optional = repository.findById(id);
+            if (optional.isEmpty() || !optional.get().getActivo()) {
+                throw new ErrorServiceException("No se encuentra la categoría indicada");
+            }
+
+            return optional.get();
+
+        } catch (ErrorServiceException e) {
+            throw e;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new ErrorServiceException("Error de sistema");
         }
-
-        var optional = repository.findById(id);
-        if (optional.isEmpty() || !optional.get().getActivo()) {
-            throw new ErrorServiceException("No se encuentra la categoría indicada");
-        }
-
-        return optional.get();
-
-    } catch (ErrorServiceException e) {
-        throw e;
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        throw new ErrorServiceException("Error de sistema");
     }
-}
+
+    @Transactional
+    public Collection<Videojuego> buscarVideojuegoPorNombre(String nombre) throws ErrorServiceException {
+        try {
+            if (nombre == null || nombre.isEmpty()) {
+                throw new ErrorServiceException("Debe indicar el nombre");
+            }
+
+            Collection<Videojuego> listaVideojuego = List.of(repository.buscarVideojuegoPorNombre(nombre));
+            return listaVideojuego;
+
+        } catch (ErrorServiceException e) {
+            throw e;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new ErrorServiceException("Error de sistema");
+        }
+    }
+
 
     @Transactional
     public void eliminarVideojuego(Long id) throws ErrorServiceException {  

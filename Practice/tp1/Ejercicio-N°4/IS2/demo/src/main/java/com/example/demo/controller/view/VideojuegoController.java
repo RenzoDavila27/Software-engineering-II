@@ -131,4 +131,22 @@ public String editarVideojuegoSubmit(
         return redirectList;
     }
 	
+  @GetMapping("/videojuego/buscar")
+    public String buscarVideojuego(Model model, @RequestParam(value = "query", required = false) String query) {
+        try {
+            Collection<Videojuego> listaVideojuego = videojuegoService.buscarVideojuegoPorNombre(query);
+            model.addAttribute("listaVideojuego", listaVideojuego);
+            model.addAttribute("videojuego", new Videojuego());
+            return "view/videojuego/lVideojuego";
+        } catch (ErrorServiceException e) {
+            model.addAttribute("msgError", e.getMessage());
+            model.addAttribute("videojuego", new Videojuego());
+            return "view/videojuego/lVideojuego";
+        } catch (Exception e) {
+            model.addAttribute("msgError", "Error de Sistema");
+            model.addAttribute("videojuego", new Videojuego());
+            return "view/videojuego/lVideojuego";
+        }
+    }
+
 }

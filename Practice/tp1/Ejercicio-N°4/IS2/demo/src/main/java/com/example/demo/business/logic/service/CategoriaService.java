@@ -10,6 +10,7 @@ import com.example.demo.business.logic.error.ErrorServiceException;
 import com.example.demo.business.persistence.repository.CategoriaRepository;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.List;
 
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
@@ -91,6 +92,24 @@ public Categoria buscarCategoria(Long id) throws ErrorServiceException {
         }
 
         return optional.get();
+
+    } catch (ErrorServiceException e) {
+        throw e;
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        throw new ErrorServiceException("Error de sistema");
+    }
+}
+
+@Transactional
+public Collection<Categoria> buscarCategoriaPorNombre(String nombre) throws ErrorServiceException {
+    try {
+        if (nombre == null || nombre.isEmpty()) {
+            throw new ErrorServiceException("Debe indicar el nombre");
+        }
+
+        Collection<Categoria> listaCategoria = List.of(repository.buscarCategoriaPorNombre(nombre));
+        return listaCategoria;
 
     } catch (ErrorServiceException e) {
         throw e;
