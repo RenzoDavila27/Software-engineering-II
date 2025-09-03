@@ -79,49 +79,27 @@ public class CategoriaService {
         }
     }
 
-    public Categoria buscarCategoria(Long id) throws ErrorServiceException {
-
-        try {
-
-            if (id == null) {
-                throw new ErrorServiceException("Debe indicar el país");
-            }
-
-            /* El método findById heredado de JpaRepository para buscar la entidad por su ID.
-             * Este método devuelve un Optional<E>, que puede contener la entidad si se encuentra,
-             * o estar vacío si no se encuentra.
-             * ¿Qué es Optional?
-             * Un Optional<E> es un contenedor que puede o no contener un valor no nulo de tipo E.
-             * Los Optional se utilizan para evitar NullPointerException
-             * y para expresar la ausencia de un valor de manera más clara.
-             */
-
-            Optional<Categoria> optional = repository.findById(id);
-            Categoria cat = null;
-            if (optional.isPresent()) {
-
-                /*
-                 * Si la entidad se encuentra, se obtiene de Optional usando get()
-                 */
-                cat = optional.get();
-
-                /* Verifica si la entidad está marcada como eliminada lógicamente (entity.isEliminado()).
-                 * Si es así, registra un mensaje de error y lanza una RuntimeException.
-                 */
-                if (!cat.isActivo()){
-                    throw new ErrorServiceException("No se encuentra la categoria indicada");
-                }
-            }
-
-            return cat;
-
-        } catch (ErrorServiceException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new ErrorServiceException("Error de sistema");
+public Categoria buscarCategoria(Long id) throws ErrorServiceException {
+    try {
+        if (id == null) {
+            throw new ErrorServiceException("Debe indicar la categoría");
         }
+
+        var optional = repository.findById(id);
+        if (optional.isEmpty() || !optional.get().isActivo()) {
+            throw new ErrorServiceException("No se encuentra la categoría indicada");
+        }
+
+        return optional.get();
+
+    } catch (ErrorServiceException e) {
+        throw e;
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        throw new ErrorServiceException("Error de sistema");
     }
+}
+
 
     @Transactional
     public void eliminarCategoria(Long id) throws ErrorServiceException {

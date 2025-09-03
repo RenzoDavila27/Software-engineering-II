@@ -13,13 +13,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Collection;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class CategoriaController {
 
     @Autowired
     private CategoriaService categoriaService;
-
+    
     private String viewList = "view/categoria/lCategoria";
     private String redirectList = "redirect:/categoria/listaCategoria";
 
@@ -59,10 +60,11 @@ public class CategoriaController {
                 model.addAttribute("msgError", "Error de Sistema");
                 return viewList;       //"view/pais/ePais.html"
             }
-
-            if (cat.getId() == null)
+            
+            if (cat.getId() == null) {
                 categoriaService.crearCategoria(cat.getNombre());
-
+            }
+                
             attributes.addFlashAttribute("msgExito", "La acción fue realizada correctamente.");
             return redirectList;      //"redirect:/pais/listPais"
 
@@ -73,9 +75,31 @@ public class CategoriaController {
             model.addAttribute("msgError", "Error de Sistema");
             return viewList; //"view/pais/ePais.html"
         }
-
-
+        
+        
     }
+    
+@PostMapping("/categoria/editar")
+public String editarCategoriaSubmit(
+        @RequestParam("id") Long id,
+        @RequestParam("nombre") String nombre,
+        RedirectAttributes attributes,
+        Model model) {
+
+    try {
+        categoriaService.editarCategoria(id, nombre);
+        attributes.addFlashAttribute("msgExito", "Categoría actualizada correctamente.");
+        return "redirect:/categoria/listaCategoria";
+    } catch (ErrorServiceException e) {
+        model.addAttribute("msgError", e.getMessage());
+        return "view/categoria/lCategoria";
+    } catch (Exception e) {
+        model.addAttribute("msgError", "Error de Sistema");
+        return "view/categoria/lCategoria";
+    }
+}
+
+
 
     @GetMapping("/categoria/nuevo")
     public String nuevaCategoria(Model model) {
