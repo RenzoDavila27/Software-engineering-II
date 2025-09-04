@@ -71,19 +71,19 @@
             <h2 class="display-4">Registrate</h2>
             <form action="/usuario/guardar" method="POST"  enctype="multipart/form-data">
                 
-               <p th:if="${error != null}" th:text="${error}" th:object= "${usuario}" style="color:red;"></p> 
+               <p th:if="${error != null}" th:text="${error}" style="color:red;"></p>
                 
               <label>Nombre</label>
-              <input type="text" class="form-control" name="nombre" th:value="*{nombre}"/>
+              <input type="text" class="form-control" name="nombre" th:value="${nombre}"/>
 
               <label>Apellido</label>
-              <input type="text" class="form-control" name="apellido" th:value="*{apellido}"/>
+              <input type="text" class="form-control" name="apellido" th:value="${apellido}"/>
               
               <label>E-Mail</label>
-              <input type="email" class="form-control" name="mail" th:value="*{mail}"/>
+              <input type="email" class="form-control" name="mail" th:value="${mail}"/>
                      
               <label>Foto</label>
-              <input type="file" class="form-control" name="foto"th:value="*{foto}"/>
+              <input type="file" class="form-control" name="foto"th:value="${foto}"/>
               
               <label>Zona</label>
               <select class="form-control" name="zona"> 

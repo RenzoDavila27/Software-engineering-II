@@ -35,6 +35,9 @@ public class Usuario {
     @Column(columnDefinition = "LONGBLOB") // FOTO MYSQL
     private byte[] foto;
 
+    @Column(name = "Tipo de foto" )
+    private String tipoFoto;
+
     @Column(name = "Clave")
     private String clave;
 
@@ -50,11 +53,12 @@ public class Usuario {
 
     
 
-    public Usuario(String nombre, String apellido, String mail, byte[] foto, String clave, Date fechadealta,Zona zona) {
+    public Usuario(String nombre, String apellido, String mail, byte[] foto,String tipoFoto, String clave, Date fechadealta,Zona zona) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.mail = mail;
         this.foto = foto;
+        this.tipoFoto = tipoFoto;
         this.clave = clave;
         this.fechadealta = fechadealta;
         this.zona = zona;
@@ -131,7 +135,11 @@ public class Usuario {
         this.foto = foto;
     }
 
-    
+    public String getTipoFoto() {
+        return tipoFoto;
+    }
 
-    
+    public void setTipoFoto(String tipoFoto) {
+        this.tipoFoto = tipoFoto;
+    }
 }

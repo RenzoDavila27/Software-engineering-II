@@ -56,8 +56,8 @@
       <div class="row align-items-center">
         <div class="col-lg-6 order-lg-2">
           <div class="p-5">
-              <img th:if="${perfil.foto != null}" class="img-fluid rounded-circle" th:src="${'/foto/usuario/' + perfil.id}" alt="">
-              <img th:if="${perfil.foto == null}" class="img-fluid rounded-circle" src="img/m1.jpeg" alt="">
+              <img th:if="${foto != null}" class="img-fluid rounded-circle" th:src="${'/usuario/foto/' + id}" alt="">
+              <img th:if="${foto == null}" class="img-fluid rounded-circle" src="img/m1.jpeg" alt="">
 
           </div>
         </div>
@@ -67,30 +67,32 @@
                 
                <p th:if="${error != null}" th:text="${error}" style="color:red;"></p>
                
-               <input type="hidden" name="id" th:value="${perfil.id}"/>
+               <input type="hidden" name="id" th:value="${id}"/>
                 
               <label>Nombre</label>
-              <input type="text" class="form-control" name="nombre" th:value="${perfil.nombre}"/>
+              <input type="text" class="form-control" name="nombre" th:value="${nombre}"/>
 
               <label>Apellido</label>
-              <input type="text" class="form-control" name="apellido" th:value="${perfil.apellido}"/>
+              <input type="text" class="form-control" name="apellido" th:value="${apellido}"/>
               
               <label>E-Mail</label>
-              <input type="email" class="form-control" name="mail" th:value="${perfil.mail}"/>
+              <input type="email" class="form-control" name="mail" th:value="${mail}"/>
                      
               <label>Foto</label>
-                <input type="file" class="form-control" name="foto" th:value="${perfil.foto}"/>
+                <input type="file" class="form-control" name="foto" th:value="${foto}"/>
               
               <label>Zona</label>
               <select class="form-control" name="idZona"> 
-                   <option th:each="zona : ${zonas}" th:value="${zona.id}" th:text="${zona.nombre}" th:selected="${perfil.zona != null && zona.id == perfil.zona.id}"></option>
+                   <option th:each="zona : ${zonas}" th:value="${zona.id}" th:text="${zona.nombre}" th:selected="${zonaUsuario != null && zona.id == zonaUsuario.id}"></option>
               </select>
+
+                <label>Contraseña actual</label>
+                <input type="password" class="form-control" name="claveActual" th:value="${claveActual}"/>
               
-              
-              <label>Clave</label>
+              <label>Nueva contraseña</label>
               <input type="password" class="form-control" name="clave1" th:value="${clave1}"/>
               
-              <label>Repetir Clave</label>
+              <label>Repetir nueva contraseña</label>
               <input type="password" class="form-control" name="clave2" th:value="${clave2}"/>
               
               <br/><button type="submit" class="btn btn-primary">Actualizar Perfil</button>

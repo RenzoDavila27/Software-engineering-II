@@ -76,10 +76,10 @@
                <p th:if="${logout != null}" th:text="${logout}" style="color:green"></p> 
 
                <label>E-Mail</label>
-               <input type="email" class="form-control" name="mail"/>
+               <input type="email" class="form-control" name="mail" th:value="${mail}"/>
               
                <label>Clave</label>
-               <input type="password" class="form-control" name="clave"/>
+               <input type="password" class="form-control" name="clave" th:value="${clave}"/>
               
                <br/><button type="submit" class="btn btn-primary">Ingresar</button>
 			   

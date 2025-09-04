@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.tinder.demo.bussines.domain.Usuario;
 import com.tinder.demo.bussines.domain.Zona;
+import com.tinder.demo.bussines.persistence.repository.ZonaRepository;
 import com.tinder.demo.bussines.logic.error.ErrorServiceException;
 import com.tinder.demo.bussines.persistence.repository.UsuarioRepository;
 
@@ -20,16 +21,19 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository repository;
 
+    @Autowired
+    private ZonaRepository repositoryZona;
+
     @Transactional
-    public void crearUsuario(String nombre, String apellido, String mail, byte[] foto, String clave, Zona zona) throws ErrorServiceException{
+    public void crearUsuario(String nombre, String apellido, String mail, byte[] foto,String tipoFoto, String clave1,String clave2, Zona zona) throws ErrorServiceException{
 
         try{
-            validar(nombre,apellido,mail,foto,zona);
+            validar(nombre,apellido,mail,foto,zona,clave1,clave2);
 
             try{
                 Usuario usuarioAux = repository.buscarUsuarioPorMail(mail);
                 if (usuarioAux != null){
-                    throw new ErrorServiceException("Existe un Usuario con el mail indicado");
+                    throw new ErrorServiceException("Existe un usuario con el mail indicado");
                 }
 
             }catch(NoResultException e){}
@@ -39,7 +43,8 @@ public class UsuarioService {
             usuario.setApellido(apellido);
             usuario.setMail(mail);
             usuario.setFoto(foto);
-            usuario.setClave(clave);
+            usuario.setTipoFoto(tipoFoto);
+            usuario.setClave(clave1);
             usuario.setZona(zona);
             usuario.setFechadealta(new Date());
             
@@ -56,7 +61,7 @@ public class UsuarioService {
     }
     
 
-    public void validar(String nombre, String apellido, String mail, byte[] foto, Zona zona) throws ErrorServiceException{
+    public void validar(String nombre, String apellido, String mail, byte[] foto, Zona zona, String clave1, String clave2) throws ErrorServiceException{
 
         if (nombre == null || nombre.isEmpty()) {
             throw new ErrorServiceException("Debe indicar un nombre");
@@ -67,40 +72,94 @@ public class UsuarioService {
         if (mail == null || mail.isEmpty()) {
             throw new ErrorServiceException("Debe indicar un mail");
         }
-        if (foto == null) {
+        if (foto.length == 0) {
             throw new ErrorServiceException("Debe cargar una foto");
         }
-        if (zona == null || nombre.isEmpty()) {
+        if (zona == null) {
             throw new ErrorServiceException("Debe indicar una Zona");
+        }
+        if (clave1 == null || clave1.isEmpty()){
+            throw new ErrorServiceException("Debe indicar una contraseña");
+        }
+        if (!clave1.equals(clave2)){
+            throw new ErrorServiceException("Las contraseñas no coinciden");
         }
 
     }
 
     @Transactional
-    public void modificarUsuario(Long id, String nombre, String apellido, String mail, byte[] foto, String clave,Zona zona) throws ErrorServiceException{
+    public void modificarUsuario(Long id, String nombre, String apellido, String mail, byte[] foto,String tipoFoto, String claveActual, String clave1, String clave2,Zona zona) throws ErrorServiceException{
 
     try {
         Usuario usuario = null;
+        boolean clave_modificada;
+        usuario = repository.buscarUsuarioPorId(id);
 
-            try {
-                usuario = repository.buscarUsuarioPorId(id);
-            } catch (NoResultException e) {
-                throw new ErrorServiceException("No se encontró el usuario con id " + id);
+        if (usuario == null){
+            throw new ErrorServiceException("Ocurrio un error validar el usuario");
+        }
+
+        try {
+            if (!usuario.getClave().equals(claveActual)){
+                throw new ErrorServiceException("La contraseña actual no es correcta");
             }
+            clave_modificada = modificaClave(clave1, clave2);
+            validarModificacion(nombre,apellido,mail,foto,zona);
+        } catch(ErrorServiceException e) {throw e;}
 
         usuario.setNombre(nombre);
         usuario.setApellido(apellido);
         usuario.setMail(mail);
         usuario.setFoto(foto);
-        usuario.setClave(clave);
+        usuario.setTipoFoto(tipoFoto);
+        if (clave_modificada){
+            usuario.setClave(clave1) ;
+        }
         usuario.setZona(zona);
 
         repository.save(usuario);
 
     } catch (Exception e) {
         e.printStackTrace();
-        throw new ErrorServiceException("Error de Sistemas");
+        throw e;
     }
+
+    }
+
+    public boolean modificaClave(String clave1, String clave2) throws ErrorServiceException{
+
+        if (clave1 == null || clave1.isEmpty()) {
+            if (!clave1.equals(clave2)) {
+                throw new ErrorServiceException("Las contraseñas no coinciden");
+            } else {
+                return false;
+            }
+        }else {
+            if (!clave1.equals(clave2)) {
+                throw new ErrorServiceException("Las contraseñas no coinciden");
+            }
+        }
+        return true;
+
+    }
+
+    public void validarModificacion(String nombre, String apellido, String mail, byte[] foto, Zona zona) throws ErrorServiceException{
+
+        if (nombre == null || nombre.isEmpty()) {
+            throw new ErrorServiceException("Debe indicar un nombre");
+        }
+        if (apellido == null || apellido.isEmpty()) {
+            throw new ErrorServiceException("Debe indicar un apellido");
+        }
+        if (mail == null || mail.isEmpty()) {
+            throw new ErrorServiceException("Debe indicar un mail");
+        }
+        if (foto.length == 0) {
+            throw new ErrorServiceException("Debe cargar una foto");
+        }
+        if (zona == null) {
+            throw new ErrorServiceException("Debe indicar una Zona");
+        }
 
     }
 
@@ -127,23 +186,33 @@ public class UsuarioService {
     public Usuario verificarUsuario(String mail, String clave) throws ErrorServiceException{
 
         try{
-            Usuario usuario = null;
-            try{
-                usuario = repository.buscarUsuarioPorMail(mail);
-                if (usuario.getClave().equals(clave)){
-                    return usuario;
-                }else{
-                    throw new ErrorServiceException("Su contraseña o mail son equivocadas");
-                }
-            }catch(NoResultException e){
-                throw new ErrorServiceException("Su contraseña o mail son equivocadas");
-            }
 
-        }catch(Exception ex){
-            ex.printStackTrace();
-            throw new ErrorServiceException("Error de Sistemas");
+            validarLogin(mail, clave);
+            Usuario usuario = repository.buscarUsuarioPorMail(mail);
+
+            if (usuario == null){
+                throw new ErrorServiceException("El mail no esta registrado");
+            }
+            if (usuario.getClave().equals(clave)){
+                return usuario;
+            }else{
+                throw new ErrorServiceException("La contraseña no corresponde al usuario");
+            }
+        }catch(Exception e){
+            throw e;
         }
 
+
+    }
+
+    public void validarLogin(String mail, String clave) throws ErrorServiceException{
+
+        if (mail == null || mail.isEmpty()) {
+            throw new ErrorServiceException("Debe indicar un mail");
+        }
+        if (clave == null || clave.isEmpty()) {
+            throw new ErrorServiceException("Debe indicar una contraseña");
+        }
 
     }
 
