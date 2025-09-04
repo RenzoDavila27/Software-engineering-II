@@ -57,7 +57,7 @@
         <div class="col-lg-12 order-lg-12">
             
             <a th:href="@{/mascota/debaja-mascotas}" class="btn btn-primary btn-x rounded-pill mt-5" style="float:right ; margin-bottom:5px ; padding: 14px">Mascotas Dadas de Baja</a>
-            <a th:href="@{/mascota/editar-perfil}" class="btn btn-primary btn-x rounded-pill mt-5" style="float:right ; margin-bottom:5px ; padding: 14px">¡Agrega una Mascota!</a>
+            <a th:href="@{/mascota/editar-perfil(accion='Crear')}" class="btn btn-primary btn-x rounded-pill mt-5" style="float:right ; margin-bottom:5px ; padding: 14px">¡Agrega una Mascota!</a>
          <br/>
             
             <table class="table table-light table-hover">
@@ -72,6 +72,10 @@
                     </tr>
                 </thead>
                 <tbody>
+
+                    <tr th:if="${mascotas.isEmpty()}">
+                        <td colspan="5">El usuario no tiene mascotas activas.</td>
+                    </tr>
                     <tr th:each="mascota : ${mascotas}">
                         <td>
                             <img th:if="${mascota.foto != null}" th:src="${'/foto/mascota/' + mascota.id}" alt="" style="max-height: 60px; border-radius: 100%">
@@ -83,8 +87,8 @@
                         <td th:text="${mascota.tipo}"></td>
                         
                         <td>
-                           <a th:href="@{/mascota/editar-perfil(id=__${mascota.id}__,accion=Actualizar)}">Editar</a> -
-                           <a th:href="@{/mascota/editar-perfil(id=__${mascota.id}__,accion=Eliminar)}">Eliminar</a>
+                           <a th:href="@{/mascota/editar-perfil(id=__${mascota.id}__,accion='Actualizar')}">Editar</a> -
+                           <a th:href="@{/mascota/editar-perfil(id=__${mascota.id}__,accion='Eliminar')}">Eliminar</a>
                         </td>
                     </tr>                  
                 </tbody>

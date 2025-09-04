@@ -81,8 +81,8 @@
                         <td th:text="${mascota.tipo}"></td>
                         
                         <td>
-                           <a th:href="@{/mascota/editar-perfil(id=__${mascota.id}__,accion=Actualizar)}">Editar</a> -
-                           <a th:href="@{/mascota/editar-perfil(id=__${mascota.id}__,accion=Alta)}">Dar Alta</a>
+                           <a th:href="@{/mascota/editar-perfil(id=__${mascota.id}__,accion='Actualizar')}">Editar</a> -
+                           <a th:href="@{/mascota/editar-perfil(id=__${mascota.id}__,accion='Alta')}">Dar Alta</a>
                         </td>
                     </tr>                  
                 </tbody>

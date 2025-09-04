@@ -53,9 +53,9 @@
       <div class="row align-items-center">
         <div class="col-lg-6 order-lg-2">
           <div class="p-5">
-              <img th:if="${perfil.foto != null}" class="img-fluid rounded-circle" th:src="${'/foto/mascota/' + perfil.id}" alt="">
+              <img th:if="${perfil.getFoto() != null}" class="img-fluid rounded-circle" th:src="${'/mascota/foto/' + perfil.id}" alt="">
                   
-              <img th:if="${perfil.foto == null}" class="img-fluid rounded-circle" src="/img/m1.jpeg" alt="">
+              <img th:if="${perfil.getFoto() == null}" class="img-fluid rounded-circle" src="/img/m1.jpeg" alt="">
           </div>
         </div>
         <div class="col-lg-6 order-lg-1">
@@ -70,13 +70,13 @@
               <input type="text" class="form-control" name="nombre" th:value="${perfil.nombre}" th:disabled="${accion == 'Eliminar' OR accion == 'Alta'}"/>
               
               <label>Tipo</label>
-              <select class="form-control" name="tipo" th:disabled="${accion == 'Eliminar' OR accion == 'Alta'}"> 
-                 <option th:each="tipo : ${tipos}" th:value="${tipo}" th:text="${tipo}" th:selected="${perfil.tipo != null && tipo == perfil.tipo}"></option>
+              <select class="form-control" name="tipo" th:disabled="${accion == 'Eliminar' OR accion == 'Alta'}">
+                 <option th:each="tipo : ${tipos}" th:value="${tipo}" th:text="${tipo}" th:selected="${perfil.getTipo() != null && tipo == perfil.getTipo()}"></option>
               </select>
               
               <label>Sexo</label>
-              <select class="form-control" name="sexo" th:disabled="${accion == 'Eliminar' OR accion == 'Alta'}"> 
-                 <option th:each="sexo : ${sexos}" th:value="${sexo}" th:text="${sexo}" th:selected="${perfil.sexo != null && sexo == perfil.sexo}"></option>
+              <select class="form-control" name="sexo" th:disabled="${accion == 'Eliminar' OR accion == 'Alta'}">
+                 <option th:each="sexo : ${sexos}" th:value="${sexo}" th:text="${sexo}" th:selected="${perfil.getSexo() != null && sexo == perfil.getSexo()}"></option>
               </select>
 
               <label th:if="${accion != 'Eliminar'}">Foto</label>

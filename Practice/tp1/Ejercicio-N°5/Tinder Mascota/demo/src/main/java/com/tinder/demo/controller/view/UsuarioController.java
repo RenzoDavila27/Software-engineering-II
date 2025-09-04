@@ -3,6 +3,7 @@ package com.tinder.demo.controller.view;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,13 +27,13 @@ public class UsuarioController {
     private UsuarioService service;
 
     @PostMapping("/usuario/guardar") //en el form de registro
-    public String guardar(@RequestParam String nombre,@RequestParam String apellido,@RequestParam String mail,@RequestParam MultipartFile foto,@RequestParam Zona zona,@RequestParam String clave1, @RequestParam String clave2, Model model) throws ErrorServiceException{
+    public String guardar(@RequestParam String nombre,@RequestParam String apellido,@RequestParam String mail,@RequestParam MultipartFile foto,@RequestParam Zona zona,@RequestParam String clave1, @RequestParam String clave2, ModelMap model) throws ErrorServiceException{
 
         try {
             byte[] imagenBytes = foto.getBytes();
             service.crearUsuario(nombre,apellido,mail,imagenBytes,clave1,zona);
-            model.addAttribute("exito", "Usuario guardado correctamente");
-            return "redirect:/exito"; // va hacia la pagina de exito
+            model.put("titulo","Usuario guardado correctamente");
+            return "exito.html"; // va hacia la pagina de exito
 
         } catch (ErrorServiceException e) {
             
@@ -76,6 +77,7 @@ public class UsuarioController {
 
     @GetMapping("/perfil")
     public String perfil(Model model, Long id) throws ErrorServiceException {
+
         Usuario usuario = service.buscarUsuarioPorId(id);
 
         if (usuario == null) {

@@ -1,18 +1,11 @@
 package com.tinder.demo.bussines.domain;
 
 import com.tinder.demo.bussines.domain.Usuario;
+import com.tinder.demo.bussines.domain.Tipo;
+import com.tinder.demo.bussines.domain.Sexo;
 import java.util.Date;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 
 
 @Entity
@@ -27,8 +20,18 @@ public class Mascota{
     @Column(name = "Nombre")
     private String nombre;
 
-    @Column(name = "Sexo")
-    private String sexo;
+    @Enumerated(EnumType.STRING)
+    private Sexo sexo;
+
+    @Enumerated(EnumType.STRING)
+    private Tipo tipo;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB") // FOTO MYSQL
+    private byte[] foto;
+
+    @Column(name = "Tipo de Foto")
+    private String fotoTipo;
 
     @Column(name = "Fecha de Alta")
     private Date fechadealta;
@@ -40,7 +43,7 @@ public class Mascota{
     @JoinColumn(name = "fk_usuario")
     private Usuario usuario;
 
-    public Mascota(String nombre, String sexo, Date fechadealta, Usuario usuario) {
+    public Mascota(String nombre, Sexo sexo, Tipo tipo, byte[] foto, Date fechadealta, Usuario usuario) {
         this.nombre = nombre;
         this.sexo = sexo;
         this.fechadealta = fechadealta;
@@ -60,14 +63,6 @@ public class Mascota{
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public String getSexo() {
-        return sexo;
-    }
-
-    public void setSexo(String sexo) {
-        this.sexo = sexo;
     }
 
     public Date getFechadealta() {
@@ -94,10 +89,39 @@ public class Mascota{
         this.usuario = usuario;
     }
 
-    
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    
+    public void setSexo(Sexo sexo) {
+        this.sexo = sexo;
+    }
 
+    public Sexo getSexo() {
+        return sexo;
+    }
 
+    public Tipo getTipo() {
+        return tipo;
+    }
 
+    public void setTipo(Tipo tipo) {
+        this.tipo = tipo;
+    }
+
+    public byte[] getFoto() {
+        return foto;
+    }
+
+    public void setFoto(byte[] foto) {
+        this.foto = foto;
+    }
+
+    public String getFotoTipo() {
+        return fotoTipo;
+    }
+
+    public void setFotoTipo(String fotoTipo) {
+        this.fotoTipo = fotoTipo;
+    }
 }
