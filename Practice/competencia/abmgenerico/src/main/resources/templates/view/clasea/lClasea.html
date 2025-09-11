@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+    body {
+        padding-top: 70px; /* Ajustar según altura del navbar */
+    }
+</style>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top" id="mainNav" style="background-color: #000000;">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand" href="#">
+                <img th:src="@{/assets/img/file.jpeg}" alt="Logo" style="height:50px; border-radius:8px;" />
+            </a>
+            <!-- Botón para volver al index -->
+            <div class="ms-auto">
+                <a th:href="@{/}" class="btn btn-light">Volver al Inicio</a>
+            </div>
+        </div>
+    </nav>
+    
+    
+    <div class="container my-4">
+        <h2 class="mb-4 text-center">Gestión de Claseas</h2>
+
+        <!-- Botones de acción -->
+        <div class="mb-8 d-flex justify-content-between">
+            <div>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalClasea" ><i class="bi bi-plus-circle"></i> Agregar Clasea</button>
+            </div>
+            <form class="d-flex" th:action="@{/clasea/buscar}" method="get" role="search">
+                <input class="form-control me-2" type="search" name="query" placeholder="Buscar por str1" aria-label="Buscar">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+        </div>
+
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Str1</th>
+                    <th scope="col">Float1</th>
+                    <th scope="col">Short1</th>
+                    <th scope="col">Str2</th>
+                    <th scope="col">Bool1</th>
+                    <th scope="col">Str3</th>
+                </tr>
+            </thead>
+            <tbody id="tablaClientes">
+                  <tr th:each="clasea : ${listaClasea}"> <!-- RECORRE LA LISTA DE LAS ClaseaS-->
+
+                      <td th:text="${clasea.id}"></td>
+                      <td th:text="${clasea.str1}"></td> <!--RELLENA LA INFORMACION-->
+                      <td th:text="${clasea.float1}"></td>
+                      <td th:text="${clasea.short1}"></td>
+                      <td th:text="${clasea.str2}"></td>
+                      <td th:text="${clasea.bool1}"></td>
+                      <td th:text="${clasea.str3}"></td>
+                      <td>
+                          <button class="btn btn-warning" 
+                                  role="button"
+                                  data-bs-toggle="modal" 
+                                  data-bs-target="#modalEditarClasea"
+                                  th:attr="data-id=${clasea.id}, data-str1=${clasea.str1}, data-id=${clasea.float1}, data-id=${clasea.short1}, data-id=${clasea.str2}, data-id=${clasea.bool1}, data-id=${clasea.str3}"
+                                  onclick="cargarEditarClasea(this)">
+                              <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                          </button>
+                          <a th:href="@{/clasea/eliminar/{id}(id=${clasea.id})}"
+                             class="btn btn-danger"
+                             onclick="return confirm('¿Seguro que deseas eliminar esta clasea?');">
+                              <i class="bi bi-trash"></i>
+                          </a>
+                      </td> <!--SI USO btn-sm al lado de danger se hace mas pequeño-->
+
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    <!-- Modal Agregar Clasea -->
+    <div class="modal fade" id="modalClasea" tabindex="-1" aria-labelledby="modalClaseaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalClaseaLabel">Agregar Clasea</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+            <form th:action="@{/clasea/guardar}" th:object="${clasea}" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Str1</label>
+                <input type="text" th:field="*{str1}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">RutaImg</label>
+                <input type="text" th:field="*{rutaimg}" class="form-control" not required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Float1</label>
+                <input type="number" th:field="*{float1}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Short1</label>
+                <input type="number" th:field="*{short1}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Str2</label>
+                <input type="text" th:field="*{str2}" class="form-control" required>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" th:field="*{bool1}" class="form-check-input" id="bool1">
+                <label class="form-check-label" for="bool1">Bool1</label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Str3</label>
+                <input type="text" th:field="*{str3}" class="form-control" required>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+            </form>
+        </div>
+
+        </div>
+    </div>
+    </div>
+    <!-- Modal Editar Clasea -->
+<div class="modal fade" id="modalEditarClasea" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Clasea</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Notá: sin th:object aquí, para que no haya dudas en el binding -->
+        <form id="formEditarClasea" th:action="@{/clasea/editar}" method="post">
+          <input type="hidden" name="id" id="editClaseaId">
+          <div class="mb-3">
+            <label class="form-label">Str1</label>
+            <input type="text" name="str1" id="editClaseaStr1" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+                <label class="form-label">RutaImg</label>
+                <input type="text" th:field="*{rutaimg}" class="form-control" not required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Float1</label>
+                <input type="number" th:field="*{float1}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Short1</label>
+                <input type="number" th:field="*{short1}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Str2</label>
+                <input type="text" th:field="*{str2}" class="form-control" required>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" th:field="*{bool1}" class="form-check-input" id="bool1">
+                <label class="form-check-label" for="bool1">Bool1</label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Str3</label>
+                <input type="text" th:field="*{str3}" class="form-control" required>
+            </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+function cargarEditarClasea(button) {
+    const id = button.getAttribute("data-id");
+    const str1 = button.getAttribute("data-str1");
+
+    document.getElementById("editClaseaId").value = id;
+    document.getElementById("editClaseaStr1").value = str1;
+}
+</script>
+
+</body>
+</html>
