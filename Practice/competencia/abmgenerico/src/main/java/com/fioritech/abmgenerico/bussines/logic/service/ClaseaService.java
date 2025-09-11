@@ -1,13 +1,13 @@
-package com.example.abmgenerico.business.logic.service;
+package com.fioritech.abmgenerico.business.logic.service;
 
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.abmgenerico.business.domain.Clasea;
-import com.example.abmgenerico.business.logic.error.ErrorServiceException;
-import com.example.abmgenerico.business.persistence.repository.ClaseaRepository;
+import com.fioritech.abmgenerico.business.domain.Clasea;
+import com.fioritech.abmgenerico.business.logic.error.ErrorServiceException;
+import com.fioritech.abmgenerico.business.persistence.repository.ClaseaRepository;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.abmgenerico.business.logic.error;
+package com.fioritech.abmgenerico.business.logic.error;
 
 public class ErrorServiceException extends Exception {
     

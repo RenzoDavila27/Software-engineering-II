@@ -1,4 +1,4 @@
-package com.example.abmgenerico.controller.view;
+package com.fioritech.abmgenerico.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

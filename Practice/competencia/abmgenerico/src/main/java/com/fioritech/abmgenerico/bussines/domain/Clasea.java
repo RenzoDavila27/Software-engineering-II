@@ -1,4 +1,4 @@
-package com.example.abmgenerico.business.domain;
+package com.fioritech.abmgenerico.business.domain;
 
 import java.io.Serializable;
 

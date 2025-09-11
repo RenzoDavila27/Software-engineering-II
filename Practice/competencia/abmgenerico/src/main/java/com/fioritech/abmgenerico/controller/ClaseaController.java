@@ -1,13 +1,13 @@
-package com.example.abmgenerico.controller.view;
+package com.fioritech.abmgenerico.controller.view;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.example.abmgenerico.business.domain.Clasea;
-import com.example.abmgenerico.business.logic.error.ErrorServiceException;
-import com.example.abmgenerico.business.logic.service.ClaseaService;
+import com.fioritech.abmgenerico.business.domain.Clasea;
+import com.fioritech.abmgenerico.business.logic.error.ErrorServiceException;
+import com.fioritech.abmgenerico.business.logic.service.ClaseaService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
