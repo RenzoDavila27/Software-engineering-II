@@ -1,0 +1,45 @@
+package com.fioritech.gimnasio.business.domain;
+
+import com.fioritech.gimnasio.business.domain.enums.TipoDocumento;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
+import java.time.LocalDate;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "personas")
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Persona extends BaseEntity {
+
+    @Column(nullable = false)
+    private String nombre;
+
+    @Column(nullable = false)
+    private String apellido;
+
+    @Column(name = "fecha_nacimiento", nullable = false)
+    private LocalDate fechaNacimiento;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_documento", nullable = false)
+    private TipoDocumento tipoDocumento;
+
+    @Column(name = "numero_documento", nullable = false, unique = true)
+    private String numeroDocumento;
+
+    @Column(nullable = false)
+    private String telefono;
+
+    @Column(name = "correo_electronico", nullable = false)
+    private String correoElectronico;
+}

@@ -1,0 +1,310 @@
+<diagram program="umletino" version="15.1"><zoom_level>4</zoom_level><element><id>UMLClass</id><coordinates><x>40</x><y>0</y><w>188</w><h>84</h></coordinates><panel_attributes>Departamento
+--
+-id:String
+-nombre: String
+-eliminado: boolean
+--
++ crearDepartamento(nombre:string, idProvincia:String): void
++ validar(nombre:string, provincia:Provincia): void
++ buscarDepartamento(id:string):Departamento
++ buscarDepartamentoPorNombre(nombre:string): Departamento
++ modificarDepartamento (id:String, nombre:string, idProvincia:String): void
++ eliminarDepartamento(id:String): void
++ listarDepartamento(idProvincia:String): Collection&lt;Departamento&gt;
++ listarDepartamentoActivo(idProvincia:String): Collection&lt;Departamento&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>300</x><y>0</y><w>168</w><h>80</h></coordinates><panel_attributes>Provincia
+--
+-id:String
+-nombre: String
+-eliminado: boolean
+--
++ crearProvincia(nombre:string, idPais:String): void
++ validar(nombre:string, pais:Pais): void
++ buscarProvincia(id:string):Provincia
++ buscarProvincia(nombre:string):Provincia
++ modificarProvincia (id:String, nombre:string, idPais:String): void
++ eliminarProvincia(id:String):void
++ listarProvicnia(idPais:String): Collection&lt;Provincia&gt;
++ listarProvicniaActiva(idPais:String): Collection&lt;Provincia&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>512</x><y>0</y><w>112</w><h>84</h></coordinates><panel_attributes>Pais
+--
+-id:String
+-nombre: String
+-eliminado: boolean
+--
++ crearPais(nombre:string): void
++ validar(nombre:string): void
++ buscarPais(id:string):Pais
++ buscarPaisPorNombre(nombre:string):Pais
++ modificarPais (id:String, nombre:string):void
++ eliminarPais(id:String):void
++ listarPais(): Collection&lt;Pais&gt;
++ listarPaisActivo(): Collection&lt;Pais&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>464</x><y>20</y><w>56</w><h>16</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>120;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>224</x><y>20</y><w>84</w><h>16</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>190;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>124</x><y>80</y><w>20</w><h>40</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>48</x><y>112</y><w>264</w><h>92</h></coordinates><panel_attributes>Localidad
+--
+-id:String
+-nombre: String
+-codigoPostal: string
+-eliminado: boolean
+--
++ crearLocalidad(nombre:string, codigoPostal:string, idDepartamento:String): void
++ validar(nombre:string, codigoPostal:string, departamento:Departamento): void
++ buscarLocalidad(id:string):Localidad
++ buscarLocalidadPorNombre(nombre:string): Localidad
++ buscarLocalidadPorCodigoPostal(codigoPostal:string): Localidad
++ modificarLocalidad (id:String, nombre:string, codigoPostal:string, idDepartamento:String):void
++ eliminarLocalidad(id:String):void
++ listarLocalidad(idDepartamento:String): Collection&lt;Localidad&gt;
++ listarLocalidadActivo(idDepartamento:String): Collection&lt;Localidad&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>116</x><y>200</y><w>20</w><h>40</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>232</y><w>404</w><h>92</h></coordinates><panel_attributes>Direccion
+--
+-id:string
+-calle: String
+-numeracion: String
+-barrio: String
+-manzanaPiso: String
+-casaDepartamento:String
+-referencia:String
+-eliminado: boolean
+--
++ crearDireccion(calle:string, numeracion:string, barrio:string, manzanaPiso:string, casaDepartamento:string,  referencia:string, idLocalidad:String): Direccion
++ validar(calle:string, numeracion:string, barrio:string, manzanaPiso:string, casaDepartamento:string,  referencia:string, idLocalidad:String):void
++ buscarDireccionPorCalleNumeracion(calle:string, numeracion:string): Direccion
++ modificarDireccion (id:String, calle:string, numeracion:string, , barrio:string, manzanaPiso:string, casaDepartamento:string,  referencia:string,idLocalidad:string):void
++ eliminarDireccion(id:String):void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>476</x><y>220</y><w>236</w><h>88</h></coordinates><panel_attributes>Sucursal
+--
+id:String
+-nombre: String
+-eliminado: boolean
+--
++ crearSucursal(nombre:string, idEmpresa:String, direccion:Direccion): void
++ validar(nombre:string, direccion:Direccion): void
++ buscarSucursal(id:string):Sucursal
++buscarSucursalPorNombre(nombre:string):Sucursal
++buscarSucursalPorNombre(nombre:string, empresa:Empresa):Sucursal
++ modificarSucursal (id:String, nombre:string, idEmpresa:String, direccion:Direccion): void
++ eliminarSucursal(id:String):void
++ listarSucursal(): Collection&lt;Sucursal&gt;
++ listarSucursalActiva(): Collection&lt;Sucursal&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>400</x><y>244</y><w>84</w><h>16</h></coordinates><panel_attributes>lt=&lt;-
+1...*</panel_attributes><additional_attributes>10;20;190;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>776</x><y>220</y><w>172</w><h>92</h></coordinates><panel_attributes>Empresa
+--
+-id:Sring
+-nombre: String
+-telefono: String
+-correoElectronico:String
+-eliminado: boolean
+--
++ crearEmpresa(nombre:string, telefono:String, correoEletronico:String): void
++ validar(nombre:string): void
++ buscarEmpresa(id:string):Empresa
++ buscarEmpresaPorNombre(nombre:string):Empresa
++ modificarEmpresa (id:String, nombre:string): void
++ eliminarEmpresal(id:String):void
++ listarEmpresa(): Collection&lt;Empresa&gt;
++ listarEmpresaActiva(): Collection&lt;Empresa&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>708</x><y>244</y><w>76</w><h>16</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>170;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>576</x><y>304</y><w>20</w><h>36</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>480</x><y>332</y><w>200</w><h>84</h></coordinates><panel_attributes>Persona
+--
+-nombre: string
+-apellido: string
+-fechaNacimiento:Date
+-tipoDocumento:Enum
+-numeroDocumento:String
+-telefono:String
+-correoElectronico:String
+-eliminado: boolean
+--
++ buscarPersona(id:String):Persona
++ eliminarPersona(id:String):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>200</x><y>444</y><w>372</w><h>88</h></coordinates><panel_attributes>Empleado
+--
+-tipoEmpleado:Enum
+--
++ crearEmpleado(nombre:String, apellido:String, fechaNacimiento:Date, tipoDocumento:Enum, numeroDocumento:String, telefono:String, correoElectronico:String, tipoEmpleado:Enum):void
++ validar(nombre:String, apellido:String, fechaNacimiento:Date, tipoDocumento:Enum, numeroDocumento:String, telefono:String, correoElectronico:String, tipoEmpleado:Enum):void
++ mdoificarEmpleado(id:String, nombre:String, apellido:String, fechaNacimiento:Date, tipoDocumento:Enum, numeroDocumento:String, tipoEmpleado:Enum):void
++ listarEmpleado(): Collection&lt;Empleado&gt;
++ listarEmpleadoActivo(): Collection&lt;Empleado&gt;
++ asociarEmpleadoUsuario(empelado:Empleado, usuario:Usuario):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>520</x><y>412</y><w>12</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>596</x><y>444</y><w>200</w><h>84</h></coordinates><panel_attributes>Socio
+--
+-numeroSocio:long
+--
++ crearSocio(nombre:String, apellido:String, fechaNacimiento:Date, tipoDocumento:Enum, numeroDocumento:String, telefono:String, correoElectronico:String, numeroSocio:Long):void
++ validar(nombre:String, apellido:String, fechaNacimiento:Date, tipoDocumento:Enum, numeroDocumento:String, telefono:String, correoElectronico:String, numeroSocio:long):void
++ mdoificarSocio(id:String, nombre:String, apellido:String, fechaNacimiento:Date, tipoDocumento:Enum, numeroDocumento:String, numeroSocio:Long):void
++ listarSocio(): Collection&lt;Socio&gt;
++ listarSocioActivo(): Collection&lt;Socio&gt;
++ asociarSocioUsuario(socio:Socio, usuario:Usuario):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>620</x><y>412</y><w>12</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>752</x><y>328</y><w>216</w><h>104</h></coordinates><panel_attributes>Usuario
+--
+-id:string
+-nombreUsuario:String
+-clave:String
+-rol:Enum
+-elimnado:boolean
+--
+crearUsuario(nombreUsuario:String, clave:String, rol:Enum):void
+modificarUsuario(id:String, nombreUsuario:String, clave:String, rol:Enum):void
+validar( nombreUsuario:String, clave:String, rol:Enum):void
+eliminarUsuario(id:String):void
+buscarUsuario(id:String):Usuario
+listarUsuario():Collection&lt;Usuario&gt;
+listarUsuarioActivo():Collection&lt;Usuario&gt;
+buscarUsuarioPorNombre(nombre:string):Usuario
+login(nombreUsuario:String, clave:String):Usuario
+modificarClave(id:String, claveActual:String, nuevaClave:String, confirmarClave:String):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>372</x><y>584</y><w>328</w><h>132</h></coordinates><panel_attributes>Rutina
+--
+-id:String
+-fechaInicio:Date
+-fechaFinalización
+-estadoRutina:Enum
+-elimiando:boolean
+--
++ crearRutina(idProfesor:String, idSocio:String,fechaInicio:Date, fechaFinalizacion:Date, detalle:Collection&lt;DetalleRutina&gt;):void
++ validar(idProfesor:String, idSocio:String,fechaInicio:Date, fechaFinalizacion:Date, detalle:Collection&lt;DetalleRutina&gt;):void
++ modificarRutina(id:String, idProfesor:String, idSocio:String,fechaInicio:Date, fechaFinalizacion:Date, detalle:Collection&lt;DetalleRutina&gt;):void
++ buscarRurina(id:String):Rutina
++ eliminarRutina(id:String):void
++ modificarEstadoRutina(id:String, estadoRutina:Enum):void
++ listarRutina(): Collection&lt;Rutina&gt;
++ listarRutinaActivo(): Collection&lt;Rutina&gt;
++ buscarRutinaActual():Rutina
++ crearDetalleRutina(fecha:Date, actividad:String):Detalle
++ buscarDetalleRutina(idDetalleRutina:String):DetalleRutina
++ modificarDetalleRutina(idDetalleRutina, fecha:Date, actividad:String):Detalle
++ eliminarDetalleRutina(idDetalleRurina:String):void
++ modificarEstadoDetalleRutina(idDetalleRutina, estadoDetalleRutina:Enum):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>492</x><y>528</y><w>24</w><h>64</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>20;10;10;140</additional_attributes></element><element><id>Relation</id><coordinates><x>552</x><y>524</y><w>80</w><h>68</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>180;10;10;150</additional_attributes></element><element><id>Relation</id><coordinates><x>288</x><y>628</y><w>92</w><h>16</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=*..1</panel_attributes><additional_attributes>210;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>156</x><y>600</y><w>136</w><h>68</h></coordinates><panel_attributes>DetalleRutina
+--
+-id:String
+-fecha:Date
+-actividad:String
+-estadoRutina:Enum
+-eliminado:boolean
+--
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>392</x><y>320</y><w>96</w><h>64</h></coordinates><panel_attributes>lt=&lt;-
+1...*</panel_attributes><additional_attributes>10;10;220;140</additional_attributes></element><element><id>UMLClass</id><coordinates><x>860</x><y>520</y><w>244</w><h>104</h></coordinates><panel_attributes>CuotaMensual
+--
+-id:String
+-mes:Enum
+-anio:Long
+-estado:Enum
+-fechaVencimiento:Date
+-boolean:eliminado
+--
++ crearCuota(idSocio:String, mes:Enum, anio:Long, idValorCuota:String):void
++ validar(mes:Enum, anio:Long, idValorCuota:String):void
++ buscarCuotaMendual(id:String):CuotaMensual
++ modificarCuota(id:String, idSocio:String, mes:Enum, anio:Long, idValorCuota:String, estado:Enum):void
++ eliminarCuotaMenual(id:String):void
++ listarCuotaMensual(): Collection&lt;CuotaMensual&gt;
++ listarCuotaMensuaActivo(): Collection&lt;CuotaMensual&gt;
++ listarCuotaMensualPorEstado(estado:Enum):Collection&lt;CuotaMensual&gt;
++ listarCuotaMensualPorFecha(fechaDesde:Date, fechaHasta:Date):Collection&lt;CuotaMensual&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>792</x><y>472</y><w>76</w><h>92</h></coordinates><panel_attributes>lt=&lt;-
+1...*</panel_attributes><additional_attributes>10;10;170;210</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1164</x><y>516</y><w>216</w><h>96</h></coordinates><panel_attributes>ValorCuota
+--
+-id:String
+-fechaDesde:Date
+-fechaHasta:Date
+-valorCuota:double
+-boolean:eliminado
+--
++ crearValorCuota(fechaDesde:Date, fechaHasta:Date, valorCuota:double):void
++ validar(echaDesde:Date, fechaHasta:Date, valorCuota:double):void
++ buscarValorCuota(id:String):ValorCuota
++ modificarValorCuota(id:String, fechaDesde:Date, fechaHasta:Date, valorCuota:double):void
++ eliminarValorCuota(id:String):void
++ listarValorCuota(): Collection&lt;ValorCuota&gt;
++ listarValorCuotaActivo(): Collection&lt;ValorCuota&gt;
++ buscarValorCuotaVigente():Cuota</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1100</x><y>548</y><w>72</w><h>16</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>160;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1132</x><y>664</y><w>372</w><h>124</h></coordinates><panel_attributes>Factura
+--
+-id:String
+-numeroFactura:long
+-fechaFactura:Date
+-totalPagado:double
+-estado:Enum
+-boolean:eliminado
+--
++ crearFactura(numeoFactura:long, fechaFactura:Date, double:totalPago, estado:Enum, detalleCollection&lt;DetalleFactura&gt;, formaDePago:FormaDePago):void
++ validar(numeoFactura:long, fechaFactura:Date, double:totalPago, estado:Enum, detalleCollection&lt;DetalleFactura&gt;, formaDePago:FormaDePago):void
++ buscarFactura(id:String):Factura
++ modificarFactura(id:String, numeoFactura:long, fechaFactura:Date, double:totalPago, estado:Enum, detalleCollection&lt;DetalleFactura&gt;):void
++ eliminarFactura(id:String):void
++ listarFactura(): Collection&lt;Factura&gt;
++ listarFacturaActivo(): Collection&lt;Factura&gt;
++ listarFacturaPorEstado(estado:Enum): Collection&lt;Factura&gt;
++ crearDetalleFactura(idCuotaMendual:String):Detalle
++ buscarDetalleFactura(id:String):DetalleFactura
++ modificarDetalleFactura(idDetalleFactura, idCuotaMendual:String):Detalle
++ eliminarDetalleFactura(idDetalleFactura:String):void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>900</x><y>672</y><w>136</w><h>68</h></coordinates><panel_attributes>DetalleFactura
+--
+-id:String
+-eliminado:boolean
+--
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>960</x><y>620</y><w>20</w><h>60</h></coordinates><panel_attributes>lt=&lt;-
+1...*</panel_attributes><additional_attributes>10;10;10;130</additional_attributes></element><element><id>Relation</id><coordinates><x>1032</x><y>700</y><w>108</w><h>16</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=*..1</panel_attributes><additional_attributes>250;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>676</x><y>348</y><w>84</w><h>16</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=*..1</panel_attributes><additional_attributes>10;10;190;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1544</x><y>576</y><w>136</w><h>68</h></coordinates><panel_attributes>FormaDePago
+--
+-id:String
+-tipoPago:Enum
+-observacion:String
+-eliminado:boolean
+--
++ crearFormaDePago(tipoPago, obsevacion:String):void
++ modificarFormaDePago(id:String, tipoPago, obsevacion:String):void
++ eliminarValorCuota(id:String):void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1500</x><y>604</y><w>52</w><h>100</h></coordinates><panel_attributes>lt=&lt;-
+*...1</panel_attributes><additional_attributes>110;10;10;230</additional_attributes></element><element><id>UMLClass</id><coordinates><x>988</x><y>432</y><w>200</w><h>68</h></coordinates><panel_attributes>Promocio
+--
+-fechaEnvioPromocion:Date
+-cantidadSociosEnviados:long
+--
++ crearPromocion(idUsuario:String,fechaPromocion:Date, titulo:String, texto:String):void
++ validar(idUsuario:String,fechaPromocion:Date, titulo:String, texto:String):void
++ modificarPromocion(id:String, idUsuario:String,fechaPromocion:Date, titulo:String, texto:String):void
++ buscarPromocion(idSting):Promocion
++ listarPromocion(): Collection&lt;Promocion&gt;
++ listarPromocionActivo(): Collection&lt;Promocion&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1120</x><y>304</y><w>252</w><h>104</h></coordinates><panel_attributes>Mensaje
+--
+-id:String
+-titulo:String
+-texto:String
+-tipoMensaje:Enum
+-eliminado:boolean
+--
++ crearMensaje(idUsuario:String, titulo:String, texto:String, tipoMensaje:Enum):void
++ validar(idUsuario:String,fechaPromocion:Date, titulo:String, texto:String, tipoMensaje:Enum):void
++ modificarMensaje((id:String, idUsuario:String, titulo:String, texto:String, tipoMensaje:Enum):void
++ buscarMensaje(idSting):Mensaje
++ eliminarMensaje(id:String):void
++ listarMensaje(): Collection&lt;Mensaje&gt;
++ listarMensajeActivo(): Collection&lt;Mensaje&gt;
++ enviarMensaje(id:String):void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>964</x><y>352</y><w>164</w><h>16</h></coordinates><panel_attributes>lt=&lt;-
+1...*</panel_attributes><additional_attributes>10;20;390;20</additional_attributes></element><element><id>Relation</id><coordinates><x>1144</x><y>404</y><w>12</w><h>36</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1416</x><y>628</y><w>56</w><h>28</h></coordinates><panel_attributes>Enum EstadoFactura
+PAGADA,
+ANULADA,
+SIN_DEFINIR</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1532</x><y>532</y><w>56</w><h>28</h></coordinates><panel_attributes>Enum TipoPago
+EFECTIVO,
+TRANSFEENCIA,
+BILLETERA_VIRTUAL</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>64</x><y>608</y><w>72</w><h>28</h></coordinates><panel_attributes>Enum EstadoDetalleRutina
+REALIZADA,
+SIN_REALIZAR
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>376</x><y>552</y><w>72</w><h>28</h></coordinates><panel_attributes>Enum EstadoRutina
+FINALIZADA,
+ANULADA,
+EN_PROCESO
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1120</x><y>272</y><w>56</w><h>28</h></coordinates><panel_attributes>Enum TipoMensaje
+PROMOCION
+CUMPLEAÑOS,
+OTROS</panel_attributes><additional_attributes></additional_attributes></element></diagram>
