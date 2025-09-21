@@ -54,7 +54,7 @@ public class PaisController {
 		 
 		}catch(BusinessException e) {	
 		  model.addAttribute("msgError", e.getMessage());
-		  return "view/Direcciones/pais/lPais";  
+		  return "redirect:/pais/listaPais";  
 		}		  
 	}
 
@@ -72,7 +72,7 @@ public class PaisController {
 		 
 		}catch(BusinessException e) {	
 		  model.addAttribute("msgError", e.getMessage());
-		  return "view/Direcciones/pais/lPais";               
+		  return "redirect:/pais/listaPais";               
 		}		  
 	}
 	
@@ -85,11 +85,11 @@ public class PaisController {
 			
 		  service.eliminarPais(idPais);		
 		  attributes.addFlashAttribute("msgExito", "La acción fue realizada correctamente.");
-		  return "view/Direcciones/pais/lPais";                                        
+		  return "redirect:/pais/listaPais";                                        
 		  
 		}catch(BusinessException e) {	
 		   model.addAttribute("msgError", e.getMessage());
-		   return "view/Direcciones/pais/lPais";                                         
+		   return "redirect:/pais/listaPais";                                         
 		} 
 
     }
@@ -110,10 +110,11 @@ public class PaisController {
 		   service.modificarPais(pais.getId(), pais.getNombre());
 			  
 		  attributes.addFlashAttribute("msgExito", "La acción fue realizada correctamente.");
-		  return "view/Direcciones/pais/lPais";      
+		  return "redirect:/pais/listaPais";      
 		  
 		}catch(BusinessException e) {	
 			  model.addAttribute("msgError", e.getMessage());
+			  
 			  return "view/Direcciones/pais/ePais"; 
 		}catch(Exception e) {
 			  model.addAttribute("msgError", "Error de Sistema");
@@ -126,7 +127,7 @@ public class PaisController {
 	
 	@GetMapping("/pais/cancelarEditPais")
 	public String cancelarEdit() {
-	    return "view/Direcciones/pais/lPais";                   
+	    return "redirect:/pais/listaPais";                  
 	}
     
 }

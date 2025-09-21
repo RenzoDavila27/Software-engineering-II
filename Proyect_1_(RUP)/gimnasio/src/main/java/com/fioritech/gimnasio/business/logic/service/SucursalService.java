@@ -7,6 +7,9 @@ import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.SucursalRepository;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,22 +17,31 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SucursalService {
 
-    private final SucursalRepository sucursalRepository;
-    private final EmpresaService empresaService;
+    @Autowired
+    private SucursalRepository sucursalRepository;
 
-    public SucursalService(SucursalRepository sucursalRepository, EmpresaService empresaService) {
-        this.sucursalRepository = sucursalRepository;
-        this.empresaService = empresaService;
-    }
+    @Autowired
+    private EmpresaService empresaService;
 
-    public Sucursal crearSucursal(String nombre, String idEmpresa, Direccion direccion) {
-        Empresa empresa = empresaService.buscarEmpresa(idEmpresa);
-        validar(nombre, direccion);
-        Sucursal sucursal = new Sucursal();
-        sucursal.setNombre(nombre.trim());
-        sucursal.setEmpresa(empresa);
-        sucursal.setDireccion(direccion);
-        return sucursalRepository.save(sucursal);
+    @Autowired
+    private DireccionService direccionService;
+
+
+
+    public Sucursal crearSucursal(String nombre, String idEmpresa, Direccion direccion) throws BusinessException{
+        try{
+            direccionService.crearDireccion(direccion.getCalle(),direccion.getNumeracion(),direccion.getBarrio(),direccion.getManzanaPiso(),direccion.getCasaDepartamento(),direccion.getReferencia(),direccion.getLocalidad().getId());
+            Empresa empresa = empresaService.buscarEmpresa(idEmpresa);
+            validar(nombre, direccion);
+            Sucursal sucursal = new Sucursal();
+            sucursal.setNombre(nombre.trim());
+            sucursal.setEmpresa(empresa);
+            sucursal.setDireccion(direccion);
+            return sucursalRepository.save(sucursal);
+        }catch(BusinessException e){
+            throw e;
+        }
+       
     }
 
     public void validar(String nombre, Direccion direccion) {
@@ -38,6 +50,10 @@ public class SucursalService {
         }
         if (direccion == null) {
             throw new BusinessException("La direccion de la sucursal es obligatoria");
+        }
+        Sucursal existente = sucursalRepository.buscarSucursalPorNombre(nombre.trim());
+        if (existente!=null) {
+            throw new BusinessException("Ya existe una sucursal con ese nombre");
         }
     }
 

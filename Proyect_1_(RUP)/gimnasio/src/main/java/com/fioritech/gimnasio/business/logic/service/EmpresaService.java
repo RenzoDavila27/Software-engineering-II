@@ -3,6 +3,8 @@ package com.fioritech.gimnasio.business.logic.service;
 import com.fioritech.gimnasio.business.domain.Empresa;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.EmpresaRepository;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
@@ -87,9 +89,9 @@ public class EmpresaService {
     }
 
     @Transactional(readOnly = true)
-    public List<Empresa> listarEmpresaActiva() {
-        return empresaRepository.findAll().stream()
-            .filter(e -> !e.isEliminado())
-            .toList();
+    public Collection<Empresa> listarEmpresaActiva() {
+        Collection<Empresa> empresas = empresaRepository.findAll();
+        return empresas;
+            
     }
 }

@@ -1,6 +1,7 @@
 package com.fioritech.gimnasio.business.logic.service;
 
 import com.fioritech.gimnasio.business.domain.Promocion;
+import com.fioritech.gimnasio.business.domain.Provincia;
 import com.fioritech.gimnasio.business.domain.Usuario;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.PromocionRepository;
@@ -70,6 +71,13 @@ public class PromocionService {
             promocion.setTexto(texto.trim());
         }
         return promocionRepository.save(promocion);
+    }
+
+    @Transactional
+    public void eliminarPromocion(String id) {
+        Promocion promocion= buscarPromocion(id);
+        promocion.setEliminado(true);
+        promocionRepository.save(promocion);
     }
 
     @Transactional(readOnly = true)

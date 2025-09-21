@@ -4,6 +4,8 @@ import com.fioritech.gimnasio.business.domain.Pais;
 import com.fioritech.gimnasio.business.domain.Provincia;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.ProvinciaRepository;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
@@ -96,10 +98,9 @@ public class ProvinciaService {
     }
 
     @Transactional(readOnly = true)
-    public List<Provincia> listarProvinciaActiva(String idPais) {
-        return provinciaRepository.findAll().stream()
-            .filter(p -> !p.isEliminado())
-            .filter(p -> idPais == null || idPais.isBlank() || p.getPais().getId().equals(idPais))
-            .toList();
+    public Collection<Provincia> listarProvinciaActiva() {
+        return provinciaRepository.listarProvinciaActiva();
     }
+
+    
 }

@@ -7,7 +7,7 @@
     <meta name="author" content="">
     <link rel="icon" href="favicon.ico">
 
-    <title>Lista País</title>
+    <title>Lista Provincia</title>
     <!-- Bootstrap core CSS -->
     <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
@@ -36,10 +36,10 @@
         </div>
 
         <div class="card">
-          <h4 class="card-header"><strong>Lista País</strong></h4>              
+          <h4 class="card-header"><strong>Lista Provincias</strong></h4>              
           <div class="card-body">
 			
-            <a class="btn btn-primary" th:href="@{/pais/altaPais}" role="button"><i class="fa fa-plus" aria-hidden="true"></i> </a>            
+            <a class="btn btn-primary" th:href="@{/provincia/altaProvincia}" role="button"><i class="fa fa-plus" aria-hidden="true"></i> </a>            
             
 			<hr>
 			<div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>   
@@ -49,17 +49,19 @@
               <thead class="thead-light">
                 <tr>
 				  <th scope="col">Acciones</th>	
-                  <th scope="col">Nombre</th>	  
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Pais</th>	    
                 </tr>
               </thead>
               <tbody>
-                <tr th:each="pais : ${listaPais}">
+                <tr th:each="provincia : ${listaProvincia}">
                   <td>
-					<a th:href="@{/pais/consultar/{id} (id=${pais.id}) }" class="btn btn-success btn-sm" role="button" title="Consultar"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                    <a th:href="@{/pais/modificar/{id} (id=${pais.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
-					<a th:href="@{/pais/baja/{id} (id=${pais.id}) }" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
+					<a th:href="@{/provincia/consultar/{id} (id=${provincia.id}) }" class="btn btn-success btn-sm" role="button" title="Consultar"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                    <a th:href="@{/provincia/modificar/{id} (id=${provincia.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+					<a th:href="@{/provincia/baja/{id} (id=${provincia.id}) }" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
                   </td>
-				  <td th:text="${pais.nombre}"></td>
+				  <td th:text="${provincia.nombre}"></td>
+                  <td th:text="${provincia.pais.nombre}"></td>
                 </tr>                              
               </tbody>
             </table>

@@ -1,16 +1,26 @@
 package com.fioritech.gimnasio.business.logic.service;
 
 import com.fioritech.gimnasio.business.domain.Pais;
+import com.fioritech.gimnasio.business.domain.Provincia;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.PaisRepository;
+import com.fioritech.gimnasio.business.persistence.repository.ProvinciaRepository;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class PaisService {
+
+    @Autowired
+    private ProvinciaRepository provinciaRepository;
 
     private final PaisRepository paisRepository;
 
@@ -18,11 +28,24 @@ public class PaisService {
         this.paisRepository = paisRepository;
     }
 
+    @Transactional
     public Pais crearPais(String nombre) {
         validar(nombre);
-        Pais pais = new Pais();
-        pais.setNombre(nombre.trim());
-        return paisRepository.save(pais);
+
+        Optional<Pais> eliminado = paisRepository.findAll().stream()
+            .filter(Pais::isEliminado)
+            .filter(p -> p.getNombre().trim().equalsIgnoreCase(nombre.trim()))
+            .findFirst();
+
+        if (eliminado.isPresent()) {
+            Pais pais = eliminado.get();
+            pais.setEliminado(false);
+            return paisRepository.save(pais);
+        }
+
+        Pais nuevo = new Pais();
+        nuevo.setNombre(nombre.trim());
+        return paisRepository.save(nuevo);
     }
 
     public void validar(String nombre) {
@@ -71,6 +94,14 @@ public class PaisService {
         Pais pais = buscarPais(id);
         pais.setEliminado(true);
         paisRepository.save(pais);
+        Collection<Provincia> provincias = provinciaRepository.listarProvinciaPorPais(id);
+        for (Provincia provincia : provincias) { 
+            if (!provincia.isEliminado()) {       
+                provincia.setEliminado(true);
+                provinciaRepository.save(provincia);
+            }
+        }
+
     }
 
     @Transactional(readOnly = true)

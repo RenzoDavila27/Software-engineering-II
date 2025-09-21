@@ -4,6 +4,8 @@ import com.fioritech.gimnasio.business.domain.Departamento;
 import com.fioritech.gimnasio.business.domain.Localidad;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.LocalidadRepository;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
@@ -109,10 +111,7 @@ public class LocalidadService {
     }
 
     @Transactional(readOnly = true)
-    public List<Localidad> listarLocalidadActivo(String idDepartamento) {
-        return localidadRepository.findAll().stream()
-            .filter(l -> !l.isEliminado())
-            .filter(l -> idDepartamento == null || idDepartamento.isBlank() || l.getDepartamento().getId().equals(idDepartamento))
-            .toList();
+    public Collection<Localidad> listarLocalidadActivo() {
+        return localidadRepository.listarLocalidadActivo();
     }
 }

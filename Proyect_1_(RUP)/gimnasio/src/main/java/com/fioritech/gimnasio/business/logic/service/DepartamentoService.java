@@ -4,6 +4,8 @@ import com.fioritech.gimnasio.business.domain.Departamento;
 import com.fioritech.gimnasio.business.domain.Provincia;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.DepartamentoRepository;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DepartamentoService {
 
     private final DepartamentoRepository departamentoRepository;
+    
     private final ProvinciaService provinciaService;
 
     public DepartamentoService(DepartamentoRepository departamentoRepository, ProvinciaService provinciaService) {
@@ -92,10 +95,8 @@ public class DepartamentoService {
     }
 
     @Transactional(readOnly = true)
-    public List<Departamento> listarDepartamentoActivo(String idProvincia) {
-        return departamentoRepository.findAll().stream()
-            .filter(d -> !d.isEliminado())
-            .filter(d -> idProvincia == null || idProvincia.isBlank() || d.getProvincia().getId().equals(idProvincia))
-            .toList();
+    public Collection<Departamento> listarDepartamentoActivo() {
+        return departamentoRepository.listarDepartamentoActivo();
+          
     }
 }
