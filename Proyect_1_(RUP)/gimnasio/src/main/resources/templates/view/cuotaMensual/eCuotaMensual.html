@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>CUOTA MENSUAL</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">
+      <hr>
+      <div class="container">
+
+        <div class="card">
+          <h4 class="card-header"><strong>EDIT CUOTA MENSUAL</strong></h4>
+          <div class="card-body">
+
+            <form th:action="@{/cuotaMensual/aceptarEditCuotaMensual}" method="post" th:object="${cuotaMensual}">
+
+              <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
+              <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+
+                    <input type="hidden" name="id" th:field="*{id}">
+
+                    <div class="mb-3">
+                      <label for="socio" class="form-label d-block">Socio</label>
+                      <select class="form-select" th:field="*{socio.id}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{socio} == null">Seleccione</option>
+                        <option th:each="s : ${socios}" th:value="${s.id}" th:text="|${s.nombre} ${s.apellido} ${s.numeroDocumento}|"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="mes" class="form-label d-block">Mes</label>
+                      <select class="form-select" th:field="*{mes}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{mes} == null">Seleccione</option>
+                        <option th:each="mesEnum : ${meses}" th:value="${mesEnum}" th:text="${#strings.capitalize(mesEnum.name().toLowerCase())}"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="anio" class="form-label">Año</label>
+                      <input type="number" class="form-control" th:field="*{anio}" min="2000" step="1" placeholder="Ingrese el año" required="required" th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="valorCuota" class="form-label d-block">Valor de Cuota</label>
+                      <select class="form-select" th:field="*{valorCuota.id}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{valorCuota} == null">Seleccione</option>
+                        <option th:each="valor : ${valoresCuota}"
+                                th:value="${valor.id}"
+                                th:text="|Desde ${#temporals.format(valor.fechaDesde, 'dd/MM/yyyy')} - ${#numbers.formatDecimal(valor.valorCuota, 1, 'COMMA', 2, 'POINT')}|">
+                        </option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="estado" class="form-label d-block">Estado</label>
+                      <select class="form-select" th:field="*{estado}" th:disabled="${isDisabled}">
+                        <option value="" disabled th:selected="*{estado} == null">Seleccione</option>
+                        <option th:each="estadoEnum : ${estados}" th:value="${estadoEnum}" th:text="${#strings.capitalize(estadoEnum.name().toLowerCase())}"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento</label>
+                      <input type="date" class="form-control" th:field="*{fechaVencimiento}">
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+              <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary" th:disabled="${isDisabled}">ACEPTAR</button>
+               <a class="btn btn-primary" th:href="@{/cuotaMensual/cancelarEditCuotaMensual}" role="button">CANCELAR</a>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
+  </body>
+</html>

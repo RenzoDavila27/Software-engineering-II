@@ -139,4 +139,11 @@ public class EmpleadoService {
         return empleadoRepository.findById(id)
             .orElseThrow(() -> new BusinessException("Empleado no encontrado"));
     }
+
+    @Transactional
+    public void eliminarEmpleado(String id) {
+        Empleado empleado = buscarEmpleado(id);
+        empleado.setEliminado(true);
+        empleadoRepository.save(empleado);
+    }
 }

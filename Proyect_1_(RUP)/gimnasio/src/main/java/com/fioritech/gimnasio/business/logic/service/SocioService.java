@@ -87,7 +87,7 @@ public class SocioService {
     }
 
     public Socio modificarSocio(String idSocio, String nombre, String apellido, LocalDate fechaNacimiento,
-        TipoDocumento tipoDocumento, String numeroDocumento, Long numeroSocio) {
+        TipoDocumento tipoDocumento, String numeroDocumento, String telefono, String correoElectronico, Long numeroSocio) {
         Socio socio = buscarSocio(idSocio);
         if (nombre != null && !nombre.isBlank()) {
             socio.setNombre(nombre.trim());
@@ -100,6 +100,12 @@ public class SocioService {
         }
         if (tipoDocumento != null) {
             socio.setTipoDocumento(tipoDocumento);
+        }
+        if(telefono != null){
+            socio.setTelefono(telefono);
+        }
+        if(correoElectronico != null){
+            socio.setCorreoElectronico(correoElectronico);
         }
         if (numeroDocumento != null && !numeroDocumento.isBlank()
             && !socio.getNumeroDocumento().equalsIgnoreCase(numeroDocumento.trim())) {
@@ -139,5 +145,20 @@ public class SocioService {
     public Socio buscarSocio(String id) {
         return socioRepository.findById(id)
             .orElseThrow(() -> new BusinessException("Socio no encontrado"));
+    }
+
+    @Transactional
+    public void eliminarSocio(String id) throws BusinessException{
+
+        try {
+            Socio socio = buscarSocio(id);
+            socio.setEliminado(true);
+            socioRepository.save(socio);
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new BusinessException("Error de sistema");
+        }
     }
 }

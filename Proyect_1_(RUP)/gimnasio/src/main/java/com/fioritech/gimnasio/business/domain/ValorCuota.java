@@ -7,6 +7,9 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,9 +21,11 @@ import lombok.Setter;
 @Table(name = "valores_cuota")
 public class ValorCuota extends BaseEntity {
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_desde", nullable = false)
     private LocalDate fechaDesde;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_hasta")
     private LocalDate fechaHasta;
 

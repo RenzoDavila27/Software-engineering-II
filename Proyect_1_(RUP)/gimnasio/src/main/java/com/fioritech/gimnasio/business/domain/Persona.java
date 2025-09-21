@@ -9,6 +9,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class Persona extends BaseEntity {
     @Column(nullable = false)
     private String apellido;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 

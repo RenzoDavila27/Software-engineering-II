@@ -99,10 +99,13 @@ public class CuotaMensualService {
     }
 
     @Transactional(readOnly = true)
-    public List<CuotaMensual> listarCuotaMensualActiva() {
-        return cuotaMensualRepository.findAll().stream()
-            .filter(c -> !c.isEliminado())
-            .toList();
+    public List<CuotaMensual> listarCuotaMensualActiva() throws BusinessException{
+        try{
+            return cuotaMensualRepository.listarCuotaMensualActiva();
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new BusinessException("Error de sistema");
+        }
     }
 
     @Transactional(readOnly = true)

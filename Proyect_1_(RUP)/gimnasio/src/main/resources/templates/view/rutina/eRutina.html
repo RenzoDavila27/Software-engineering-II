@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>RUTINA</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">
+      <hr>
+      <div class="container">
+
+        <div class="card">
+          <h4 class="card-header"><strong>EDIT RUTINA</strong></h4>
+          <div class="card-body">
+
+            <form th:action="@{/rutina/aceptarEditRutina}" method="post" th:object="${rutina}">
+
+              <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
+              <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+
+                    <input type="hidden" name="id" th:field="*{id}">
+
+                    <div class="mb-3">
+                      <label for="profesor" class="form-label d-block">Profesor</label>
+                      <select class="form-select" th:field="*{profesor.id}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{profesor} == null">Seleccione</option>
+                        <option th:each="prof : ${profesores}" th:value="${prof.id}" th:text="|${prof.nombre} ${prof.apellido}|"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="socio" class="form-label d-block">Socio</label>
+                      <select class="form-select" th:field="*{socio.id}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{socio} == null">Seleccione</option>
+                        <option th:each="socio : ${socios}" th:value="${socio.id}" th:text="|${socio.nombre} ${socio.apellido}|"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                      <input type="date" class="form-control" th:field="*{fechaInicio}" required th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="fechaFinalizacion" class="form-label">Fecha Finalización</label>
+                      <input type="date" class="form-control" th:field="*{fechaFinalizacion}" th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3" th:if="${!isDisabled}">
+                      <label class="form-label">Estado</label>
+                      <input type="text" class="form-control" th:value="${rutina != null && rutina.estadoRutina != null ? #strings.capitalize(rutina.estadoRutina.name().toLowerCase()) : 'En proceso'}" readonly>
+                    </div>
+
+                    <div class="mb-3" th:if="${isDisabled}">
+                      <label for="estadoRutina" class="form-label d-block">Estado</label>
+                      <input type="text" class="form-control"
+                             th:value="${rutina != null && rutina.estadoRutina != null ? #strings.capitalize(rutina.estadoRutina.name().toLowerCase()) : 'En proceso'}"
+                             readonly>
+                    </div>
+
+                    <div class="mb-3" th:if="${!isDisabled}">
+                      <label for="estadoRutina" class="form-label d-block">Cambiar Estado</label>
+                      <select class="form-select" th:field="*{estadoRutina}" th:disabled="${isDisabled}">
+                        <option value="" disabled th:selected="*{estadoRutina} == null">Seleccione</option>
+                        <option th:each="estado : ${estadosRutina}" th:value="${estado}" th:text="${#strings.capitalize(estado.name().toLowerCase())}"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3" th:if="${detallesRutina != null and !detallesRutina.isEmpty()}">
+                      <h5>Detalles de la Rutina</h5>
+                      <table class="table table-sm">
+                        <thead>
+                          <tr>
+                            <th>Fecha</th>
+                            <th>Actividad</th>
+                            <th>Estado</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr th:each="detalle : ${detallesRutina}">
+                            <td th:text="${#temporals.format(detalle.fecha, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${detalle.actividad}"></td>
+                            <td th:text="${#strings.capitalize(detalle.estadoDetalle.name().toLowerCase())}"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+              <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary" th:disabled="${isDisabled}">ACEPTAR</button>
+               <a class="btn btn-primary" th:href="@{/rutina/cancelarEditRutina}" role="button">CANCELAR</a>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
+  </body>
+</html>

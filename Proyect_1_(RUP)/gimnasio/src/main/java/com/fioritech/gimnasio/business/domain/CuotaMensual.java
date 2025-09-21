@@ -13,6 +13,9 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,6 +38,7 @@ public class CuotaMensual extends BaseEntity {
     @Column(nullable = false)
     private EstadoCuotaMensual estado;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_vencimiento", nullable = false)
     private LocalDate fechaVencimiento;
 
