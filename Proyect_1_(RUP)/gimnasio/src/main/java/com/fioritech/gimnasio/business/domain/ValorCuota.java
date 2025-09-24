@@ -6,6 +6,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,11 +24,11 @@ public class ValorCuota extends BaseEntity {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_desde", nullable = false)
-    private LocalDate fechaDesde;
+    private Date fechaDesde;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_hasta")
-    private LocalDate fechaHasta;
+    private Date fechaHasta = null;
 
     @Column(name = "valor_cuota", nullable = false)
     private double valorCuota;

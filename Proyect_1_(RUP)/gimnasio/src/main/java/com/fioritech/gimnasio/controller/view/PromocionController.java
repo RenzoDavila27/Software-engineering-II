@@ -9,17 +9,24 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fioritech.gimnasio.business.domain.Promocion;
+import com.fioritech.gimnasio.business.domain.enums.RolUsuario;
+import com.fioritech.gimnasio.business.domain.enums.TipoMensaje;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.logic.service.PromocionService;
+import com.fioritech.gimnasio.business.logic.service.UsuarioService;
 
 @Controller
 public class PromocionController {
     
     @Autowired
     private PromocionService service;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     private String viewEdit = "view/promociones/ePromociones";
     private String viewList = "view/promociones/lPromociones";
@@ -44,6 +51,8 @@ public class PromocionController {
 	public String alta(Promocion promocion, Model model) {
 		model.addAttribute("isDisabled", false);
         model.addAttribute("promocion",promocion);
+        model.addAttribute("tipoMensaje", TipoMensaje.values());
+        model.addAttribute("listaUsuario",usuarioService.listarUsuariosPorTipo(RolUsuario.ADMINISTRADOR));
 		return viewEdit;                         
 	}
 
@@ -55,6 +64,8 @@ public class PromocionController {
 		  Promocion promocion = service.buscarPromocion(idPromocion);		
 		  model.addAttribute("promocion", promocion);
 		  model.addAttribute("isDisabled", true);
+           model.addAttribute("listaUsuario",usuarioService.listarUsuariosPorTipo(RolUsuario.ADMINISTRADOR));
+        model.addAttribute("tipoMensaje", TipoMensaje.values());
 
 		  return viewEdit;                  
 		 
@@ -72,6 +83,8 @@ public class PromocionController {
 		  Promocion promocion = service.buscarPromocion(idPromocion);		
 		  model.addAttribute("promocion", promocion);
 		  model.addAttribute("isDisabled", false);
+           model.addAttribute("listaUsuario",usuarioService.listarUsuariosPorTipo(RolUsuario.ADMINISTRADOR));
+            model.addAttribute("tipoMensaje", TipoMensaje.values());
 		  return viewEdit;                     
 		 
 		}catch(BusinessException e) {	
@@ -96,20 +109,21 @@ public class PromocionController {
 	}
 
     @PostMapping("/promocion/aceptarEditPromocion")
-	public String aceptarEdit(Promocion promocion, BindingResult result, RedirectAttributes attributes, Model model){
+	public String aceptarEdit(Promocion promocion,@RequestParam("idUsuario")String idUsuario, BindingResult result, RedirectAttributes attributes, Model model){
 		
 		try {
 			
 		  if (result.hasErrors()){		
-			model.addAttribute("msgError", "Error de Sistema");
-			return viewEdit;      
+            System.out.println("ENTRO A LOS ERRORES");
+			model.addAttribute("msgError", "Error de Sistema");     
 		  }
 		 
-		  if (promocion.getId() == null || promocion.getId().trim().isEmpty())
-		   service.crearPromocion(promocion.getUsuario().getId(),promocion.getFechaEnvioPromocion(),promocion.getTitulo(),promocion.getTexto());
-		  else 
-		   service.modificarPromocion(promocion.getId(),promocion.getUsuario().getId(),promocion.getFechaEnvioPromocion(),promocion.getTitulo(),promocion.getTexto());
-			  
+		  if (promocion.getId() == null || promocion.getId().trim().isEmpty()){
+            System.out.println("ENTRO A CREAR");
+		   service.crearPromocion(idUsuario,promocion.getFechaEnvioPromocion(),promocion.getTitulo(),promocion.getTexto(),promocion.getTipoMensaje());
+		  }else{
+		   service.modificarPromocion(promocion.getId(),idUsuario,promocion.getFechaEnvioPromocion(),promocion.getTitulo(),promocion.getTexto(),promocion.getTipoMensaje());
+            }
 		  attributes.addFlashAttribute("msgExito", "La acción fue realizada correctamente.");
 		  return redirectList;      
 		  
@@ -118,6 +132,8 @@ public class PromocionController {
 		}catch(Exception e) {
 			  model.addAttribute("msgError", "Error de Sistema");
 		}
+        model.addAttribute("listaUsuario",usuarioService.listarUsuariosPorTipo(RolUsuario.ADMINISTRADOR));
+        model.addAttribute("tipoMensaje", TipoMensaje.values());
 		return viewEdit; 
 		
 	}
@@ -126,6 +142,21 @@ public class PromocionController {
 	public String cancelarEdit() {
 		return redirectList;                     
 	}
+
+    @GetMapping("/promocion/enviarMensaje/{id}")
+    public String enviarMensaje(@PathVariable("id") String idPromocion, RedirectAttributes attributes, Model model) {
+        try {
+            service.enviarMensaje(idPromocion);
+            attributes.addFlashAttribute("msgExito", "La promoción fue enviada correctamente.");
+            return redirectList;
+        } catch (BusinessException e) {
+            model.addAttribute("msgError", e.getMessage());
+            return redirectList;
+        } catch (Exception e) {
+            model.addAttribute("msgError", "Error de Sistema");
+            return redirectList;
+        }
+    }
 
 
 }

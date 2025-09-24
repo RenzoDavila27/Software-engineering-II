@@ -36,9 +36,9 @@ public class CuotaMensualController {
         model.addAttribute("meses", Mes.values());
         model.addAttribute("estados", EstadoCuotaMensual.values());
         List<Socio> socios = socioService.listarSocioActivo();
-        List<ValorCuota> valores = valorCuotaService.listarValorCuotaActivo();
+        //List<ValorCuota> valores = valorCuotaService.listarValorCuotaActivo();
         model.addAttribute("socios", socios);
-        model.addAttribute("valoresCuota", valores);
+        //model.addAttribute("valoresCuota", valores);
     }
 
     @GetMapping("/cuotaMensual/listaCuotaMensual")

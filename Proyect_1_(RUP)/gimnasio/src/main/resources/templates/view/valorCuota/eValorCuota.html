@@ -38,12 +38,7 @@
 
                     <div class="mb-3">
                       <label for="fechaDesde" class="form-label">Fecha Desde</label>
-                      <input type="date" class="form-control" th:field="*{fechaDesde}" required="required" th:disabled="${isDisabled}">
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="fechaHasta" class="form-label">Fecha Hasta</label>
-                      <input type="date" class="form-control" th:field="*{fechaHasta}" th:disabled="${isDisabled}">
+                      <input type="date" class="form-control" th:value="*{#dates.format(#dates.createNow(),'yyyy-MM-dd')}" readonly>
                     </div>
 
                     <div class="mb-3">

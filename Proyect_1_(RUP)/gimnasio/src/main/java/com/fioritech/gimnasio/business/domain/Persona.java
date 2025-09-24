@@ -1,12 +1,17 @@
 package com.fioritech.gimnasio.business.domain;
 
 import com.fioritech.gimnasio.business.domain.enums.TipoDocumento;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,7 +24,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "personas")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Persona extends BaseEntity {
 
     @Column(nullable = false)
@@ -44,4 +49,19 @@ public class Persona extends BaseEntity {
 
     @Column(name = "correo_electronico", nullable = false)
     private String correoElectronico;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "sucursal_id", nullable = false)
+    private Sucursal sucursal;
+
+    @OneToOne(optional = true,cascade = CascadeType.ALL)
+    @JoinColumn(name = "usuario_id", unique = true)
+    private Usuario usuario;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "direccion_id", nullable = false)
+    private Direccion direccion;
+
+
+    
 }

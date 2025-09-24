@@ -1,14 +1,23 @@
 package com.fioritech.gimnasio.business.logic.service;
 
+import com.fioritech.gimnasio.business.domain.Direccion;
+import com.fioritech.gimnasio.business.domain.Empleado;
 import com.fioritech.gimnasio.business.domain.Socio;
+import com.fioritech.gimnasio.business.domain.Sucursal;
 import com.fioritech.gimnasio.business.domain.Usuario;
 import com.fioritech.gimnasio.business.domain.enums.TipoDocumento;
+import com.fioritech.gimnasio.business.domain.enums.TipoEmpleado;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.SocioRepository;
 import com.fioritech.gimnasio.business.persistence.repository.UsuarioRepository;
+
+import java.util.Date;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,32 +25,58 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SocioService {
 
-    private final SocioRepository socioRepository;
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioService usuarioService;
 
-    public SocioService(SocioRepository socioRepository, UsuarioRepository usuarioRepository) {
-        this.socioRepository = socioRepository;
-        this.usuarioRepository = usuarioRepository;
+    @Autowired
+    private DireccionService direccionService;
+
+    @Autowired
+    private SocioRepository socioRepository;
+
+    @Autowired
+    private SucursalService sucursalService;
+
+    @Transactional
+    public void crearSocio(String idSucursal, String nombre, String apellido, LocalDate fechaNacimiento,
+        TipoDocumento tipoDocumento, String numeroDocumento, String telefono, String correoElectronico,
+        Usuario usuario,Direccion direccion) throws BusinessException {
+        try{
+
+            Usuario usuarioGuardado = usuarioService.crearUsuario(usuario.getNombreUsuario(), usuario.getClave(), usuario.getRol());
+         
+            Direccion direaccionGuardado = direccionService.crearDireccion(direccion.getCalle(),direccion.getNumeracion(),direccion.getBarrio(),direccion.getManzanaPiso(),direccion.getCasaDepartamento(),direccion.getReferencia(),direccion.getLocalidad().getId());
+       
+            Sucursal sucursal = sucursalService.buscarSucursal(idSucursal);
+
+            Long numeroSocio = socioRepository.obtenerProximoNumeroSocio() +1;
+            
+            validar(nombre, apellido, fechaNacimiento, tipoDocumento, numeroDocumento, telefono, correoElectronico,numeroSocio);
+            validarDocumentoUnico(numeroDocumento, null);
+
+            Socio socio = new Socio();
+            socio.setNombre(nombre.trim());
+            socio.setApellido(apellido.trim());
+            socio.setFechaNacimiento(fechaNacimiento);
+            socio.setTipoDocumento(tipoDocumento);
+            socio.setNumeroDocumento(numeroDocumento.trim());
+            socio.setTelefono(telefono);
+            socio.setCorreoElectronico(correoElectronico);
+            socio.setNumeroSocio(numeroSocio);
+            socio.setSucursal(sucursal);
+            socio.setUsuario(usuarioGuardado);
+            socio.setDireccion(direaccionGuardado);
+            socioRepository.save(socio);
+
+        }catch(BusinessException e){
+            throw e;
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            throw new BusinessException("Error desconocido"); 
+        }
+
     }
 
-    public Socio crearSocio(String nombre, String apellido, LocalDate fechaNacimiento, TipoDocumento tipoDocumento,
-        String numeroDocumento, String telefono, String correoElectronico, Long numeroSocio) {
-        validar(nombre, apellido, fechaNacimiento, tipoDocumento, numeroDocumento, telefono, correoElectronico,
-            numeroSocio);
-        validarDocumentoUnico(numeroDocumento, null);
-        validarNumeroSocioUnico(numeroSocio, null);
-
-        Socio socio = new Socio();
-        socio.setNombre(nombre.trim());
-        socio.setApellido(apellido.trim());
-        socio.setFechaNacimiento(fechaNacimiento);
-        socio.setTipoDocumento(tipoDocumento);
-        socio.setNumeroDocumento(numeroDocumento.trim());
-        socio.setTelefono(telefono);
-        socio.setCorreoElectronico(correoElectronico);
-        socio.setNumeroSocio(numeroSocio);
-        return socioRepository.save(socio);
-    }
 
     public void validar(String nombre, String apellido, LocalDate fechaNacimiento, TipoDocumento tipoDocumento,
         String numeroDocumento, String telefono, String correoElectronico, Long numeroSocio) {
@@ -131,15 +166,15 @@ public class SocioService {
             .toList();
     }
 
-    public Socio asociarSocioUsuario(String idSocio, String idUsuario) {
-        Socio socio = buscarSocio(idSocio);
-        Usuario usuario = usuarioRepository.findById(idUsuario)
-            .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
-        socio.setUsuario(usuario);
-        usuario.setSocio(socio);
-        usuarioRepository.save(usuario);
-        return socioRepository.save(socio);
-    }
+    //public Socio asociarSocioUsuario(String idSocio, String idUsuario) {
+      //  Socio socio = buscarSocio(idSocio);
+        //Usuario usuario = usuarioRepository.findById(idUsuario)
+          //  .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
+        //socio.setUsuario(usuario);
+        //usuario.setSocio(socio);
+        //usuarioRepository.save(usuario);
+        //return socioRepository.save(socio);
+    //}
 
     @Transactional(readOnly = true)
     public Socio buscarSocio(String id) {
@@ -160,5 +195,26 @@ public class SocioService {
             ex.printStackTrace();
             throw new BusinessException("Error de sistema");
         }
+    }
+
+    public  Collection<Socio> listarCumpleanieros(){
+        try{
+            int dia = LocalDate.now().getDayOfMonth();
+            int mes = LocalDate.now().getMonthValue();
+            Collection<Socio> socio = socioRepository.listarCumpleanieros(dia,mes);
+            if(socio.isEmpty()){
+                throw new BusinessException("No hay socios que cumplan años hoy");
+            }
+            return socio;
+        }catch(BusinessException e){
+            throw e;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Socio> listarSociosActivos() {
+        Collection<Socio> socio = socioRepository.listarSociosActivos();
+        return socio;
+        
     }
 }

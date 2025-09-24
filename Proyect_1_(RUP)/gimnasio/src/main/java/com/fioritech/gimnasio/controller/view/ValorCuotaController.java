@@ -3,6 +3,8 @@ package com.fioritech.gimnasio.controller.view;
 import com.fioritech.gimnasio.business.domain.ValorCuota;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.logic.service.ValorCuotaService;
+
+import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -22,7 +25,7 @@ public class ValorCuotaController {
     @GetMapping("/valorCuota/listaValorCuota")
     public String listaValorCuota(Model model) {
         try {
-            List<ValorCuota> listaValores = service.listarValorCuotaActivo();
+            Collection<ValorCuota> listaValores = service.listarValorCuotaActivas();
             model.addAttribute("listaValorCuota", listaValores);
             return "view/valorCuota/lValorCuota";
         } catch (BusinessException e) {
@@ -86,11 +89,9 @@ public class ValorCuotaController {
             }
 
             if (valorCuota.getId() == null || valorCuota.getId().trim().isEmpty()) {
-                service.crearValorCuota(valorCuota.getFechaDesde(), valorCuota.getFechaHasta(),
-                    valorCuota.getValorCuota());
+                service.crearValorCuota(valorCuota.getValorCuota(),valorCuota.getFechaDesde());
             } else {
-                service.modificarValorCuota(valorCuota.getId(), valorCuota.getFechaDesde(), valorCuota.getFechaHasta(),
-                    valorCuota.getValorCuota());
+                service.modificarValorCuota(valorCuota.getId(),valorCuota.getValorCuota());
             }
 
             attributes.addFlashAttribute("msgExito", "La acción fue realizada correctamente.");

@@ -59,8 +59,15 @@ public class SucursalService {
 
     @Transactional(readOnly = true)
     public Sucursal buscarSucursal(String id) {
-        return sucursalRepository.findById(id)
-            .orElseThrow(() -> new BusinessException("Sucursal no encontrada"));
+        try{
+            Sucursal sucursal = sucursalRepository.buscarSucursalPorId(id);    
+            if (sucursal == null) {
+                throw new BusinessException("Sucursal no encontrada");
+            } 
+            return sucursal;
+        }catch(BusinessException e){
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)

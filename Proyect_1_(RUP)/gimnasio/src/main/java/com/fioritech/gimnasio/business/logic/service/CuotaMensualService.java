@@ -31,13 +31,13 @@ public class CuotaMensualService {
     public CuotaMensual crearCuota(String idSocio, Mes mes, Long anio, String idValorCuota) {
         validar(mes, anio, idValorCuota);
         Socio socio = socioService.buscarSocio(idSocio);
-        ValorCuota valorCuota = valorCuotaService.buscarValorCuota(idValorCuota);
+       //ValorCuota valorCuota = valorCuotaService.buscarValorCuota(idValorCuota);
         CuotaMensual cuota = new CuotaMensual();
         cuota.setSocio(socio);
         cuota.setMes(mes);
         cuota.setAnio(anio);
         cuota.setEstado(EstadoCuotaMensual.PENDIENTE);
-        cuota.setValorCuota(valorCuota);
+        //cuota.setValorCuota(valorCuota);
         cuota.setFechaVencimiento(calcularVencimiento(mes, anio));
         return cuotaMensualRepository.save(cuota);
     }
@@ -78,7 +78,7 @@ public class CuotaMensualService {
             cuota.setAnio(anio);
         }
         if (idValorCuota != null && !idValorCuota.isBlank()) {
-            cuota.setValorCuota(valorCuotaService.buscarValorCuota(idValorCuota));
+            //cuota.setValorCuota(valorCuotaService.buscarValorCuota(idValorCuota));
         }
         if (estado != null) {
             cuota.setEstado(estado);

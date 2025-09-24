@@ -2,10 +2,14 @@ package com.fioritech.gimnasio.business.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import jakarta.persistence.Temporal;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,21 +19,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "promociones")
-public class Promocion extends BaseEntity {
+public class Promocion extends Mensaje {
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
-
-    @Column(name = "fecha_envio", nullable = false)
-    private LocalDate fechaEnvioPromocion;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Temporal(jakarta.persistence.TemporalType.DATE)
+	private Date fechaEnvioPromocion; 
 
     @Column(name = "cantidad_socios_enviados")
     private Long cantidadSociosEnviados;
 
-    @Column(nullable = false)
-    private String titulo;
-
-    @Column(nullable = false, length = 2048)
-    private String texto;
 }

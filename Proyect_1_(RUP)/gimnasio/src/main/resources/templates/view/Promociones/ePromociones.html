@@ -35,18 +35,33 @@
                   <div class="form-group">
 					
 					<input type="hidden" name="id" th:field="*{id}" >
-
-                    <label for="nombre">Usuario</label>
-                    <input type="text" class="form-control" th:field="*{id}" placeholder="Escriba el ID del usuario" required="required" th:disabled="${isDisabled}">
                 
                     <label for="nombre">Titulo</label>
                     <input type="text" class="form-control" th:field="*{titulo}" placeholder="Escriba el titulo de la promocion" required="required" th:disabled="${isDisabled}">
                     
                     <label for="nombre">Texto</label>
                     <input type="text" class="form-control" th:field="*{texto}" placeholder="Escriba el contenido de la promocion" required="required" th:disabled="${isDisabled}">
-
+ 
+                    <label for="tipoMensaje">Tipo de Promocion</label>
+                            <select id="tipoMensaje" th:field="*{tipoMensaje}" class="form-control" th:disabled="${isDisabled}">
+                                    <option th:each="tipoMensaje : ${tipoMensaje}" 
+                                    th:value="${tipoMensaje}" 
+                                    th:text="${tipoMensaje}">Tipo</option>
+                            </select>
+                    
                     <label for="nombre">Fecha de Envio</label>
-                    <input type="text" class="form-control" th:field="*{fechaEnvioPromocion}" placeholder="Escriba el correo electronico" required="required" th:disabled="${isDisabled}">
+                    <input type="date" class="form-control" th:field="*{fechaEnvioPromocion}" placeholder="Escriba el contenido de la promocion" required="required" th:disabled="${isDisabled}">
+                       
+                    <label for="nombre">Cantidad de Socios</label>
+                    <input type="text" class="form-control" th:field="*{cantidadSociosEnviados}"  readonly>
+
+                    <label for="usuario">Usuario</label>
+                            <select id="idUsario" name="idUsuario" class="form-control" th:disabled="${isDisabled}">
+                                    <option th:each="usuario : ${listaUsuario}" 
+                                    th:value="${usuario.id}" 
+                                    th:text="${usuario.nombreUsuario}">
+                                </option>
+                            </select>
 
 				  </div>
                 </div>                

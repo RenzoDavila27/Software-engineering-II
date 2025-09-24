@@ -21,9 +21,12 @@ public class DireccionService {
         this.localidadService = localidadService;
     }
 
+    @Transactional
     public Direccion crearDireccion(String calle, String numeracion, String barrio, String manzanaPiso,
         String casaDepartamento, String referencia, String idLocalidad) {
+        System.out.println("LLEGUE A CREAR DIRECCION");
         Localidad localidad = localidadService.buscarLocalidad(idLocalidad);
+        System.out.println("BUSQUE LA LOCALIDAD");
         validar(calle, numeracion, barrio, manzanaPiso, casaDepartamento, referencia, localidad);
         Direccion direccion = new Direccion();
         direccion.setCalle(calle.trim());

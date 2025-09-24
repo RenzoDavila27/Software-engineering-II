@@ -54,8 +54,8 @@
                     <a th:href="@{/valorCuota/modificar/{id} (id=${valor.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
                     <a th:href="@{/valorCuota/baja/{id} (id=${valor.id}) }" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
                   </td>
-                  <td th:text="${#temporals.format(valor.fechaDesde, 'dd/MM/yyyy')}"></td>
-                  <td th:text="${valor.fechaHasta != null ? #temporals.format(valor.fechaHasta, 'dd/MM/yyyy') : '-'}"></td>
+                  <td th:text="${#dates.format(valor.fechaDesde, 'dd/MM/yyyy')}"></td>
+                  <td th:text="${#dates.format(valor.fechaHasta, 'dd/MM/yyyy')}"></td>
                   <td th:text="${#numbers.formatDecimal(valor.valorCuota, 1, 'COMMA', 2, 'POINT')}"></td>
                 </tr>
               </tbody>

@@ -12,5 +12,7 @@ public interface SucursalRepository extends JpaRepository<Sucursal, String> {
 
     @Query("SELECT s FROM Sucursal s WHERE s.nombre = :nombre AND s.eliminado = false")
     public Sucursal buscarSucursalPorNombre(@Param("nombre")String nombre);
-    
+
+    @Query("SELECT s FROM Sucursal s WHERE s.id = :id AND s.eliminado = false")
+    public Sucursal buscarSucursalPorId(@Param("id")String id);
 }

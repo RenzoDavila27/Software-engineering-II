@@ -31,11 +31,6 @@ public class Usuario extends BaseEntity {
     @Column(nullable = false)
     private RolUsuario rol;
 
-    @OneToOne(mappedBy = "usuario")
-    private Empleado empleado;
-
-    @OneToOne(mappedBy = "usuario")
-    private Socio socio;
 
     @OneToMany(mappedBy = "usuario")
     private List<Promocion> promociones = new ArrayList<>();

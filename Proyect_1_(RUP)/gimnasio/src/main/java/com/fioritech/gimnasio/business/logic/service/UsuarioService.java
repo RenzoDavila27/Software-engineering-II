@@ -2,8 +2,11 @@ package com.fioritech.gimnasio.business.logic.service;
 
 import com.fioritech.gimnasio.business.domain.Usuario;
 import com.fioritech.gimnasio.business.domain.enums.RolUsuario;
+import com.fioritech.gimnasio.business.domain.enums.TipoMensaje;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.UsuarioRepository;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    @Transactional
     public Usuario crearUsuario(String nombreUsuario, String clave, RolUsuario rol) {
         validar(nombreUsuario, clave, rol);
         validarNombreUnico(nombreUsuario, null);
@@ -130,5 +134,9 @@ public class UsuarioService {
         }
         usuario.setClave(nuevaClave);
         return usuarioRepository.save(usuario);
+    }
+
+    public Collection<Usuario> listarUsuariosPorTipo(RolUsuario tipo){
+        return usuarioRepository.listarUsuariosPorTipo(tipo);
     }
 }
