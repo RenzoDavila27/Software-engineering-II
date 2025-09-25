@@ -12,5 +12,9 @@ public record MercadoPagoPreferenceRequest(
     @NotNull @Positive Integer quantity,
     @NotNull @DecimalMin(value = "0.01") BigDecimal unitPrice,
     String currencyId,
-    String externalReference) {
+    String externalReference,
+    String successUrl,
+    String failureUrl,
+    String pendingUrl,
+    String autoReturn) {
 }

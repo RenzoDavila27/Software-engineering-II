@@ -60,4 +60,13 @@ public class FormaDePagoService {
             .filter(f -> !f.isEliminado())
             .toList();
     }
+
+    @Transactional(readOnly = true)
+    public FormaDePago buscarPorTipo(TipoPago tipoPago) {
+        if (tipoPago == null) {
+            throw new BusinessException("Debe indicar un tipo de pago");
+        }
+        return formaDePagoRepository.findFirstByTipoPagoAndEliminadoFalse(tipoPago)
+            .orElseThrow(() -> new BusinessException("No hay una forma de pago activa para el tipo especificado"));
+    }
 }

@@ -32,23 +32,15 @@
           <h4 class="card-header"><strong>Lista Facturas</strong></h4>
           <div class="card-body">
 
-            <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
-              <div>
-                <a class="btn btn-primary" th:href="@{/factura/altaFactura}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
-              </div>
-              <div class="d-flex align-items-center">
-                <span class="mr-3 font-weight-bold" id="totalSeleccionado">Total seleccionado: $0.00</span>
-                <button type="button" class="btn btn-success" id="btnPagarFacturas" disabled>Pagar seleccionadas</button>
-              </div>
-            </div>
+            <a class="btn btn-primary" th:href="@{/factura/altaFactura}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
 
+            <hr>
             <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
             <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div>
 
             <table class="table table-hover w-100">
               <thead class="thead-light">
                 <tr>
-                  <th scope="col">Seleccionar</th>
                   <th scope="col">Acciones</th>
                   <th scope="col">Número</th>
                   <th scope="col">Socio</th>
@@ -60,13 +52,6 @@
               </thead>
               <tbody>
                 <tr th:each="factura : ${listaFactura}">
-                  <td class="align-middle">
-                    <input type="checkbox" class="factura-checkbox" th:value="${factura.id}"
-                      th:data-total="${factura.totalPagado}" th:data-numero="${factura.numeroFactura}"
-                      th:data-socio="|${factura.socio.nombre} ${factura.socio.apellido}|"
-                      th:disabled="${factura.estado != T(com.fioritech.gimnasio.business.domain.enums.EstadoFactura).PENDIENTE}"
-                      aria-label="Seleccionar factura" />
-                  </td>
                   <td>
                     <a th:href="@{/factura/consultar/{id} (id=${factura.id}) }" class="btn btn-success btn-sm" role="button" title="Consultar"><i class="fas fa-eye" aria-hidden="true"></i></a>
                     <a th:href="@{/factura/modificar/{id} (id=${factura.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
@@ -99,91 +84,6 @@
       document.querySelectorAll('.confirmar').forEach(function(elemento) {
         elemento.addEventListener('click', dialogoConfirm, false);
       });
-
-      (function () {
-        const checkboxes = Array.from(document.querySelectorAll('.factura-checkbox'));
-        const totalLabel = document.getElementById('totalSeleccionado');
-        const btnPagar = document.getElementById('btnPagarFacturas');
-
-        if (!totalLabel || !btnPagar || !checkboxes.length) {
-          return;
-        }
-
-        const formatCurrency = function (value) {
-          return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value);
-        };
-
-        const obtenerSeleccion = function () {
-          const seleccionadas = checkboxes.filter(function (cb) { return cb.checked; });
-          const total = seleccionadas.reduce(function (acumulado, cb) {
-            const valor = parseFloat(cb.dataset.total || '0');
-            return acumulado + (isNaN(valor) ? 0 : valor);
-          }, 0);
-          return { seleccionadas: seleccionadas, total: total };
-        };
-
-        const actualizarEstado = function () {
-          const { seleccionadas, total } = obtenerSeleccion();
-          totalLabel.textContent = 'Total seleccionado: ' + formatCurrency(total);
-          btnPagar.disabled = seleccionadas.length === 0;
-          return { seleccionadas: seleccionadas, total: total };
-        };
-
-        checkboxes.forEach(function (cb) {
-          cb.addEventListener('change', actualizarEstado);
-        });
-
-        btnPagar.addEventListener('click', async function () {
-          const { seleccionadas, total } = actualizarEstado();
-          if (seleccionadas.length === 0) {
-            return;
-          }
-
-          const totalRedondeado = Number(total.toFixed(2));
-          const ids = seleccionadas.map(function (cb) { return cb.value; });
-          const numeros = seleccionadas.map(function (cb) { return cb.dataset.numero; }).join(', ');
-          const socio = seleccionadas[0].dataset.socio || '';
-
-          btnPagar.disabled = true;
-          const textoOriginal = btnPagar.textContent;
-          btnPagar.textContent = 'Conectando con Mercado Pago...';
-
-          try {
-            const response = await fetch('/api/mercadopago/preferences', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                title: 'Pago facturas ' + numeros,
-                description: 'Cobro para ' + socio.trim(),
-                quantity: 1,
-                unitPrice: totalRedondeado,
-                currencyId: 'ARS',
-                externalReference: 'FACTURAS:' + ids.join(',')
-              })
-            });
-
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error(errorText || 'Error al crear la preferencia');
-            }
-
-            const preference = await response.json();
-            const destino = preference.initPoint || preference.sandboxInitPoint;
-            if (!destino) {
-              throw new Error('Mercado Pago no devolvió un enlace de pago');
-            }
-            window.location.href = destino;
-          } catch (error) {
-            alert(error.message || 'No se pudo iniciar el pago en Mercado Pago.');
-            btnPagar.disabled = false;
-            btnPagar.textContent = textoOriginal;
-          }
-        });
-
-        actualizarEstado();
-      })();
     </script>
 
   </body>
