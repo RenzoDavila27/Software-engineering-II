@@ -13,6 +13,9 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,9 +27,11 @@ import lombok.Setter;
 @Table(name = "rutinas")
 public class Rutina extends BaseEntity {
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "fecha_finalizacion")
     private LocalDate fechaFinalizacion;
 

@@ -46,6 +46,9 @@ public class RutinaService {
         List<DetalleRutina> detallesPersistentes = new ArrayList<>();
         if (detalle != null) {
             for (DetalleRutina det : detalle) {
+                if (det.getId() != null && det.getId().isBlank()) {
+                    det.setId(null);
+                }
                 det.setRutina(rutina);
                 if (det.getEstadoDetalle() == null) {
                     det.setEstadoDetalle(EstadoDetalleRutina.SIN_REALIZAR);
@@ -102,6 +105,9 @@ public class RutinaService {
         if (detalle != null && !detalle.isEmpty()) {
             rutina.getDetalles().clear();
             for (DetalleRutina det : detalle) {
+                if (det.getId() != null && det.getId().isBlank()) {
+                    det.setId(null);
+                }
                 det.setRutina(rutina);
                 if (det.getEstadoDetalle() == null) {
                     det.setEstadoDetalle(EstadoDetalleRutina.SIN_REALIZAR);

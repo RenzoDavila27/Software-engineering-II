@@ -119,6 +119,7 @@ public class RutinaController {
                 model.addAttribute("msgError", "Error de Sistema");
                 cargarCatalogos(model);
                 model.addAttribute("detallesRutina", obtenerDetalles(rutina));
+                model.addAttribute("isDisabled", false);
                 return "view/rutina/eRutina";
             }
 
@@ -127,6 +128,7 @@ public class RutinaController {
                 model.addAttribute("msgError", "Debe seleccionar un profesor");
                 cargarCatalogos(model);
                 model.addAttribute("detallesRutina", obtenerDetalles(rutina));
+                model.addAttribute("isDisabled", false);
                 return "view/rutina/eRutina";
             }
 
@@ -135,6 +137,7 @@ public class RutinaController {
                 model.addAttribute("msgError", "Debe seleccionar un socio");
                 cargarCatalogos(model);
                 model.addAttribute("detallesRutina", obtenerDetalles(rutina));
+                model.addAttribute("isDisabled", false);
                 return "view/rutina/eRutina";
             }
 
@@ -169,11 +172,13 @@ public class RutinaController {
             model.addAttribute("msgError", e.getMessage());
             cargarCatalogos(model);
             model.addAttribute("detallesRutina", obtenerDetalles(rutina));
+            model.addAttribute("isDisabled", false);
             return "view/rutina/eRutina";
         } catch (Exception e) {
             model.addAttribute("msgError", "Error de Sistema");
             cargarCatalogos(model);
             model.addAttribute("detallesRutina", obtenerDetalles(rutina));
+            model.addAttribute("isDisabled", false);
             return "view/rutina/eRutina";
         }
     }

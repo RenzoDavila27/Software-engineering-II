@@ -34,8 +34,16 @@
                             <a class="nav-link" th:href="@{/promocion/listaPromocion}">Promociones</a>
                         </li>
 
+                        <li class="nav-item" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}" >
+                            <a class="nav-link" th:href="@{/formaDePago/listaFormaDePago}">Formas de Pago</a>
+                        </li>
+
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/cuotaMensual/listaCuotaMensual}">CuotaMensual</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/rutina/listaRutina}">Rutina</a>
                     </li>
 
                     <li class="nav-item">

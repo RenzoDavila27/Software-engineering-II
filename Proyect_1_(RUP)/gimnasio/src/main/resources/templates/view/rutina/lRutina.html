@@ -32,7 +32,7 @@
           <h4 class="card-header"><strong>Lista Rutinas</strong></h4>
           <div class="card-body">
 
-            <a class="btn btn-primary" th:href="@{/rutina/altaRutina}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+            <a class="btn btn-primary" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}" th:href="@{/rutina/altaRutina}" role="button"><i class="fa fa-plus" aria-hidden="true" ></i></a>
 
             <hr>
             <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
@@ -51,10 +51,10 @@
               </thead>
               <tbody>
                 <tr th:each="rutina : ${listaRutina}">
-                  <td>
+                  <td class="text-center align-middle">
                     <a th:href="@{/rutina/consultar/{id} (id=${rutina.id}) }" class="btn btn-success btn-sm" role="button" title="Consultar"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                    <a th:href="@{/rutina/modificar/{id} (id=${rutina.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
-                    <a th:href="@{/rutina/baja/{id} (id=${rutina.id}) }" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                    <a th:href="@{/rutina/modificar/{id} (id=${rutina.id}) }" th:if = "${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+                    <a th:href="@{/rutina/baja/{id} (id=${rutina.id}) }" th:if = "${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
                   </td>
                   <td th:text="|${rutina.socio.nombre} ${rutina.socio.apellido}|"></td>
                   <td th:text="|${rutina.profesor.nombre} ${rutina.profesor.apellido}|"></td>
