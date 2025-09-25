@@ -5,6 +5,7 @@ import com.fioritech.gimnasio.business.domain.Empleado;
 import com.fioritech.gimnasio.business.domain.Socio;
 import com.fioritech.gimnasio.business.domain.Sucursal;
 import com.fioritech.gimnasio.business.domain.Usuario;
+import com.fioritech.gimnasio.business.domain.enums.EstadoCuotaMensual;
 import com.fioritech.gimnasio.business.domain.enums.TipoDocumento;
 import com.fioritech.gimnasio.business.domain.enums.TipoEmpleado;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
@@ -36,6 +37,9 @@ public class SocioService {
 
     @Autowired
     private SucursalService sucursalService;
+    
+    @Autowired
+    private CuotaMensualService cuotaMensualService;
 
     @Transactional
     public void crearSocio(String idSucursal, String nombre, String apellido, LocalDate fechaNacimiento,
@@ -67,6 +71,7 @@ public class SocioService {
             socio.setUsuario(usuarioGuardado);
             socio.setDireccion(direaccionGuardado);
             socioRepository.save(socio);
+            cuotaMensualService.generarPrimeraCuotaParaNuevoSocio(socio);
 
         }catch(BusinessException e){
             throw e;
@@ -166,16 +171,6 @@ public class SocioService {
             .toList();
     }
 
-    //public Socio asociarSocioUsuario(String idSocio, String idUsuario) {
-      //  Socio socio = buscarSocio(idSocio);
-        //Usuario usuario = usuarioRepository.findById(idUsuario)
-          //  .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
-        //socio.setUsuario(usuario);
-        //usuario.setSocio(socio);
-        //usuarioRepository.save(usuario);
-        //return socioRepository.save(socio);
-    //}
-
     @Transactional(readOnly = true)
     public Socio buscarSocio(String id) {
         return socioRepository.findById(id)
@@ -217,4 +212,10 @@ public class SocioService {
         return socio;
         
     }
-}
+
+    public Collection<Socio> SocioConDeudas(EstadoCuotaMensual estado){
+
+            Collection<Socio> socio = socioRepository.SocioConDeudas(estado);
+            return socio;
+    }  
+ }

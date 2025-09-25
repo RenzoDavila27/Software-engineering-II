@@ -1,6 +1,7 @@
 package com.fioritech.gimnasio.business.persistence.repository;
 
 import com.fioritech.gimnasio.business.domain.Socio;
+import com.fioritech.gimnasio.business.domain.enums.EstadoCuotaMensual;
 
 import java.util.Collection;
 
@@ -20,4 +21,7 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
 
     @Query("SELECT s FROM Socio s WHERE s.eliminado = false")
     public Collection<Socio> listarSociosActivos();
+
+    @Query("SELECT DISTINCT s FROM Socio s JOIN s.cuotasMensuales c WHERE c.estado = :estado")
+    public Collection<Socio> SocioConDeudas(@Param("estado") EstadoCuotaMensual estado);
 }

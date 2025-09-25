@@ -6,6 +6,8 @@ import com.fioritech.gimnasio.business.domain.enums.TipoMensaje;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.UsuarioRepository;
 
+import jakarta.persistence.NoResultException;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -109,17 +111,6 @@ public class UsuarioService {
             .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
     }
 
-    @Transactional(readOnly = true)
-    public Usuario login(String nombreUsuario, String clave) {
-        if (nombreUsuario == null || clave == null) {
-            throw new BusinessException("Credenciales invalidas");
-        }
-        Usuario usuario = buscarUsuarioPorNombre(nombreUsuario);
-        if (!usuario.getClave().equals(clave)) {
-            throw new BusinessException("Credenciales invalidas");
-        }
-        return usuario;
-    }
 
     public Usuario modificarClave(String id, String claveActual, String nuevaClave, String confirmarClave) {
         Usuario usuario = buscarUsuario(id);
@@ -138,5 +129,37 @@ public class UsuarioService {
 
     public Collection<Usuario> listarUsuariosPorTipo(RolUsuario tipo){
         return usuarioRepository.listarUsuariosPorTipo(tipo);
+    }
+
+    public Usuario login(String cuenta, String clave){
+    	
+    	try {
+    		
+    		if (cuenta == null || cuenta.trim().isEmpty()) {
+                throw new BusinessException("Debe indicar la cuenta");
+            }
+
+            if (clave == null || clave.trim().isEmpty()) {
+                throw new BusinessException("Debe indicar la clave");
+            }
+            
+            Usuario usuario = null; 
+            try {		
+             usuario = usuarioRepository.buscarUsuarioPorCuentaYClave(cuenta, clave);
+             if (usuario == null || usuario.isEliminado()) {
+            	throw new BusinessException("No existe usuario para la cuenta indicada"); 
+             }
+            } catch (NoResultException ex) {
+            	throw new BusinessException("No existe usuario para la cuenta o clave indicada");
+            }
+    		
+            return usuario;
+            
+    	}catch(BusinessException e) {  
+         	throw e;  
+        }catch(Exception e) {
+         	e.printStackTrace();
+         	throw new BusinessException("Error de Sistemas");
+        } 
     }
 }

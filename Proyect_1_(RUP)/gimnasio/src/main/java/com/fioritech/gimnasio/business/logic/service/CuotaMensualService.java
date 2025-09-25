@@ -9,6 +9,8 @@ import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.CuotaMensualRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,28 +20,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class CuotaMensualService {
 
     private final CuotaMensualRepository cuotaMensualRepository;
-    private final SocioService socioService;
     private final ValorCuotaService valorCuotaService;
 
-    public CuotaMensualService(CuotaMensualRepository cuotaMensualRepository, SocioService socioService,
-        ValorCuotaService valorCuotaService) {
+    public CuotaMensualService(CuotaMensualRepository cuotaMensualRepository,ValorCuotaService valorCuotaService) {
         this.cuotaMensualRepository = cuotaMensualRepository;
-        this.socioService = socioService;
         this.valorCuotaService = valorCuotaService;
     }
 
-    public CuotaMensual crearCuota(String idSocio, Mes mes, Long anio, String idValorCuota) {
-        validar(mes, anio, idValorCuota);
-        Socio socio = socioService.buscarSocio(idSocio);
-       //ValorCuota valorCuota = valorCuotaService.buscarValorCuota(idValorCuota);
+    @Transactional
+    public void generarPrimeraCuotaParaNuevoSocio(Socio socio) {
+        ValorCuota valorCuotaActual = valorCuotaService.ultimaCuota();
+
+        LocalDate fechaActual = LocalDate.now();
+
         CuotaMensual cuota = new CuotaMensual();
         cuota.setSocio(socio);
-        cuota.setMes(mes);
-        cuota.setAnio(anio);
-        cuota.setEstado(EstadoCuotaMensual.PENDIENTE);
-        //cuota.setValorCuota(valorCuota);
-        cuota.setFechaVencimiento(calcularVencimiento(mes, anio));
-        return cuotaMensualRepository.save(cuota);
+        cuota.setValorCuota(valorCuotaActual);
+        cuota.setMes(Mes.values()[fechaActual.getMonthValue() - 1]); // mes actual
+        cuota.setAnio((long) fechaActual.getYear());
+        cuota.setEstado(EstadoCuotaMensual.ADEUDADA);
+        cuota.setFechaVencimiento(fechaActual.plusDays(30)); // ya es LocalDate
+
+        cuotaMensualRepository.save(cuota);
     }
 
     public void validar(Mes mes, Long anio, String idValorCuota) {
@@ -65,20 +67,13 @@ public class CuotaMensualService {
             .orElseThrow(() -> new BusinessException("Cuota mensual no encontrada"));
     }
 
-    public CuotaMensual modificarCuota(String id, String idSocio, Mes mes, Long anio, String idValorCuota,
-        EstadoCuotaMensual estado) {
-        CuotaMensual cuota = buscarCuotaMensual(id);
-        if (idSocio != null && !idSocio.isBlank()) {
-            cuota.setSocio(socioService.buscarSocio(idSocio));
-        }
+    public CuotaMensual modificarCuota(String id, Mes mes, Long anio,EstadoCuotaMensual estado){
+      CuotaMensual cuota = buscarCuotaMensual(id);
         if (mes != null) {
             cuota.setMes(mes);
         }
         if (anio != null) {
             cuota.setAnio(anio);
-        }
-        if (idValorCuota != null && !idValorCuota.isBlank()) {
-            //cuota.setValorCuota(valorCuotaService.buscarValorCuota(idValorCuota));
         }
         if (estado != null) {
             cuota.setEstado(estado);
@@ -128,4 +123,45 @@ public class CuotaMensualService {
             })
             .toList();
     }
+    @Transactional
+    public Collection<CuotaMensual> listarDeudasPorSocio(String idSocio, EstadoCuotaMensual estado) {
+        try{
+            Collection<CuotaMensual> cuota = cuotaMensualRepository.listarDeudasPorSocio(idSocio,estado);
+            return cuota;
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new BusinessException("Error de sistema");
+        }
+    }
+
+    public void actualizarCuotasMensuales(){
+        Collection<CuotaMensual> cuotas = cuotaMensualRepository.ultimaCuotaDeSocio();
+        LocalDate fechahoy = LocalDate.now();
+        for (CuotaMensual cuota : cuotas){
+            if (cuota.getFechaVencimiento()==fechahoy){
+                generarNuevaCuotaMensual(cuota);
+            }
+        }
+    }
+
+    @Transactional
+    public void generarNuevaCuotaMensual(CuotaMensual ultima_cuota){
+        CuotaMensual nueva_cuota = new CuotaMensual();
+        nueva_cuota.setSocio(ultima_cuota.getSocio());
+        nueva_cuota.setValorCuota(ultima_cuota.getValorCuota());
+        int siguienteMes = (ultima_cuota.getMes().ordinal() + 1) % Mes.values().length;
+        nueva_cuota.setMes(Mes.values()[siguienteMes]);
+
+        if (siguienteMes == 0) { 
+            nueva_cuota.setAnio(ultima_cuota.getAnio() + 1);
+        } else {
+            nueva_cuota.setAnio(ultima_cuota.getAnio());
+        }
+        nueva_cuota.setEstado(EstadoCuotaMensual.ADEUDADA);
+        nueva_cuota.setFechaVencimiento(ultima_cuota.getFechaVencimiento().plusMonths(1)); 
+
+        cuotaMensualRepository.save(nueva_cuota);
+
+    }
+
 }

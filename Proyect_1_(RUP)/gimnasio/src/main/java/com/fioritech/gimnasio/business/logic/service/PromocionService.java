@@ -1,20 +1,22 @@
 package com.fioritech.gimnasio.business.logic.service;
 
+import com.fioritech.gimnasio.business.domain.CuotaMensual;
 import com.fioritech.gimnasio.business.domain.Promocion;
-import com.fioritech.gimnasio.business.domain.Provincia;
+
 import com.fioritech.gimnasio.business.domain.Socio;
 import com.fioritech.gimnasio.business.domain.Usuario;
-import com.fioritech.gimnasio.business.domain.enums.RolUsuario;
+import com.fioritech.gimnasio.business.domain.enums.EstadoCuotaMensual;
+
 import com.fioritech.gimnasio.business.domain.enums.TipoMensaje;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.PromocionRepository;
-import java.time.LocalDate;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,9 @@ public class PromocionService {
 
      @Autowired
     private SocioService socioService;
+
+    @Autowired
+    private CuotaMensualService CuotaMensualService;
 
     @Transactional
     public Promocion crearPromocion(String idUsuario, Date fechaPromocion, String titulo, String texto,TipoMensaje tipoMensaje) {
@@ -113,6 +118,7 @@ public class PromocionService {
 
     @Transactional
     public void enviarMensaje(String idPromocion){
+        System.out.println("ENTRE AL SISTEMA DE ENVIO DE PROMOCION");
         try{
           Promocion promocion = buscarPromocion(idPromocion);	
           if(promocion==null){
@@ -120,9 +126,6 @@ public class PromocionService {
           }
           if(promocion.isEliminado()){
               throw new BusinessException("EL mensaje esta eliminado");
-          }
-          if (new Date().after(promocion.getFechaEnvioPromocion())) {
-            throw new BusinessException("No se puede enviar el mensaje porque la fecha de la promoción ya pasó");
           }
            
             if (promocion.getTipoMensaje() == TipoMensaje.CUMPLEANOS){
@@ -133,8 +136,10 @@ public class PromocionService {
                 Collection<Socio> listaSocios = socioService.listarSociosActivos();
                 enviarPromocion(listaSocios,promocion);
                 
-            }else{
-                System.out.println("TIPO DE MENSAJE NO VALIDO");
+            }else if (promocion.getTipoMensaje() == TipoMensaje.DEUDA){
+                Collection<Socio> listaSocios = socioService.SocioConDeudas(EstadoCuotaMensual.ADEUDADA);
+                enviarDeuda(listaSocios,promocion);
+                
             }
         }catch(BusinessException e) {	
             throw e;
@@ -158,4 +163,26 @@ public class PromocionService {
         promocion.setCantidadSociosEnviados((long) listaSocios.size() + promocion.getCantidadSociosEnviados());
         promocionRepository.save(promocion);
     }
+
+    public void enviarDeuda(Collection<Socio> listaSocios,Promocion promocion){
+        for(Socio socio: listaSocios){
+            Collection<CuotaMensual> cuotas = CuotaMensualService.listarDeudasPorSocio(socio.getId(), EstadoCuotaMensual.ADEUDADA);
+            String texto = promocion.getTexto() + "\nDetalle de la deuda:\n";
+            double deudatotal = 0;
+           for(CuotaMensual cuota: cuotas){
+                 texto = texto
+                    + "Mes: " + cuota.getMes() + "\n"
+                    + "Año: " + cuota.getAnio() + "\n"
+                    + "Estado: " + cuota.getEstado() + "\n\n";
+                deudatotal = deudatotal + cuota.getValorCuota().getValorCuota();
+
+            }
+                texto = texto + "Deuda total: " + String.valueOf(deudatotal);
+                emailService.sendEmail(socio.getCorreoElectronico(), promocion.getTitulo(), texto);
+            }
+           
+        promocion.setCantidadSociosEnviados((long) listaSocios.size() + promocion.getCantidadSociosEnviados());
+        promocionRepository.save(promocion);
+    }
+
 }

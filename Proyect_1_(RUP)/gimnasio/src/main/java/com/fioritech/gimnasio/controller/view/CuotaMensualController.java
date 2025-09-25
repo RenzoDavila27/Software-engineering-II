@@ -32,15 +32,6 @@ public class CuotaMensualController {
         this.valorCuotaService = valorCuotaService;
     }
 
-    private void cargarCatalogos(Model model) {
-        model.addAttribute("meses", Mes.values());
-        model.addAttribute("estados", EstadoCuotaMensual.values());
-        List<Socio> socios = socioService.listarSocioActivo();
-        //List<ValorCuota> valores = valorCuotaService.listarValorCuotaActivo();
-        model.addAttribute("socios", socios);
-        //model.addAttribute("valoresCuota", valores);
-    }
-
     @GetMapping("/cuotaMensual/listaCuotaMensual")
     public String listaCuotas(Model model) {
         try {
@@ -56,7 +47,9 @@ public class CuotaMensualController {
     @GetMapping("/cuotaMensual/altaCuotaMensual")
     public String alta(CuotaMensual cuotaMensual, Model model) {
         model.addAttribute("isDisabled", false);
-        cargarCatalogos(model);
+        model.addAttribute("Mes", Mes.values());
+        model.addAttribute("estadoCuotaMensual", EstadoCuotaMensual.values());
+        model.addAttribute("cuotaMensual", cuotaMensual);
         return "view/cuotaMensual/eCuotaMensual";
     }
 
@@ -66,7 +59,8 @@ public class CuotaMensualController {
             CuotaMensual cuotaMensual = cuotaMensualService.buscarCuotaMensual(idCuotaMensual);
             model.addAttribute("cuotaMensual", cuotaMensual);
             model.addAttribute("isDisabled", true);
-            cargarCatalogos(model);
+            model.addAttribute("Mes", Mes.values());
+            model.addAttribute("estadoCuotaMensual", EstadoCuotaMensual.values());
             return "view/cuotaMensual/eCuotaMensual";
         } catch (BusinessException e) {
             attributes.addFlashAttribute("msgError", e.getMessage());
@@ -79,8 +73,9 @@ public class CuotaMensualController {
         try {
             CuotaMensual cuotaMensual = cuotaMensualService.buscarCuotaMensual(idCuotaMensual);
             model.addAttribute("cuotaMensual", cuotaMensual);
+            model.addAttribute("Mes", Mes.values());
+            model.addAttribute("estadoCuotaMensual", EstadoCuotaMensual.values());
             model.addAttribute("isDisabled", false);
-            cargarCatalogos(model);
             return "view/cuotaMensual/eCuotaMensual";
         } catch (BusinessException e) {
             attributes.addFlashAttribute("msgError", e.getMessage());
@@ -100,44 +95,31 @@ public class CuotaMensualController {
         }
     }
 
+             
     @PostMapping("/cuotaMensual/aceptarEditCuotaMensual")
     public String aceptarEdit(CuotaMensual cuotaMensual, BindingResult result, RedirectAttributes attributes,
         Model model) {
         try {
             if (result.hasErrors()) {
                 model.addAttribute("msgError", "Error de Sistema");
-                cargarCatalogos(model);
+                model.addAttribute("Mes", Mes.values());
+                model.addAttribute("estadoCuotaMensual", EstadoCuotaMensual.values());
                 return "view/cuotaMensual/eCuotaMensual";
             }
-
-            if (cuotaMensual.getId() == null || cuotaMensual.getId().trim().isEmpty()) {
-                cuotaMensualService.crearCuota(
-                    cuotaMensual.getSocio().getId(),
-                    cuotaMensual.getMes(),
-                    cuotaMensual.getAnio(),
-                    cuotaMensual.getValorCuota().getId()
-                );
-            } else {
-                cuotaMensualService.modificarCuota(
-                    cuotaMensual.getId(),
-                    cuotaMensual.getSocio() != null ? cuotaMensual.getSocio().getId() : null,
-                    cuotaMensual.getMes(),
-                    cuotaMensual.getAnio(),
-                    cuotaMensual.getValorCuota() != null ? cuotaMensual.getValorCuota().getId() : null,
-                    cuotaMensual.getEstado()
-                );
-            }
-
+            cuotaMensualService.modificarCuota(cuotaMensual.getId(),cuotaMensual.getMes(),cuotaMensual.getAnio(),cuotaMensual.getEstado());
             attributes.addFlashAttribute("msgExito", "La acción fue realizada correctamente.");
             return "redirect:/cuotaMensual/listaCuotaMensual";
 
         } catch (BusinessException e) {
             model.addAttribute("msgError", e.getMessage());
-            cargarCatalogos(model);
+            model.addAttribute("Mes", Mes.values());
+            model.addAttribute("estadoCuotaMensual", EstadoCuotaMensual.values());
             return "view/cuotaMensual/eCuotaMensual";
         } catch (Exception e) {
             model.addAttribute("msgError", "Error de Sistema");
-            cargarCatalogos(model);
+            model.addAttribute("Mes", Mes.values());
+            model.addAttribute("estadoCuotaMensual", EstadoCuotaMensual.values());
+
             return "view/cuotaMensual/eCuotaMensual";
         }
     }
@@ -146,4 +128,5 @@ public class CuotaMensualController {
     public String cancelarEdit() {
         return "redirect:/cuotaMensual/listaCuotaMensual";
     }
+    
 }

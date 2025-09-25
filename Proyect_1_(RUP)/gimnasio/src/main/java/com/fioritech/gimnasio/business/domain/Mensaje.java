@@ -27,7 +27,7 @@ public class Mensaje extends BaseEntity {
     private String texto;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_mensaje", nullable = false)
+    @Column(name = "tipo_mensaje", nullable = false,length = 20)
     private TipoMensaje tipoMensaje;
 
     @ManyToOne(optional = false)

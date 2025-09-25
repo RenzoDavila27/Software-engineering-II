@@ -28,10 +28,6 @@
     <main role="main">     
       <hr>
       <div class="container"> 
-        <div class="mb-3">
-            <a class="btn btn-outline-primary" th:href="@{/promocion/listaPromocion}">Promocion</a>
-            <a class="btn btn-outline-secondary" th:href="@{/mensaje/listaMensaje}">Mensaje</a>
-        </div>
         <div class="card">
           <h4 class="card-header"><strong>Lista de Mensajes</strong></h4>              
           <div class="card-body">
@@ -50,7 +46,6 @@
                   <th scope="col">Tipo de Mensaje</th>
                   <th scope="col">Fecha de Envio</th>
                   <th scope="col">Usuarios Enviados</th>
-                  <th scope="col">Usuario</th>
                   <th scope="col">Enviar Mensaje</th>
                 </tr>
               </thead>
@@ -65,7 +60,6 @@
                   <td th:text="${promocion.tipoMensaje}"></td>
                   <td th:text="${promocion.fechaEnvioPromocion}"></td>
                   <td th:text="${promocion.cantidadSociosEnviados}"></td>
-                  <td th:text="${promocion.usuario.nombreUsuario}"></td>
                   <td>
                     <a class="btn btn-outline-secondary" th:href="@{/promocion/enviarMensaje/{id} (id=${promocion.id})}">Enviar</a>
                   </td>
