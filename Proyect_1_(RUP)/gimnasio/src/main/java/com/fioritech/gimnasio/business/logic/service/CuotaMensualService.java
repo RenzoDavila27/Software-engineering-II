@@ -164,4 +164,17 @@ public class CuotaMensualService {
 
     }
 
+    public Collection<CuotaMensual> buscarCuotasDeSocioPorDNI(String dni){
+
+        Collection<CuotaMensual> cuotas = cuotaMensualRepository.buscarCuotasDeSocioPorDNI(dni);
+        return cuotas;
+    }
+
+    public Collection<CuotaMensual> listarCuotaMensualPorUsuario(String idUsuario){
+         Collection<CuotaMensual> cuotas = cuotaMensualRepository.buscarCuotasDeSocioPorUsuario(idUsuario);
+        return cuotas;
+    }
+
+
+
 }

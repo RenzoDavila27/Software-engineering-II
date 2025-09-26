@@ -44,6 +44,14 @@
                 </button>
               </div>
             </div>
+            <div class="flex-wrap align-items-center justify-content-between mb-3">
+                <form th:action="@{/cuotaMensual/buscarCuotasDeSocio}" method="get" class="d-flex flex-grow-1" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}">
+                    <input type="text" name="dni" class="form-control me-2" placeholder="Ingresar DNI del Socio">
+                    <button type="submit" class="btn btn-outline-success">Buscar</button>
+                </form>
+                <a class="btn btn-outline-success" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}" th:href="@{/cuotaMensual/volver}" role="button">Volver</a>
+            </div>  
+
             <hr>
             <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
             <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div>

@@ -20,4 +20,11 @@ public interface CuotaMensualRepository extends JpaRepository<CuotaMensual, Stri
     
     @Query("SELECT c FROM CuotaMensual c WHERE c.fechaVencimiento = (SELECT MAX(c2.fechaVencimiento) FROM CuotaMensual c2 WHERE c2.socio.id = c.socio.id) AND c.socio.eliminado = false")
     public Collection<CuotaMensual> ultimaCuotaDeSocio();
+
+    @Query("SELECT c FROM CuotaMensual c WHERE c.socio.numeroDocumento = :dni AND c.socio.eliminado = false AND c.eliminado = false")
+    public Collection<CuotaMensual> buscarCuotasDeSocioPorDNI(@Param("dni")String dni);
+
+    @Query("Select c FROM CuotaMensual c where c.socio.usuario.id = :idUsuario AND c.socio.eliminado = false AND c.eliminado = false")
+    public Collection<CuotaMensual> buscarCuotasDeSocioPorUsuario(@Param("idUsuario")String idUsuario);
+
 }   
