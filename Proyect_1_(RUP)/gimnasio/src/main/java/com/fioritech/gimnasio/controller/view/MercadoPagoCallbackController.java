@@ -23,17 +23,21 @@ public class MercadoPagoCallbackController {
 
     @GetMapping("/mercadopago/success")
     public String success(@RequestParam(value = "payment_id", required = false) String paymentId,
-        @RequestParam(value = "external_reference", required = false) String externalReference,
         @RequestParam(value = "preference_id", required = false) String preferenceId,
+        @RequestParam(value = "collection_status", required = false) String collectionStatus,
         RedirectAttributes attributes) {
         try {
-            if ((paymentId == null || paymentId.isBlank()) && preferenceId != null && !preferenceId.isBlank()) {
-                paymentId = mercadoPagoService.resolvePaymentIdFromPreference(preferenceId);
+            var resultado = mercadoPagoService.processPaymentNotification(paymentId, preferenceId);
+            if (resultado.isPresent()) {
+                Factura factura = resultado.get();
+                attributes.addFlashAttribute("msgExito",
+                    "Pago registrado correctamente. Factura N° " + factura.getNumeroFactura());
+            } else {
+                String estado = collectionStatus != null ? collectionStatus : "pendiente";
+                attributes.addFlashAttribute("msgError",
+                    "El pago aún se encuentra en proceso (estado: " + estado
+                        + "). Mercado Pago notificará cuando se apruebe.");
             }
-
-            Factura factura = mercadoPagoService.processSuccessfulPayment(paymentId, externalReference);
-            attributes.addFlashAttribute("msgExito",
-                "Pago registrado correctamente. Factura N° " + factura.getNumeroFactura());
         } catch (BusinessException ex) {
             attributes.addFlashAttribute("msgError", ex.getMessage());
         } catch (Exception ex) {

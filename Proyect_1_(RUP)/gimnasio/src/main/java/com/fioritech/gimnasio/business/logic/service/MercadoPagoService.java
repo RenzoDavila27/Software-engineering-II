@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -106,6 +108,10 @@ public class MercadoPagoService {
             if (request.autoReturn() != null && !request.autoReturn().isBlank()) {
                 preferenceBuilder.autoReturn(request.autoReturn());
             }
+        }
+
+        if (request.notificationUrl() != null && !request.notificationUrl().isBlank()) {
+            preferenceBuilder.notificationUrl(request.notificationUrl().trim());
         }
 
         PreferenceRequest preferenceRequest = preferenceBuilder.build();
@@ -228,7 +234,8 @@ public class MercadoPagoService {
             throw new BusinessException("Mercado Pago no devolvió la referencia externa");
         }
 
-        String[] partes = externalReference.split("\\|");
+        String delimiterRegex = externalReference.contains("~") ? "~" : "\\|";
+        String[] partes = externalReference.split(delimiterRegex);
         if (partes.length < 3) {
             throw new BusinessException("La referencia externa no contiene la información esperada");
         }
@@ -244,22 +251,58 @@ public class MercadoPagoService {
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public String resolvePaymentIdFromPreference(String preferenceId) {
-        try {
-            PaymentClient paymentClient = new PaymentClient();
-            MPSearchRequest searchRequest = MPSearchRequest.builder()
-                .limit(1)
-                .offset(0)
-                .filters(java.util.Map.of("preference_id", preferenceId))
-                .build();
-            List<Payment> payments = paymentClient.search(searchRequest, null).getResults();
-            return payments.stream()
-                .findFirst()
-                .map(payment -> payment.getId().toString())
-                .orElse(null);
-        } catch (MPApiException | MPException ex) {
-            LOGGER.error("No se pudo obtener el payment_id desde la preferencia {}", preferenceId, ex);
-            return null;
+    public Optional<Factura> processPaymentNotification(String paymentId, String preferenceId) {
+        Payment payment = fetchPayment(paymentId, preferenceId);
+        if (payment == null) {
+            LOGGER.warn("No se encontró información del pago para paymentId={} preferenceId={}", paymentId, preferenceId);
+            return Optional.empty();
         }
+
+        if (payment.getStatus() == null || !"approved".equalsIgnoreCase(payment.getStatus())) {
+            LOGGER.info("Pago {} con estado {}. Se esperará la confirmación de Mercado Pago.",
+                payment.getId(), payment.getStatus());
+            return Optional.empty();
+        }
+
+        String externalReference = payment.getExternalReference();
+        if (externalReference == null || externalReference.isBlank()) {
+            throw new BusinessException("Mercado Pago no informó la referencia externa del pago "
+                + payment.getId());
+        }
+
+        String resolvedPaymentId = payment.getId() != null ? payment.getId().toString() : paymentId;
+        Factura factura = processSuccessfulPayment(resolvedPaymentId, externalReference);
+        return Optional.ofNullable(factura);
+    }
+
+    private Payment fetchPayment(String paymentId, String preferenceId) {
+        if (paymentId != null && !paymentId.isBlank()) {
+            try {
+                PaymentClient client = new PaymentClient();
+                return client.get(Long.parseLong(paymentId));
+            } catch (NumberFormatException ex) {
+                throw new BusinessException("Identificador de pago inválido: " + paymentId);
+            } catch (MPApiException | MPException ex) {
+                LOGGER.error("Error consultando el pago {} en Mercado Pago", paymentId, ex);
+                throw new BusinessException("No fue posible consultar el pago en Mercado Pago");
+            }
+        }
+
+        if (preferenceId != null && !preferenceId.isBlank()) {
+            try {
+                PaymentClient client = new PaymentClient();
+                MPSearchRequest searchRequest = MPSearchRequest.builder()
+                    .limit(1)
+                    .offset(0)
+                    .filters(Map.of("preference_id", preferenceId))
+                    .build();
+                return client.search(searchRequest, null).getResults().stream().findFirst().orElse(null);
+            } catch (MPApiException | MPException ex) {
+                LOGGER.error("Error consultando la preferencia {} en Mercado Pago", preferenceId, ex);
+                throw new BusinessException("No fue posible consultar la preferencia en Mercado Pago");
+            }
+        }
+
+        return null;
     }
 }

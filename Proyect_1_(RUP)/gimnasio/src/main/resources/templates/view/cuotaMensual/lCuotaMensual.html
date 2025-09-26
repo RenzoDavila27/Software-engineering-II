@@ -179,7 +179,7 @@
           const periodos = seleccionadas.map(function (cb) { return cb.dataset.periodo; }).join(', ');
           const socioNombre = seleccionadas[0].dataset.socio || '';
           const ids = seleccionadas.map(function (cb) { return cb.value; });
-          const referencia = ['CUOTAS', Date.now(), ids.join(',')].join('|');
+          const referencia = ['CUOTAS', Date.now(), ids.join(',')].join('~');
           const totalRedondeado = Number(total.toFixed(2));
           const overrideBaseUrl = document.body.dataset.callbackBaseUrl;
           const baseUrl = overrideBaseUrl && overrideBaseUrl.length > 0 ? overrideBaseUrl : window.location.origin;
@@ -187,6 +187,7 @@
           const successUrl = baseUrl + '/mercadopago/success';
           const failureUrl = baseUrl + '/mercadopago/failure';
           const pendingUrl = baseUrl + '/mercadopago/pending';
+          const notificationUrl = baseUrl + '/mercadopago/webhook';
 
           pagarButton.disabled = true;
           pagarButton.innerHTML = 'Conectando con Mercado Pago...';
@@ -207,7 +208,8 @@
                 successUrl,
                 failureUrl,
                 pendingUrl,
-                autoReturn: useHttps ? 'approved' : undefined
+                autoReturn: useHttps ? 'approved' : undefined,
+                notificationUrl
               })
             });
 

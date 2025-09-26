@@ -16,5 +16,6 @@ public record MercadoPagoPreferenceRequest(
     String successUrl,
     String failureUrl,
     String pendingUrl,
-    String autoReturn) {
+    String autoReturn,
+    String notificationUrl) {
 }
