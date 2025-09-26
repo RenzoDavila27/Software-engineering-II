@@ -184,9 +184,10 @@
           const overrideBaseUrl = document.body.dataset.callbackBaseUrl;
           const baseUrl = overrideBaseUrl && overrideBaseUrl.length > 0 ? overrideBaseUrl : window.location.origin;
           const useHttps = baseUrl.startsWith('https://');
-          const successUrl = baseUrl + '/mercadopago/success';
-          const failureUrl = baseUrl + '/mercadopago/failure';
-          const pendingUrl = baseUrl + '/mercadopago/pending';
+          const skipWarningParam = baseUrl.includes('ngrok') ? '?ngrok-skip-browser-warning=true' : '';
+          const successUrl = baseUrl + '/mercadopago/success' + skipWarningParam;
+          const failureUrl = baseUrl + '/mercadopago/failure' + skipWarningParam;
+          const pendingUrl = baseUrl + '/mercadopago/pending' + skipWarningParam;
           const notificationUrl = baseUrl + '/mercadopago/webhook';
 
           pagarButton.disabled = true;

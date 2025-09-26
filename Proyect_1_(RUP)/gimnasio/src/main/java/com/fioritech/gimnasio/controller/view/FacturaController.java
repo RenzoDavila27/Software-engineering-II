@@ -5,10 +5,12 @@ import com.fioritech.gimnasio.business.domain.DetalleFactura;
 import com.fioritech.gimnasio.business.domain.Factura;
 import com.fioritech.gimnasio.business.domain.FormaDePago;
 import com.fioritech.gimnasio.business.domain.enums.EstadoFactura;
+import com.fioritech.gimnasio.business.domain.Usuario;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.logic.service.CuotaMensualService;
 import com.fioritech.gimnasio.business.logic.service.FacturaService;
 import com.fioritech.gimnasio.business.logic.service.FormaDePagoService;
+import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -59,9 +61,17 @@ public class FacturaController {
     }
 
     @GetMapping("/factura/listaFactura")
-    public String listaFactura(Model model) {
-        List<Factura> lista = facturaService.listarFacturaActivo();
-        model.addAttribute("listaFactura", lista);
+    public String listaFactura(Model model, HttpSession session) {
+        String rol = (String) session.getAttribute("rol");
+        if ("SOCIO".equals(rol)) {
+            Usuario usuario = (Usuario) session.getAttribute("usuarioSession");
+            String usuarioId = usuario != null ? usuario.getId() : null;
+            List<Factura> lista = facturaService.listarFacturaPorUsuario(usuarioId);
+            model.addAttribute("listaFactura", lista);
+        } else {
+            List<Factura> lista = facturaService.listarFacturaActivo();
+            model.addAttribute("listaFactura", lista);
+        }
         return "view/factura/lFactura";
     }
 

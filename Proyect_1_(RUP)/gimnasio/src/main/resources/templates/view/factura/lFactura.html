@@ -32,7 +32,8 @@
           <h4 class="card-header"><strong>Lista Facturas</strong></h4>
           <div class="card-body">
 
-            <a class="btn btn-primary" th:href="@{/factura/altaFactura}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+            <a class="btn btn-primary" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}"
+              th:href="@{/factura/altaFactura}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
 
             <hr>
             <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
@@ -54,8 +55,10 @@
                 <tr th:each="factura : ${listaFactura}">
                   <td>
                     <a th:href="@{/factura/consultar/{id} (id=${factura.id}) }" class="btn btn-success btn-sm" role="button" title="Consultar"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                    <a th:href="@{/factura/modificar/{id} (id=${factura.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
-                    <a th:href="@{/factura/baja/{id} (id=${factura.id}) }" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                    <a th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}"
+                      th:href="@{/factura/modificar/{id} (id=${factura.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+                    <a th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}"
+                      th:href="@{/factura/baja/{id} (id=${factura.id}) }" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
                   </td>
                   <td th:text="${factura.numeroFactura}"></td>
                   <td th:text="|${factura.socio.nombre} ${factura.socio.apellido}|"></td>

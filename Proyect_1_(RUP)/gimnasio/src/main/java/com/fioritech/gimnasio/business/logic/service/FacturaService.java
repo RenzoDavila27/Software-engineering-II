@@ -146,6 +146,14 @@ public class FacturaService {
     }
 
     @Transactional(readOnly = true)
+    public List<Factura> listarFacturaPorUsuario(String usuarioId) {
+        if (usuarioId == null || usuarioId.isBlank()) {
+            return List.of();
+        }
+        return facturaRepository.findBySocioUsuarioIdAndEliminadoFalse(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
     public List<Factura> listarFacturaPorEstado(EstadoFactura estado) {
         return facturaRepository.findAll().stream()
             .filter(f -> !f.isEliminado())
