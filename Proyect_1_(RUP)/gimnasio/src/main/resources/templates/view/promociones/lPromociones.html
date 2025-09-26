@@ -29,7 +29,7 @@
       <hr>
       <div class="container"> 
         <div class="card">
-          <h4 class="card-header"><strong>Lista de Mensajes</strong></h4>              
+          <h4 class="card-header"><strong>Lista de Promociones</strong></h4>              
           <div class="card-body">
 			
             <a class="btn btn-primary" th:href="@{/promocion/altaPromocion}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
@@ -62,6 +62,46 @@
                   <td th:text="${promocion.cantidadSociosEnviados}"></td>
                   <td>
                     <a class="btn btn-outline-secondary" th:href="@{/promocion/enviarMensaje/{id} (id=${promocion.id})}">Enviar</a>
+                  </td>
+                </tr>                              
+              </tbody>
+            </table>
+            
+          </div>
+        </div>
+      </div>
+      
+       <div class="container"> 
+        <div class="card">
+          <h4 class="card-header"><strong>Lista de Mensajes</strong></h4>              
+          <div class="card-body">
+			
+            <a class="btn btn-primary" th:href="@{/mensaje/altaMensaje}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+            
+			<hr>
+			<div th:if="${msgExito2 != null}" class='alert alert-success' th:text="${msgExito2}" role='alert'></div>   
+		    <div th:if="${msgError2 != null}" class='alert alert-danger' th:text="${msgError2}" role='alert'></div>
+            
+			<table class="table table-hover w-80">
+              <thead class="thead-light">
+                <tr>
+				  <th scope="col">Acciones</th>	
+                  <th scope="col">Titulo</th>
+                  <th scope="col">Tipo de Mensaje</th>
+                  <th scope="col">Enviar Mensaje</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="mensaje : ${listaMensaje}">
+                  <td>
+					<a th:href="@{/mensaje/consultar/{id} (id=${mensaje.id}) }" class="btn btn-success btn-sm" role="button" title="Consultar"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                    <a th:href="@{/mensaje/modificar/{id} (id=${mensaje.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+					<a th:href="@{/mensaje/baja/{id} (id=${mensaje.id}) }" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                  </td>
+				  <td th:text="${mensaje.titulo}"></td>
+                  <td th:text="${mensaje.tipoMensaje}"></td>
+                  <td>
+                    <a class="btn btn-outline-secondary" th:href="@{/mensaje/enviarMensaje/{id} (id=${mensaje.id})}">Enviar</a>
                   </td>
                 </tr>                              
               </tbody>

@@ -75,7 +75,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="documento">Documento</label>
-                                <input type="text" class="form-control" th:field="*{numeroDocumento}" placeholder="Escriba el N° de documento" required th:disabled="${isDisabled}">
+                                <input type="text" class="form-control" th:field="*{numeroDocumento}" placeholder="Escriba el N° de documento, Pasaporte o CUIT" required th:disabled="${isDisabled}">
                             </div>
                         </div>
                     </div>
@@ -181,13 +181,13 @@
                             <div class="form-group">
                                 <input type="hidden" th:field="*{direccion.id}" />
                                 <label for="calle">Calle</label>
-                                <input type="text" class="form-control" th:field="*{direccion.calle}" placeholder="Escriba la calle de la sucursal" required th:disabled="${isDisabled}">
+                                <input type="text" class="form-control" th:field="*{direccion.calle}" placeholder="Escriba la calle" required th:disabled="${isDisabled}">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="numeracion">Numeración</label>
-                                <input type="text" class="form-control" th:field="*{direccion.numeracion}" placeholder="Escriba la numeración de la sucursal" required th:disabled="${isDisabled}">
+                                <input type="text" class="form-control" th:field="*{direccion.numeracion}" placeholder="Escriba la numeración" required th:disabled="${isDisabled}">
                             </div>
                         </div>
                     </div>

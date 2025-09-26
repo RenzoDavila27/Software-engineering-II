@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fioritech.gimnasio.business.domain.Mensaje;
 import com.fioritech.gimnasio.business.domain.Promocion;
 import com.fioritech.gimnasio.business.domain.enums.RolUsuario;
 import com.fioritech.gimnasio.business.domain.enums.TipoMensaje;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
+import com.fioritech.gimnasio.business.logic.service.MensajeService;
 import com.fioritech.gimnasio.business.logic.service.PromocionService;
 import com.fioritech.gimnasio.business.logic.service.UsuarioService;
 
@@ -28,6 +30,9 @@ public class PromocionController {
     @Autowired
     private UsuarioService usuarioService;
 
+	@Autowired
+	private MensajeService mensajeService;
+
     private String viewEdit = "view/promociones/ePromociones";
     private String viewList = "view/promociones/lPromociones";
     private String redirectList = "redirect:/promocion/listaPromocion";
@@ -36,8 +41,10 @@ public class PromocionController {
     @GetMapping("/promocion/listaPromocion")
     public String listaPromocion(Model model)  throws BusinessException{
         try{
+            List<Mensaje> listaMensaje = mensajeService.listarMensajeActivo();
             List<Promocion> listaPromocion = service.listarPromocionActivo();
             model.addAttribute("listaPromocion",listaPromocion);
+            model.addAttribute("listaMensaje",listaMensaje);
             return viewList;
         }catch(BusinessException e){
           model.addAttribute("msgError", e.getMessage());  

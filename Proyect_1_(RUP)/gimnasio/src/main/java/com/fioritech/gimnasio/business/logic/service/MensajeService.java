@@ -1,12 +1,19 @@
 package com.fioritech.gimnasio.business.logic.service;
 
+import com.fioritech.gimnasio.business.domain.CuotaMensual;
 import com.fioritech.gimnasio.business.domain.Mensaje;
+import com.fioritech.gimnasio.business.domain.Promocion;
+import com.fioritech.gimnasio.business.domain.Socio;
 import com.fioritech.gimnasio.business.domain.Usuario;
+import com.fioritech.gimnasio.business.domain.enums.EstadoCuotaMensual;
 import com.fioritech.gimnasio.business.domain.enums.TipoMensaje;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.MensajeRepository;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +28,14 @@ public class MensajeService {
         this.mensajeRepository = mensajeRepository;
         this.usuarioService = usuarioService;
     }
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private CuotaMensualService cuotaMensualService;
+
+    @Autowired
+    private SocioService socioService;
 
     public Mensaje crearMensaje(String idUsuario, String titulo, String texto, TipoMensaje tipoMensaje) {
         validar(idUsuario, titulo, texto, tipoMensaje);
@@ -83,15 +98,72 @@ public class MensajeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Mensaje> listarMensajeActivo() {
-        return mensajeRepository.findAll().stream()
-            .filter(m -> !m.isEliminado())
-            .toList();
+    public List<Mensaje> listarMensajeActivo(){
+        List<Mensaje> mensajes =  mensajeRepository.listarMensajeActivo();
+        return mensajes;
     }
 
-    public Mensaje enviarMensaje(String id) {
-        Mensaje mensaje = buscarMensaje(id);
-        mensaje.setTexto(mensaje.getTexto() + "\nEnviado: " + LocalDateTime.now());
-        return mensajeRepository.save(mensaje);
+    public void enviarMensaje(String idMensaje) {
+       
+        try{
+          Mensaje mensaje = buscarMensaje(idMensaje);	
+          if(mensaje==null){
+              throw new BusinessException("El mensaje no existe");
+          }
+          if(mensaje.isEliminado()){
+              throw new BusinessException("EL mensaje esta eliminado");
+          }
+           
+            if (mensaje.getTipoMensaje() == TipoMensaje.CUMPLEANOS){
+                Collection<Socio> listaSociosCumpleaños = socioService.listarCumpleanieros();
+                enviarCumpleanios(listaSociosCumpleaños,mensaje);
+
+            }else if(mensaje.getTipoMensaje() == TipoMensaje.PROMOCION){;
+                Collection<Socio> listaSocios = socioService.listarSociosActivos();
+                enviarPromocion(listaSocios,mensaje);
+                
+            }else if (mensaje.getTipoMensaje() == TipoMensaje.DEUDA){
+                Collection<Socio> listaSocios = socioService.SocioConDeudas(EstadoCuotaMensual.ADEUDADA);
+                enviarDeuda(listaSocios,mensaje);
+                
+            }
+        }catch(BusinessException e) {	
+            throw e;
+        }catch(Exception ex){
+            ex.printStackTrace();
+            throw new BusinessException("Error desconocido");
+        }
+        
+    }
+
+    public void enviarCumpleanios(Collection<Socio> listaSociosCumpleaños,Mensaje mensaje){
+        for(Socio socio: listaSociosCumpleaños){
+           emailService.sendEmail(socio.getCorreoElectronico(), mensaje.getTitulo(), mensaje.getTexto());
+        }
+    }
+
+    public void enviarPromocion(Collection<Socio> listaSocios,Mensaje mensaje){
+        for(Socio socio: listaSocios){
+           emailService.sendEmail(socio.getCorreoElectronico(), mensaje.getTitulo(), mensaje.getTexto());
+        }
+    }
+
+    public void enviarDeuda(Collection<Socio> listaSocios,Mensaje mensaje){
+        for(Socio socio: listaSocios){
+            Collection<CuotaMensual> cuotas = cuotaMensualService.listarDeudasPorSocio(socio.getId(), EstadoCuotaMensual.ADEUDADA);
+            String texto = mensaje.getTexto() + "\nDetalle de la deuda:\n";
+            double deudatotal = 0;
+           for(CuotaMensual cuota: cuotas){
+                 texto = texto
+                    + "Mes: " + cuota.getMes() + "\n"
+                    + "Año: " + cuota.getAnio() + "\n"
+                    + "Estado: " + cuota.getEstado() + "\n\n";
+                deudatotal = deudatotal + cuota.getValorCuota().getValorCuota();
+
+            }
+                texto = texto + "Deuda total: " + String.valueOf(deudatotal);
+                emailService.sendEmail(socio.getCorreoElectronico(), mensaje.getTitulo(), texto);
+            }
+        
     }
 }
