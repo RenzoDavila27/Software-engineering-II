@@ -22,10 +22,15 @@ public class MercadoPagoCallbackController {
     }
 
     @GetMapping("/mercadopago/success")
-    public String success(@RequestParam("payment_id") String paymentId,
+    public String success(@RequestParam(value = "payment_id", required = false) String paymentId,
         @RequestParam(value = "external_reference", required = false) String externalReference,
+        @RequestParam(value = "preference_id", required = false) String preferenceId,
         RedirectAttributes attributes) {
         try {
+            if ((paymentId == null || paymentId.isBlank()) && preferenceId != null && !preferenceId.isBlank()) {
+                paymentId = mercadoPagoService.resolvePaymentIdFromPreference(preferenceId);
+            }
+
             Factura factura = mercadoPagoService.processSuccessfulPayment(paymentId, externalReference);
             attributes.addFlashAttribute("msgExito",
                 "Pago registrado correctamente. Factura N° " + factura.getNumeroFactura());

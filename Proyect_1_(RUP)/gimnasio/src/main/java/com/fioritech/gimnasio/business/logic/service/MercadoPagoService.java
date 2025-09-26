@@ -14,9 +14,12 @@ import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
+import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.preference.Preference;
+import com.mercadopago.resources.payment.Payment;
+import com.mercadopago.net.MPSearchRequest;
 import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -239,5 +242,24 @@ public class MercadoPagoService {
             .filter(id -> !id.isBlank())
             .distinct()
             .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public String resolvePaymentIdFromPreference(String preferenceId) {
+        try {
+            PaymentClient paymentClient = new PaymentClient();
+            MPSearchRequest searchRequest = MPSearchRequest.builder()
+                .limit(1)
+                .offset(0)
+                .filters(java.util.Map.of("preference_id", preferenceId))
+                .build();
+            List<Payment> payments = paymentClient.search(searchRequest, null).getResults();
+            return payments.stream()
+                .findFirst()
+                .map(payment -> payment.getId().toString())
+                .orElse(null);
+        } catch (MPApiException | MPException ex) {
+            LOGGER.error("No se pudo obtener el payment_id desde la preferencia {}", preferenceId, ex);
+            return null;
+        }
     }
 }

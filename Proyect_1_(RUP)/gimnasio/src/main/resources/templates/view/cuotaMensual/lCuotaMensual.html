@@ -21,7 +21,7 @@
   </style>
   </head>
 
-  <body>
+  <body th:attr="data-callback-base-url=${@environment.getProperty('mercadopago.callback-base-url','')}">
 
     <header th:insert="~{fragments/menubody :: menu-principal}"></header>
 
@@ -173,11 +173,12 @@
           const ids = seleccionadas.map(function (cb) { return cb.value; });
           const referencia = ['CUOTAS', Date.now(), ids.join(',')].join('|');
           const totalRedondeado = Number(total.toFixed(2));
-          const baseUrl = window.location.origin;
-          const useHttps = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-          const successUrl = (useHttps ? baseUrl.replace('http://', 'https://') : baseUrl) + '/mercadopago/success';
-          const failureUrl = (useHttps ? baseUrl.replace('http://', 'https://') : baseUrl) + '/mercadopago/failure';
-          const pendingUrl = (useHttps ? baseUrl.replace('http://', 'https://') : baseUrl) + '/mercadopago/pending';
+          const overrideBaseUrl = document.body.dataset.callbackBaseUrl;
+          const baseUrl = overrideBaseUrl && overrideBaseUrl.length > 0 ? overrideBaseUrl : window.location.origin;
+          const useHttps = baseUrl.startsWith('https://');
+          const successUrl = baseUrl + '/mercadopago/success';
+          const failureUrl = baseUrl + '/mercadopago/failure';
+          const pendingUrl = baseUrl + '/mercadopago/pending';
 
           pagarButton.disabled = true;
           pagarButton.innerHTML = 'Conectando con Mercado Pago...';
