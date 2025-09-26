@@ -2,7 +2,10 @@ package com.fioritech.gimnasio.controller.view;
 
 import com.fioritech.gimnasio.business.domain.Empleado;
 import com.fioritech.gimnasio.business.domain.Rutina;
+import com.fioritech.gimnasio.business.domain.Socio;
+import com.fioritech.gimnasio.business.domain.Usuario;
 import com.fioritech.gimnasio.business.domain.enums.EstadoRutina;
+import com.fioritech.gimnasio.business.domain.enums.RolUsuario;
 import com.fioritech.gimnasio.business.domain.enums.TipoEmpleado;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.logic.service.EmpleadoService;
@@ -12,6 +15,7 @@ import com.fioritech.gimnasio.business.domain.DetalleRutina;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,6 +47,25 @@ public class RutinaController {
         model.addAttribute("estadosRutina", EstadoRutina.values());
     }
 
+    private boolean esSocio(HttpSession session) {
+        if (session == null) {
+            return false;
+        }
+        Object rol = session.getAttribute("rol");
+        return RolUsuario.SOCIO.name().equals(rol);
+    }
+
+    private Socio obtenerSocioSesion(HttpSession session) {
+        if (session == null) {
+            throw new BusinessException("La sesión no es válida");
+        }
+        Usuario usuario = (Usuario) session.getAttribute("usuarioSession");
+        if (usuario == null || usuario.getId() == null || usuario.getId().isBlank()) {
+            throw new BusinessException("No se encontró un usuario asociado a la sesión");
+        }
+        return socioService.buscarSocioPorUsuario(usuario.getId());
+    }
+
     private List<DetalleRutina> obtenerDetalles(Rutina rutina) {
         if (rutina == null || rutina.getDetalles() == null) {
             return Collections.emptyList();
@@ -51,9 +74,15 @@ public class RutinaController {
     }
 
     @GetMapping("/rutina/listaRutina")
-    public String listaRutina(Model model) {
+    public String listaRutina(Model model, HttpSession session) {
         try {
-            List<Rutina> listaRutina = rutinaService.listarRutinaActivo();
+            List<Rutina> listaRutina;
+            if (esSocio(session)) {
+                Socio socio = obtenerSocioSesion(session);
+                listaRutina = rutinaService.listarRutinaActivoPorSocio(socio.getId());
+            } else {
+                listaRutina = rutinaService.listarRutinaActivo();
+            }
             model.addAttribute("listaRutina", listaRutina);
         } catch (BusinessException e) {
             model.addAttribute("msgError", e.getMessage());
@@ -72,9 +101,17 @@ public class RutinaController {
     }
 
     @GetMapping("/rutina/consultar/{id}")
-    public String consultar(@PathVariable("id") String idRutina, Model model, RedirectAttributes attributes) {
+    public String consultar(@PathVariable("id") String idRutina, Model model, RedirectAttributes attributes,
+        HttpSession session) {
         try {
             Rutina rutina = rutinaService.buscarRutina(idRutina);
+            if (esSocio(session)) {
+                Socio socio = obtenerSocioSesion(session);
+                if (!rutina.getSocio().getId().equals(socio.getId())) {
+                    attributes.addFlashAttribute("msgError", "No está autorizado a consultar la rutina indicada.");
+                    return "redirect:/rutina/listaRutina";
+                }
+            }
             model.addAttribute("rutina", rutina);
             model.addAttribute("isDisabled", true);
             model.addAttribute("detallesRutina", obtenerDetalles(rutina));

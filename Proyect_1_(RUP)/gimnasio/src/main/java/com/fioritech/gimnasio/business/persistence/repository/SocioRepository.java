@@ -4,6 +4,7 @@ import com.fioritech.gimnasio.business.domain.Socio;
 import com.fioritech.gimnasio.business.domain.enums.EstadoCuotaMensual;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,6 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
 
     @Query("SELECT DISTINCT s FROM Socio s JOIN s.cuotasMensuales c WHERE c.estado = :estado")
     public Collection<Socio> SocioConDeudas(@Param("estado") EstadoCuotaMensual estado);
+
+    Optional<Socio> findByUsuarioIdAndEliminadoFalse(String usuarioId);
 }

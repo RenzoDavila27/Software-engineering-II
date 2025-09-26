@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -175,6 +176,15 @@ public class SocioService {
     public Socio buscarSocio(String id) {
         return socioRepository.findById(id)
             .orElseThrow(() -> new BusinessException("Socio no encontrado"));
+    }
+
+    @Transactional(readOnly = true)
+    public Socio buscarSocioPorUsuario(String idUsuario) {
+        if (idUsuario == null || idUsuario.isBlank()) {
+            throw new BusinessException("El usuario es obligatorio");
+        }
+        Optional<Socio> socio = socioRepository.findByUsuarioIdAndEliminadoFalse(idUsuario);
+        return socio.orElseThrow(() -> new BusinessException("No se encontró un socio asociado al usuario"));
     }
 
     @Transactional

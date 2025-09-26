@@ -152,6 +152,14 @@ public class RutinaService {
     }
 
     @Transactional(readOnly = true)
+    public List<Rutina> listarRutinaActivoPorSocio(String socioId) {
+        if (socioId == null || socioId.isBlank()) {
+            throw new BusinessException("El socio es obligatorio");
+        }
+        return rutinaRepository.findBySocioIdAndEliminadoFalse(socioId);
+    }
+
+    @Transactional(readOnly = true)
     public Rutina buscarRutinaActual() {
         return rutinaRepository.findAll().stream()
             .filter(r -> !r.isEliminado())
