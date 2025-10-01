@@ -4,57 +4,66 @@ import com.fioritech.demo.bussines.domain.Pais;
 import com.fioritech.demo.bussines.domain.Provincia;
 import com.fioritech.demo.bussines.logic.exception.BusinessException;
 import com.fioritech.demo.bussines.logic.util.ValidationUtils;
-import jakarta.persistence.EntityManager;
+import com.fioritech.demo.bussines.repository.PaisRepository;
+import com.fioritech.demo.bussines.repository.ProvinciaRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
 
 @Service
 @Transactional
 public class ProvinciaService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final ProvinciaRepository provinciaRepository;
+    private final PaisRepository paisRepository;
+
+    public ProvinciaService(ProvinciaRepository provinciaRepository, PaisRepository paisRepository) {
+        this.provinciaRepository = provinciaRepository;
+        this.paisRepository = paisRepository;
+    }
 
     public Provincia crearProvincia(Provincia provincia) {
         verificarAtributos(provincia);
         if (provincia.getId() != null) {
             throw new BusinessException("La provincia ya tiene un id asignado");
         }
-        Pais pais = obtenerPaisActivo(provincia);
+        Pais pais = obtenerPaisActivo(provincia.getPais().getId());
         provincia.setNombre(provincia.getNombre().trim());
         provincia.setPais(pais);
         provincia.setEliminado(false);
-        entityManager.persist(provincia);
-        return provincia;
+        return provinciaRepository.save(provincia);
     }
 
     public Provincia modificarProvincia(Long id, Provincia cambios) {
-        Provincia existente = entityManager.find(Provincia.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe la provincia con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("La provincia con id " + id + " esta eliminada");
-        }
+        Provincia existente = obtenerProvinciaActiva(id);
         verificarAtributos(cambios);
-        Pais pais = obtenerPaisActivo(cambios);
+        Pais pais = obtenerPaisActivo(cambios.getPais().getId());
         existente.setNombre(cambios.getNombre().trim());
         existente.setPais(pais);
-        return entityManager.merge(existente);
+        return provinciaRepository.save(existente);
     }
 
     public void eliminarProvincia(Long id) {
-        Provincia existente = entityManager.find(Provincia.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe la provincia con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("La provincia con id " + id + " ya esta eliminada");
-        }
+        Provincia existente = obtenerProvinciaActiva(id);
         existente.setEliminado(true);
-        entityManager.merge(existente);
+        provinciaRepository.save(existente);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Provincia> listarProvincias() {
+        return provinciaRepository.buscarProvinciasActivas();
+    }
+
+    @Transactional(readOnly = true)
+    public Provincia buscarProvinciaPorId(Long id) {
+        return obtenerProvinciaActiva(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Provincia> obtenerProvinciasActivas() {
+        return provinciaRepository.buscarProvinciasActivas();
     }
 
     public void verificarAtributos(Provincia provincia) {
@@ -69,15 +78,21 @@ public class ProvinciaService {
         }
     }
 
-    private Pais obtenerPaisActivo(Provincia provincia) {
-        Long paisId = provincia.getPais().getId();
-        Pais pais = entityManager.find(Pais.class, paisId);
-        if (pais == null) {
-            throw new EntityNotFoundException("No existe el pais con id " + paisId);
-        }
+    private Pais obtenerPaisActivo(Long paisId) {
+        Pais pais = paisRepository.findById(paisId)
+                .orElseThrow(() -> new EntityNotFoundException("No existe el pais con id " + paisId));
         if (pais.isEliminado()) {
             throw new BusinessException("El pais con id " + paisId + " esta eliminado");
         }
         return pais;
+    }
+
+    private Provincia obtenerProvinciaActiva(Long id) {
+        Provincia provincia = provinciaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe la provincia con id " + id));
+        if (provincia.isEliminado()) {
+            throw new BusinessException("La provincia con id " + id + " esta eliminada");
+        }
+        return provincia;
     }
 }

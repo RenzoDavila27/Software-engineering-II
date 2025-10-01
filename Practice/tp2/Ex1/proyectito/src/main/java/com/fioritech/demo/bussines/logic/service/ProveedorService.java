@@ -3,23 +3,23 @@ package com.fioritech.demo.bussines.logic.service;
 import com.fioritech.demo.bussines.domain.Proveedor;
 import com.fioritech.demo.bussines.logic.exception.BusinessException;
 import com.fioritech.demo.bussines.logic.util.ValidationUtils;
-import jakarta.persistence.EntityManager;
+import com.fioritech.demo.bussines.repository.ProveedorRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
 
 @Service
 @Transactional
 public class ProveedorService {
 
     private final PersonaService personaService;
+    private final ProveedorRepository proveedorRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public ProveedorService(PersonaService personaService) {
+    public ProveedorService(PersonaService personaService, ProveedorRepository proveedorRepository) {
         this.personaService = personaService;
+        this.proveedorRepository = proveedorRepository;
     }
 
     public Proveedor crearProveedor(Proveedor proveedor) {
@@ -33,37 +33,34 @@ public class ProveedorService {
         proveedor.setCorreo(proveedor.getCorreo().trim());
         proveedor.setCuit(proveedor.getCuit().trim());
         proveedor.setEliminado(false);
-        entityManager.persist(proveedor);
-        return proveedor;
+        return proveedorRepository.save(proveedor);
     }
 
     public Proveedor modificarProveedor(Long id, Proveedor cambios) {
-        Proveedor existente = entityManager.find(Proveedor.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe el proveedor con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("El proveedor con id " + id + " esta eliminado");
-        }
+        Proveedor existente = obtenerProveedorActivo(id);
         verificarAtributos(cambios);
         existente.setNombre(cambios.getNombre().trim());
         existente.setApellido(cambios.getApellido().trim());
         existente.setTelefono(cambios.getTelefono().trim());
         existente.setCorreo(cambios.getCorreo().trim());
         existente.setCuit(cambios.getCuit().trim());
-        return entityManager.merge(existente);
+        return proveedorRepository.save(existente);
     }
 
     public void eliminarProveedor(Long id) {
-        Proveedor existente = entityManager.find(Proveedor.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe el proveedor con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("El proveedor con id " + id + " ya esta eliminado");
-        }
+        Proveedor existente = obtenerProveedorActivo(id);
         existente.setEliminado(true);
-        entityManager.merge(existente);
+        proveedorRepository.save(existente);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Proveedor> listarProveedores() {
+        return proveedorRepository.buscarProveedoresActivos();
+    }
+
+    @Transactional(readOnly = true)
+    public Proveedor buscarProveedorPorId(Long id) {
+        return obtenerProveedorActivo(id);
     }
 
     public void verificarAtributos(Proveedor proveedor) {
@@ -71,5 +68,14 @@ public class ProveedorService {
         if (ValidationUtils.isBlank(proveedor.getCuit())) {
             throw new BusinessException("El CUIT es obligatorio");
         }
+    }
+
+    private Proveedor obtenerProveedorActivo(Long id) {
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe el proveedor con id " + id));
+        if (proveedor.isEliminado()) {
+            throw new BusinessException("El proveedor con id " + id + " esta eliminado");
+        }
+        return proveedor;
     }
 }

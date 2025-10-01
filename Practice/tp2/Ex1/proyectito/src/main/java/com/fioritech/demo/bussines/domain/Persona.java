@@ -3,6 +3,7 @@ package com.fioritech.demo.bussines.domain;
 import jakarta.persistence.*;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Persona {
 
     @Id

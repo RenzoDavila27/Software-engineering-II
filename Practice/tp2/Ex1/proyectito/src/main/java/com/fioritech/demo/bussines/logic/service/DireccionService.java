@@ -4,25 +4,33 @@ import com.fioritech.demo.bussines.domain.Direccion;
 import com.fioritech.demo.bussines.domain.Localidad;
 import com.fioritech.demo.bussines.logic.exception.BusinessException;
 import com.fioritech.demo.bussines.logic.util.ValidationUtils;
-import jakarta.persistence.EntityManager;
+import com.fioritech.demo.bussines.repository.DireccionRepository;
+import com.fioritech.demo.bussines.repository.LocalidadRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
 
 @Service
 @Transactional
 public class DireccionService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final DireccionRepository direccionRepository;
+    private final LocalidadRepository localidadRepository;
+
+    public DireccionService(DireccionRepository direccionRepository,
+                            LocalidadRepository localidadRepository) {
+        this.direccionRepository = direccionRepository;
+        this.localidadRepository = localidadRepository;
+    }
 
     public Direccion crearDireccion(Direccion direccion) {
         verificarAtributos(direccion);
         if (direccion.getId() != null) {
             throw new BusinessException("La direccion ya tiene un id asignado");
         }
-        Localidad localidad = obtenerLocalidadActiva(direccion);
+        Localidad localidad = obtenerLocalidadActiva(direccion.getLocalidad().getId());
         direccion.setCalle(direccion.getCalle().trim());
         direccion.setNumeracion(direccion.getNumeracion().trim());
         direccion.setBarrio(ajustarTexto(direccion.getBarrio()));
@@ -31,20 +39,13 @@ public class DireccionService {
         direccion.setReferencia(ajustarTexto(direccion.getReferencia()));
         direccion.setLocalidad(localidad);
         direccion.setEliminado(false);
-        entityManager.persist(direccion);
-        return direccion;
+        return direccionRepository.save(direccion);
     }
 
     public Direccion modificarDireccion(Long id, Direccion cambios) {
-        Direccion existente = entityManager.find(Direccion.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe la direccion con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("La direccion con id " + id + " esta eliminada");
-        }
+        Direccion existente = obtenerDireccionActiva(id);
         verificarAtributos(cambios);
-        Localidad localidad = obtenerLocalidadActiva(cambios);
+        Localidad localidad = obtenerLocalidadActiva(cambios.getLocalidad().getId());
         existente.setCalle(cambios.getCalle().trim());
         existente.setNumeracion(cambios.getNumeracion().trim());
         existente.setBarrio(ajustarTexto(cambios.getBarrio()));
@@ -52,19 +53,23 @@ public class DireccionService {
         existente.setCasaDepartamento(ajustarTexto(cambios.getCasaDepartamento()));
         existente.setReferencia(ajustarTexto(cambios.getReferencia()));
         existente.setLocalidad(localidad);
-        return entityManager.merge(existente);
+        return direccionRepository.save(existente);
     }
 
     public void eliminarDireccion(Long id) {
-        Direccion existente = entityManager.find(Direccion.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe la direccion con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("La direccion con id " + id + " ya esta eliminada");
-        }
+        Direccion existente = obtenerDireccionActiva(id);
         existente.setEliminado(true);
-        entityManager.merge(existente);
+        direccionRepository.save(existente);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Direccion> listarDirecciones() {
+        return direccionRepository.buscarDireccionesActivas();
+    }
+
+    @Transactional(readOnly = true)
+    public Direccion buscarDireccionPorId(Long id) {
+        return obtenerDireccionActiva(id);
     }
 
     public void verificarAtributos(Direccion direccion) {
@@ -82,12 +87,18 @@ public class DireccionService {
         }
     }
 
-    private Localidad obtenerLocalidadActiva(Direccion direccion) {
-        Long localidadId = direccion.getLocalidad().getId();
-        Localidad localidad = entityManager.find(Localidad.class, localidadId);
-        if (localidad == null) {
-            throw new EntityNotFoundException("No existe la localidad con id " + localidadId);
+    private Direccion obtenerDireccionActiva(Long id) {
+        Direccion direccion = direccionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe la direccion con id " + id));
+        if (direccion.isEliminado()) {
+            throw new BusinessException("La direccion con id " + id + " esta eliminada");
         }
+        return direccion;
+    }
+
+    private Localidad obtenerLocalidadActiva(Long localidadId) {
+        Localidad localidad = localidadRepository.findById(localidadId)
+                .orElseThrow(() -> new EntityNotFoundException("No existe la localidad con id " + localidadId));
         if (localidad.isEliminado()) {
             throw new BusinessException("La localidad con id " + localidadId + " esta eliminada");
         }

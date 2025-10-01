@@ -4,57 +4,72 @@ import com.fioritech.demo.bussines.domain.Departamento;
 import com.fioritech.demo.bussines.domain.Provincia;
 import com.fioritech.demo.bussines.logic.exception.BusinessException;
 import com.fioritech.demo.bussines.logic.util.ValidationUtils;
-import jakarta.persistence.EntityManager;
+import com.fioritech.demo.bussines.repository.DepartamentoRepository;
+import com.fioritech.demo.bussines.repository.ProvinciaRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
 
 @Service
 @Transactional
 public class DepartamentoService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final DepartamentoRepository departamentoRepository;
+    private final ProvinciaRepository provinciaRepository;
+
+    public DepartamentoService(DepartamentoRepository departamentoRepository,
+                               ProvinciaRepository provinciaRepository) {
+        this.departamentoRepository = departamentoRepository;
+        this.provinciaRepository = provinciaRepository;
+    }
 
     public Departamento crearDepartamento(Departamento departamento) {
         verificarAtributos(departamento);
         if (departamento.getId() != null) {
             throw new BusinessException("El departamento ya tiene un id asignado");
         }
-        Provincia provincia = obtenerProvinciaActiva(departamento);
+        Provincia provincia = obtenerProvinciaActiva(departamento.getProvincia().getId());
         departamento.setNombre(departamento.getNombre().trim());
         departamento.setProvincia(provincia);
         departamento.setEliminado(false);
-        entityManager.persist(departamento);
-        return departamento;
+        return departamentoRepository.save(departamento);
     }
 
     public Departamento modificarDepartamento(Long id, Departamento cambios) {
-        Departamento existente = entityManager.find(Departamento.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe el departamento con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("El departamento con id " + id + " esta eliminado");
-        }
+        Departamento existente = obtenerDepartamentoActivo(id);
         verificarAtributos(cambios);
-        Provincia provincia = obtenerProvinciaActiva(cambios);
+        Provincia provincia = obtenerProvinciaActiva(cambios.getProvincia().getId());
         existente.setNombre(cambios.getNombre().trim());
         existente.setProvincia(provincia);
-        return entityManager.merge(existente);
+        return departamentoRepository.save(existente);
     }
 
     public void eliminarDepartamento(Long id) {
-        Departamento existente = entityManager.find(Departamento.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe el departamento con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("El departamento con id " + id + " ya esta eliminado");
-        }
+        Departamento existente = obtenerDepartamentoActivo(id);
         existente.setEliminado(true);
-        entityManager.merge(existente);
+        departamentoRepository.save(existente);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Departamento> listarDepartamentos() {
+        return departamentoRepository.buscarDepartamentosActivos();
+    }
+
+    @Transactional(readOnly = true)
+    public Departamento buscarDepartamentoPorId(Long id) {
+        return obtenerDepartamentoActivo(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Departamento obtenerDepartamentoActivo(Long id) {
+        Departamento departamento = departamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe el departamento con id " + id));
+        if (departamento.isEliminado()) {
+            throw new BusinessException("El departamento con id " + id + " esta eliminado");
+        }
+        return departamento;
     }
 
     public void verificarAtributos(Departamento departamento) {
@@ -69,12 +84,9 @@ public class DepartamentoService {
         }
     }
 
-    private Provincia obtenerProvinciaActiva(Departamento departamento) {
-        Long provinciaId = departamento.getProvincia().getId();
-        Provincia provincia = entityManager.find(Provincia.class, provinciaId);
-        if (provincia == null) {
-            throw new EntityNotFoundException("No existe la provincia con id " + provinciaId);
-        }
+    private Provincia obtenerProvinciaActiva(Long provinciaId) {
+        Provincia provincia = provinciaRepository.findById(provinciaId)
+                .orElseThrow(() -> new EntityNotFoundException("No existe la provincia con id " + provinciaId));
         if (provincia.isEliminado()) {
             throw new BusinessException("La provincia con id " + provinciaId + " esta eliminada");
         }

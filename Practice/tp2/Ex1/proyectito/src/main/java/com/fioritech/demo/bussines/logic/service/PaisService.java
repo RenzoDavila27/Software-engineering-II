@@ -3,18 +3,22 @@ package com.fioritech.demo.bussines.logic.service;
 import com.fioritech.demo.bussines.domain.Pais;
 import com.fioritech.demo.bussines.logic.exception.BusinessException;
 import com.fioritech.demo.bussines.logic.util.ValidationUtils;
-import jakarta.persistence.EntityManager;
+import com.fioritech.demo.bussines.repository.PaisRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
 
 @Service
 @Transactional
 public class PaisService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final PaisRepository paisRepository;
+
+    public PaisService(PaisRepository paisRepository) {
+        this.paisRepository = paisRepository;
+    }
 
     public Pais crearPais(Pais pais) {
         verificarAtributos(pais);
@@ -23,33 +27,30 @@ public class PaisService {
         }
         pais.setNombre(pais.getNombre().trim());
         pais.setEliminado(false);
-        entityManager.persist(pais);
-        return pais;
+        return paisRepository.save(pais);
     }
 
     public Pais modificarPais(Long id, Pais cambios) {
-        Pais existente = entityManager.find(Pais.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe el pais con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("El pais con id " + id + " esta eliminado");
-        }
+        Pais existente = obtenerPaisActivo(id);
         verificarAtributos(cambios);
         existente.setNombre(cambios.getNombre().trim());
-        return entityManager.merge(existente);
+        return paisRepository.save(existente);
     }
 
     public void eliminarPais(Long id) {
-        Pais existente = entityManager.find(Pais.class, id);
-        if (existente == null) {
-            throw new EntityNotFoundException("No existe el pais con id " + id);
-        }
-        if (existente.isEliminado()) {
-            throw new BusinessException("El pais con id " + id + " ya esta eliminado");
-        }
+        Pais existente = obtenerPaisActivo(id);
         existente.setEliminado(true);
-        entityManager.merge(existente);
+        paisRepository.save(existente);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Pais> listarPaises() {
+        return paisRepository.buscarPaisesActivos();
+    }
+
+    @Transactional(readOnly = true)
+    public Pais buscarPaisPorId(Long id) {
+        return obtenerPaisActivo(id);
     }
 
     public void verificarAtributos(Pais pais) {
@@ -59,5 +60,14 @@ public class PaisService {
         if (ValidationUtils.isBlank(pais.getNombre())) {
             throw new BusinessException("El nombre del pais es obligatorio");
         }
+    }
+
+    private Pais obtenerPaisActivo(Long id) {
+        Pais pais = paisRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe el pais con id " + id));
+        if (pais.isEliminado()) {
+            throw new BusinessException("El pais con id " + id + " esta eliminado");
+        }
+        return pais;
     }
 }

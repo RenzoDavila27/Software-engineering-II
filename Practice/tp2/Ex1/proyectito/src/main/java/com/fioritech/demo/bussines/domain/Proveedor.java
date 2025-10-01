@@ -3,7 +3,6 @@ package com.fioritech.demo.bussines.domain;
 import jakarta.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Proveedor extends Persona{
 
     private String cuit;

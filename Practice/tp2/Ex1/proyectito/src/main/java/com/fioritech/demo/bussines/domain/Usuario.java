@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Usuario extends Persona{
 
     private String cuenta;
