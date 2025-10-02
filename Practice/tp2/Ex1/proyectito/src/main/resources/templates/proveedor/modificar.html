@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modificar Proveedor</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --sidebar-collapsed: 80px;
+      --primary-start: #4e73df;
+      --primary-end: #224abe;
+    }
+
+    body { font-family: "Nunito", "Segoe UI", Roboto, Arial, sans-serif; }
+
+    .sidebar { list-style: none; margin: 0; padding: 0; position: fixed; top: 0; left: 0; height: 100vh;
+               width: var(--sidebar-width); transition: width .2s ease; z-index: 1000; }
+    .bg-gradient-primary {
+      background: linear-gradient(180deg, var(--primary-start) 10%, var(--primary-end) 100%) !important;
+    }
+    #wrapper.toggled .sidebar { width: var(--sidebar-collapsed); }
+    #wrapper { display:flex; align-items:stretch; min-height:100vh; transition:margin-left .2s ease; }
+    #content-wrapper { margin-left: var(--sidebar-width); width: 100%; transition: margin-left .2s ease; }
+    #wrapper.toggled #content-wrapper { margin-left: var(--sidebar-collapsed); }
+
+    .register-card { margin: 5rem auto; }
+    .form-control-user { border-radius: .35rem; padding: .75rem 1rem; }
+
+    @media (max-width: 768px) {
+      .sidebar { left: -100%; position: fixed; }
+      #wrapper.toggled .sidebar { left: 0; }
+      #content-wrapper { margin-left: 0; }
+    }
+  </style>
+</head>
+<body id="page-top">
+
+<div id="wrapper">
+
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div id="content-wrapper" class="d-flex flex-column">
+
+    <div id="content">
+
+      <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+      <div class="container-fluid">
+        <div class="d-flex justify-content-center align-items-start" style="padding-top: 40px;">
+          <div class="card o-hidden border-0 shadow-lg register-card" style="max-width: 520px; width: 100%;">
+            <div class="card-body p-5">
+
+              <div class="text-center mb-4">
+                <h1 class="h4 text-gray-900">Modificar Proveedor</h1>
+              </div>
+
+              <form th:action="@{/proveedor/modificar/{id}(id=${proveedor.id})}" th:object="${proveedor}" method="post">
+
+                <div class="form-group">
+                  <label class="font-weight-bold">Nombre</label>
+                  <input type="text" th:field="*{nombre}" class="form-control form-control-user" required>
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold">Apellido</label>
+                  <input type="text" th:field="*{apellido}" class="form-control form-control-user" required>
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold">Teléfono</label>
+                  <input type="text" th:field="*{telefono}" class="form-control form-control-user" required>
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold">Correo</label>
+                  <input type="email" th:field="*{correo}" class="form-control form-control-user" required>
+                </div>
+                <div class="form-group">
+                  <label class="font-weight-bold">CUIT</label>
+                  <input type="text" th:field="*{cuit}" class="form-control form-control-user" required>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Guardar cambios
+                  </button>
+                  <a th:href="@{/proveedor/listar}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                  </a>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+<script>
+  (function($){
+    $(document).ready(function(){
+      $('#sidebarToggle, #sidebarToggleTop').on('click', function(e){
+        e.preventDefault();
+        $('#wrapper').toggleClass('toggled');
+      });
+    });
+  })(jQuery);
+</script>
+</body>
+</html>

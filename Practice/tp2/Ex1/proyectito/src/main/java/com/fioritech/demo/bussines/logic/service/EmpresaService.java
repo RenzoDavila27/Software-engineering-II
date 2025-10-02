@@ -5,9 +5,15 @@ import com.fioritech.demo.bussines.logic.exception.BusinessException;
 import com.fioritech.demo.bussines.logic.util.ValidationUtils;
 import com.fioritech.demo.bussines.repository.EmpresaRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 
 @Service
@@ -51,6 +57,35 @@ public class EmpresaService {
     @Transactional(readOnly = true)
     public Empresa buscarEmpresaPorId(Long id) {
         return obtenerEmpresaActiva(id);
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] exportarEmpresasExcel() {
+        Collection<Empresa> empresas = empresaRepository.buscarEmpresasActivas();
+
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Empresas");
+
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("ID");
+            header.createCell(1).setCellValue("Razón Social");
+
+            int rowIndex = 1;
+            for (Empresa empresa : empresas) {
+                Row row = sheet.createRow(rowIndex++);
+                row.createCell(0)
+                        .setCellValue(empresa.getId() == null ? "" : empresa.getId().toString());
+                row.createCell(1).setCellValue(empresa.getRazonSocial());
+            }
+
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new BusinessException("No se pudo generar el archivo de empresas", e);
+        }
     }
 
     public void verificarAtributos(Empresa empresa) {

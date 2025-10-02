@@ -2,6 +2,10 @@ package com.fioritech.demo.bussines.controller;
 
 import com.fioritech.demo.bussines.domain.Empresa;
 import com.fioritech.demo.bussines.logic.service.EmpresaService;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,5 +58,22 @@ public class EmpresaController {
     public String eliminarEmpresa(@PathVariable Long id) {
         empresaService.eliminarEmpresa(id);
         return "redirect:/empresa/listar";
+    }
+
+    @GetMapping("/exportar")
+    public ResponseEntity<byte[]> exportarEmpresas() {
+        byte[] contenido = empresaService.exportarEmpresasExcel();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "empresas.xlsx");
+        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentLength(contenido.length)
+                .body(contenido);
     }
 }

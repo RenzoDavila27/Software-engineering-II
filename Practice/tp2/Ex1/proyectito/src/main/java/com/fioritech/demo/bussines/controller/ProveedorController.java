@@ -2,6 +2,10 @@ package com.fioritech.demo.bussines.controller;
 
 import com.fioritech.demo.bussines.domain.Proveedor;
 import com.fioritech.demo.bussines.logic.service.ProveedorService;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,5 +58,21 @@ public class ProveedorController {
     public String eliminarProveedor(@PathVariable Long id) {
         proveedorService.eliminarProveedor(id);
         return "redirect:/proveedor/listar";
+    }
+
+    @GetMapping("/exportar")
+    public ResponseEntity<byte[]> exportarProveedores() {
+        byte[] contenido = proveedorService.exportarProveedoresPdf();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "proveedores.pdf");
+        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentLength(contenido.length)
+                .body(contenido);
     }
 }
