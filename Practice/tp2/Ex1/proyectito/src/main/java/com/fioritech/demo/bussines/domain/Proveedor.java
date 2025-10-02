@@ -7,6 +7,10 @@ public class Proveedor extends Persona{
 
     private String cuit;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "direccion_id")
+    private Direccion direccion;
+
     public Proveedor() {}
 
     public Proveedor(String cuit) {
@@ -20,6 +24,14 @@ public class Proveedor extends Persona{
 
     public void setCuit(String cuit) {
         this.cuit = cuit;
+    }
+
+    public Direccion getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(Direccion direccion) {
+        this.direccion = direccion;
     }
 
 }
