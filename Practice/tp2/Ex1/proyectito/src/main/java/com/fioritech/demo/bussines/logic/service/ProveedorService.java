@@ -43,7 +43,10 @@ public class ProveedorService {
         proveedor.setTelefono(proveedor.getTelefono().trim());
         proveedor.setCorreo(proveedor.getCorreo().trim());
         proveedor.setCuit(proveedor.getCuit().trim());
-        Direccion direccion = direccionService.buscarDireccionPorId(proveedor.getDireccion().getId());
+        if (proveedor.getDireccion() == null) {
+            throw new BusinessException("La dirección es obligatoria");
+        }
+        Direccion direccion = direccionService.crearDireccion(proveedor.getDireccion());
         proveedor.setDireccion(direccion);
         proveedor.setEliminado(false);
         return proveedorRepository.save(proveedor);
@@ -57,9 +60,16 @@ public class ProveedorService {
         existente.setTelefono(cambios.getTelefono().trim());
         existente.setCorreo(cambios.getCorreo().trim());
         existente.setCuit(cambios.getCuit().trim());
-
-        Direccion direccion = direccionService.buscarDireccionPorId(cambios.getDireccion().getId());
-        existente.setDireccion(direccion);
+        if (cambios.getDireccion() == null) {
+            throw new BusinessException("La dirección es obligatoria");
+        }
+        Direccion direccionActualizada;
+        if (cambios.getDireccion().getId() == null) {
+            direccionActualizada = direccionService.crearDireccion(cambios.getDireccion());
+        } else {
+            direccionActualizada = direccionService.modificarDireccion(cambios.getDireccion().getId(), cambios.getDireccion());
+        }
+        existente.setDireccion(direccionActualizada);
         return proveedorRepository.save(existente);
     }
 
@@ -173,7 +183,9 @@ public class ProveedorService {
         if (ValidationUtils.isBlank(proveedor.getCuit())) {
             throw new BusinessException("El CUIT es obligatorio");
         }
-        if (proveedor.getDireccion() == null || proveedor.getDireccion().getId() == null) {
+        if (proveedor.getDireccion() == null
+                || proveedor.getDireccion().getLocalidad() == null
+                || proveedor.getDireccion().getLocalidad().getId() == null) {
             throw new BusinessException("La dirección es obligatoria");
         }
     }

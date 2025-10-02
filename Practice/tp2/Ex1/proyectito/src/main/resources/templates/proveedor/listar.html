@@ -74,7 +74,7 @@
               <table class="table table-bordered table-hover">
                 <thead class="thead-light">
                   <tr>
-                    <th style="width: 180px;">Acciones</th>
+                    <th style="width: 240px;">Acciones</th>
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
@@ -90,12 +90,18 @@
                   </tr>
                   <tr th:each="proveedor : ${proveedores}">
                     <td>
-                      <a th:href="@{/proveedor/modificar/{id}(id=${proveedor.id})}" class="btn btn-warning btn-sm" title="Modificar">
-                        <i class="fas fa-pencil-alt"></i>
-                      </a>
-                      <a th:href="@{/proveedor/eliminar/{id}(id=${proveedor.id})}" class="btn btn-danger btn-sm" title="Eliminar">
-                        <i class="fas fa-trash"></i>
-                      </a>
+                      <div class="btn-group btn-group-sm" role="group">
+                        <a th:href="@{/proveedor/modificar/{id}(id=${proveedor.id})}" class="btn btn-warning" title="Modificar">
+                          <i class="fas fa-pencil-alt"></i>
+                        </a>
+                        <a th:href="@{/proveedor/eliminar/{id}(id=${proveedor.id})}" class="btn btn-danger" title="Eliminar">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                        <a th:if="${proveedor.direccion != null}" th:href="@{/proveedor/mapa/{id}(id=${proveedor.direccion.id})}"
+                           class="btn btn-info" title="Ver ubicación" target="_blank">
+                          <i class="fas fa-map-marker-alt"></i> Ubicación
+                        </a>
+                      </div>
                     </td>
                     <td th:text="${proveedor.id}"></td>
                     <td th:text="${proveedor.nombre}"></td>

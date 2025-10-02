@@ -66,6 +66,108 @@
                   <input type="text" th:field="*{razonSocial}" class="form-control form-control-user" required>
                 </div>
 
+                <div class="border rounded p-3 mb-3"
+                     th:with="dir=*{direccion},
+                               loc=${dir == null ? null : dir.localidad},
+                               dep=${loc == null ? null : loc.departamento},
+                               prov=${dep == null ? null : dep.provincia},
+                               pais=${prov == null ? null : prov.pais}">
+                  <h5 class="font-weight-bold mb-3">Datos de la dirección</h5>
+
+                  <input type="hidden" th:field="*{direccion.id}">
+
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Calle</label>
+                      <input type="text" th:field="*{direccion.calle}" class="form-control" placeholder="Calle" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Numeración</label>
+                      <input type="text" th:field="*{direccion.numeracion}" class="form-control" placeholder="Número" required>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Barrio</label>
+                      <input type="text" th:field="*{direccion.barrio}" class="form-control" placeholder="Barrio">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Manzana</label>
+                      <input type="text" th:field="*{direccion.manzana}" class="form-control" placeholder="Manzana">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Casa / Departamento</label>
+                      <input type="text" th:field="*{direccion.casaDepartamento}" class="form-control" placeholder="Casa / Departamento">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Referencia</label>
+                      <input type="text" th:field="*{direccion.referencia}" class="form-control" placeholder="Referencia">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Latitud</label>
+                      <input type="text" th:field="*{direccion.latitud}" class="form-control" placeholder="Latitud">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Longitud</label>
+                      <input type="text" th:field="*{direccion.longitud}" class="form-control" placeholder="Longitud">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="font-weight-bold">País</label>
+                    <select id="paisSelect" th:field="*{direccion.localidad.departamento.provincia.pais.id}" class="form-control" required>
+                      <option value="" disabled th:selected="${pais == null}">Seleccioná un país</option>
+                      <option th:each="pais : ${paises}"
+                              th:value="${pais.id}"
+                              th:text="${pais.nombre}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="font-weight-bold">Provincia</label>
+                    <select id="provinciaSelect" th:field="*{direccion.localidad.departamento.provincia.id}" class="form-control" required>
+                      <option value="" disabled th:selected="${prov == null}">Seleccioná una provincia</option>
+                      <option th:each="prov : ${provincias}"
+                              th:value="${prov.id}"
+                              th:data-pais="${prov.pais.id}"
+                              th:text="${prov.nombre}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="font-weight-bold">Departamento</label>
+                    <select id="departamentoSelect" th:field="*{direccion.localidad.departamento.id}" class="form-control" required>
+                      <option value="" disabled th:selected="${dep == null}">Seleccioná un departamento</option>
+                      <option th:each="dep : ${departamentos}"
+                              th:value="${dep.id}"
+                              th:data-provincia="${dep.provincia.id}"
+                              th:text="${dep.nombre}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="font-weight-bold">Localidad</label>
+                    <select id="localidadSelect" th:field="*{direccion.localidad.id}" class="form-control" required>
+                      <option value="" disabled th:selected="${loc == null}">Seleccioná una localidad</option>
+                      <option th:each="loc : ${localidades}"
+                              th:value="${loc.id}"
+                              th:data-departamento="${loc.departamento.id}"
+                              th:text="|${loc.nombre} (${loc.codPostal})|">
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
                 <div class="d-flex justify-content-between">
                   <button type="submit" class="btn btn-success">
                     <i class="fas fa-save"></i> Guardar cambios
@@ -100,6 +202,56 @@
       });
     });
   })(jQuery);
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const paisSelect = document.getElementById('paisSelect');
+    const provinciaSelect = document.getElementById('provinciaSelect');
+    const departamentoSelect = document.getElementById('departamentoSelect');
+    const localidadSelect = document.getElementById('localidadSelect');
+
+    if (!paisSelect || !provinciaSelect || !departamentoSelect || !localidadSelect) {
+      return;
+    }
+
+    const filterByParent = (parentValue, select, datasetKey) => {
+      let keepCurrent = false;
+      Array.from(select.options).forEach(option => {
+        if (!option.value) {
+          option.hidden = false;
+          return;
+        }
+        const matches = !parentValue || option.dataset[datasetKey] === parentValue;
+        option.hidden = !matches;
+        if (matches && option.value === select.value) {
+          keepCurrent = true;
+        }
+      });
+
+      if (!keepCurrent && select.value) {
+        select.value = '';
+      }
+    };
+
+    const handlePaisChange = () => {
+      filterByParent(paisSelect.value, provinciaSelect, 'pais');
+      handleProvinciaChange();
+    };
+
+    const handleProvinciaChange = () => {
+      filterByParent(provinciaSelect.value, departamentoSelect, 'provincia');
+      handleDepartamentoChange();
+    };
+
+    const handleDepartamentoChange = () => {
+      filterByParent(departamentoSelect.value, localidadSelect, 'departamento');
+    };
+
+    paisSelect.addEventListener('change', handlePaisChange);
+    provinciaSelect.addEventListener('change', handleProvinciaChange);
+    departamentoSelect.addEventListener('change', handleDepartamentoChange);
+
+    handlePaisChange();
+  });
 </script>
 </body>
 </html>
