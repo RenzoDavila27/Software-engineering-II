@@ -55,7 +55,7 @@ public class LocalidadController {
     @GetMapping("/modificarForm/{id}")
     public String modificarLocalidadForm(@PathVariable Long id, Model model) {
         model.addAttribute("localidad", localidadService.buscarLocalidadPorId(id));
-        model.addAttribute("departamentos", departamentoService.listarDepartamentos());
+        model.addAttribute("listaDepartamento", departamentoService.listarDepartamentos());
         model.addAttribute("listaProvincia", provinciaService.listarProvincias());
           model.addAttribute("listaPais", paisService.listarPaises());
         return "direccion/localidad/editarLocalidad";

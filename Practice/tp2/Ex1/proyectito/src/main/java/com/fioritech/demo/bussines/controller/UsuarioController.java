@@ -26,7 +26,7 @@ public class UsuarioController {
     @GetMapping("/usuario/listar")
     public String listarUsuarios(Model model) {
         model.addAttribute("listaUsuario", usuarioService.listarUsuarios());
-        return "usuario/listar";
+        return "usuario/listarUsuario";
     }
 
     @GetMapping("/usuario/crearForm")
@@ -44,12 +44,18 @@ public class UsuarioController {
     @GetMapping("/usuario/modificarForm/{id}")
     public String modificarUsuarioForm(@PathVariable Long id, Model model) {
         model.addAttribute("usuario", usuarioService.buscarUsuarioPorId(id));
-        return "usuario/modificar";
+        return "usuario/modificarUsuario";
     }
 
     @PostMapping("/usuario/modificar/{id}")
     public String modificarUsuario(@PathVariable Long id, @ModelAttribute Usuario cambios) {
         usuarioService.modificarUsuario(id, cambios);
+        return "redirect:/usuario/listar";
+    }
+
+    @PostMapping("/usuario/modificarClave")
+    public String modificarClave(@RequestParam("cuenta")String cuenta, @RequestParam("clave")String clave, @RequestParam("clavenueva")String clavenueva) {
+        usuarioService.modificarClave(cuenta,clave,clavenueva);
         return "redirect:/usuario/listar";
     }
 
@@ -78,10 +84,21 @@ public class UsuarioController {
 		}
 
 	}
+    @GetMapping("/usuario/cambiarClaveUsuario")
+    public String cambiarClaveUsuarioForm() {
+        return "usuario/cambioClaveUsuario";
+    }
 
     @GetMapping("/usuario/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "login";
     }
+
+    @GetMapping("/usuario/volverEdit")
+    public String volver() {
+        return "redirect:/usuario/listar";
+    }
+
+
 }

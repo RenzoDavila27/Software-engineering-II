@@ -75,7 +75,7 @@
 
         <div class="card shadow mb-4">
           <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Lista de Localidades</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Localidades Registradas</h6>
             <a th:href="@{/localidad/crearForm}" class="btn btn-primary btn-sm">
               <i class="fas fa-plus"></i> Nueva Localidad
             </a>
@@ -93,6 +93,7 @@
                   <tr>
                     <th>Acciones</th>
                     <th>Nombre</th>
+                    <th>Codigo Postal</th>
                     <th>Departamento</th>
                     <th>Provincia</th>
                     <th>Pais</th>
@@ -105,6 +106,7 @@
                         data-toggle="modal" 
                         data-target="#verLocalidadModal"
                         th:data-nombre="${localidad.nombre}"
+                        th:data-codigopostal="${localidad.codPostal}"
                         th:data-departamento="${localidad.departamento?.nombre}"
                         th:data-provincia="${localidad.departamento?.provincia?.nombre}"
                         th:data-pais="${localidad.departamento?.provincia?.pais?.nombre}">
@@ -118,6 +120,7 @@
                       </a>
                     </td>
                     <td th:text="${localidad.nombre}"></td>
+                    <td th:text="${localidad.codPostal}"></td>
                     <td th:text="${localidad.departamento?.nombre}"></td>
                     <td th:text="${localidad.departamento?.provincia?.nombre}"></td>
                     <td th:text="${localidad.departamento?.provincia?.pais.nombre}"></td>
@@ -153,6 +156,10 @@
           <div class="form-group">
             <label>Nombre</label>
             <input type="text" id="localidadNombre" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Codigo Postal</label>
+            <input type="text" id="localidadCodPostal" class="form-control" readonly>
           </div>
           <div class="form-group">
             <label>Departamento</label>
@@ -203,6 +210,7 @@
   $('#verLocalidadModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Botón que disparó el modal
     var nombre = button.data('nombre');
+    var codigopostal = button.data('codigopostal');
     var pais = button.data('pais');
     var provincia = button.data('provincia');
     var departamento = button.data('departamento');
@@ -212,6 +220,7 @@
     modal.find('#localidadProvincia').val(provincia);
     modal.find('#localidadDepartamento').val(pais);
      modal.find('#localidadPais').val(pais);
+     modal.find('#localidadCodPostal').val(codigopostal);
   });
 </script>
 

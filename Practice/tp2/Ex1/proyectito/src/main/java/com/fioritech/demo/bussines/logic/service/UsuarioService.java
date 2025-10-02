@@ -122,4 +122,24 @@ public class UsuarioService {
             throw new BusinessException("Error de Sistemas");
         }
     }
+
+    public void modificarClave(String cuenta, String clave, String clavenueva) {
+        try {
+            Usuario usuario = usuarioRepository.findByCuenta(cuenta).orElse(null);
+            if (usuario == null) {
+                throw new BusinessException("No existe la cuenta indicada");
+            }
+            if (usuario.getClave().equals(clave)) {
+                usuario.setClave(clavenueva);
+                usuarioRepository.save(usuario);
+            } else {
+                throw new BusinessException("La clave actual no coincide");
+            }
+        } catch (BusinessException e) {
+            throw e; // se relanza tal cual
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new BusinessException("Error de Sistemas");
+        }
+    }
 }
