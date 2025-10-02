@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Collection;
-
 @Controller
 @RequestMapping("/empresa")
 public class EmpresaController {
@@ -64,6 +62,29 @@ public class EmpresaController {
     public String eliminarEmpresa(@PathVariable Long id) {
         empresaService.eliminarEmpresa(id);
         return "redirect:/empresa/listar";
+    }
+
+    @GetMapping("/exportar")
+    public ResponseEntity<byte[]> exportarEmpresas() {
+        byte[] contenido = empresaService.exportarEmpresasExcel();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "empresas.xlsx");
+        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentLength(contenido.length)
+                .body(contenido);
+    }
+    @GetMapping("/mapa/{direccionId}")
+    public String verMapaDireccion(@PathVariable Long direccionId) {
+        return direccionService.obtenerLinkGoogleMaps(direccionId)
+                .map(url -> "redirect:" + url)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La direccion no tiene coordenadas disponibles"));
     }
 
     @GetMapping("/exportar")
