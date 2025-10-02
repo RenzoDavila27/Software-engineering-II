@@ -61,6 +61,22 @@ public class EmpresaController {
         return "redirect:/empresa/listar";
     }
 
+    @GetMapping("/exportar")
+    public ResponseEntity<byte[]> exportarEmpresas() {
+        byte[] contenido = empresaService.exportarEmpresasExcel();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "empresas.xlsx");
+        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentLength(contenido.length)
+                .body(contenido);
+    }
     @GetMapping("/mapa/{direccionId}")
     public String verMapaDireccion(@PathVariable Long direccionId) {
         return direccionService.obtenerLinkGoogleMaps(direccionId)

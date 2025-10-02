@@ -67,4 +67,10 @@ public class ProveedorController {
                 .map(url -> "redirect:" + url)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La direccion no tiene coordenadas disponibles"));
     }
+    @GetMapping("/mapa/{direccionId}")
+    public String verMapaDireccion(@PathVariable Long direccionId) {
+        return direccionService.obtenerLinkGoogleMaps(direccionId)
+                .map(url -> "redirect:" + url)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La direccion no tiene coordenadas disponibles"));
+    }
 }
