@@ -22,6 +22,8 @@ public class Direccion {
     private String manzana;
     private String casaDepartamento;
     private String referencia;
+    private String latitud;
+    private String longitud;
 
     @Column(nullable = false)
     private boolean eliminado = false;
@@ -38,6 +40,8 @@ public class Direccion {
                      String manzana,
                      String casaDepartamento,
                      String referencia,
+                     String latitud,
+                     String longitud,
                      Localidad localidad) {
         this.calle = calle;
         this.numeracion = numeracion;
@@ -45,6 +49,8 @@ public class Direccion {
         this.manzana = manzana;
         this.casaDepartamento = casaDepartamento;
         this.referencia = referencia;
+        this.latitud = latitud;
+        this.longitud = longitud;
         this.localidad = localidad;
     }
 
@@ -102,6 +108,22 @@ public class Direccion {
 
     public void setReferencia(String referencia) {
         this.referencia = referencia;
+    }
+
+    public String getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(String latitud) {
+        this.latitud = latitud;
+    }
+
+    public String getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(String longitud) {
+        this.longitud = longitud;
     }
 
     public boolean isEliminado() {
