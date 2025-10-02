@@ -1,5 +1,6 @@
 package com.fioritech.demo.bussines.logic.service;
 
+import com.fioritech.demo.bussines.domain.Direccion;
 import com.fioritech.demo.bussines.domain.Empresa;
 import com.fioritech.demo.bussines.logic.exception.BusinessException;
 import com.fioritech.demo.bussines.logic.util.ValidationUtils;
@@ -21,9 +22,12 @@ import java.util.Collection;
 public class EmpresaService {
 
     private final EmpresaRepository empresaRepository;
+    private final DireccionService direccionService;
 
-    public EmpresaService(EmpresaRepository empresaRepository) {
+    public EmpresaService(EmpresaRepository empresaRepository,
+                          DireccionService direccionService) {
         this.empresaRepository = empresaRepository;
+        this.direccionService = direccionService;
     }
 
     public Empresa crearEmpresa(Empresa empresa) {
@@ -31,6 +35,8 @@ public class EmpresaService {
         if (empresa.getId() != null) {
             throw new BusinessException("La empresa ya tiene un id asignado");
         }
+        Direccion direccion = direccionService.buscarDireccionPorId(empresa.getDireccion().getId());
+        empresa.setDireccion(direccion);
         empresa.setRazonSocial(empresa.getRazonSocial().trim());
         empresa.setEliminado(false);
         return empresaRepository.save(empresa);
@@ -39,6 +45,8 @@ public class EmpresaService {
     public Empresa modificarEmpresa(Long id, Empresa cambios) {
         Empresa existente = obtenerEmpresaActiva(id);
         verificarAtributos(cambios);
+        Direccion direccion = direccionService.buscarDireccionPorId(cambios.getDireccion().getId());
+        existente.setDireccion(direccion);
         existente.setRazonSocial(cambios.getRazonSocial().trim());
         return empresaRepository.save(existente);
     }
@@ -94,6 +102,9 @@ public class EmpresaService {
         }
         if (ValidationUtils.isBlank(empresa.getRazonSocial())) {
             throw new BusinessException("La razon social es obligatoria");
+        }
+        if (empresa.getDireccion() == null || empresa.getDireccion().getId() == null) {
+            throw new BusinessException("La empresa debe tener una direccion asociada");
         }
     }
 
