@@ -44,12 +44,12 @@
             <a th:href="@{/promocion/listar}" class="btn btn-link">Volver</a>
           </div>
           <div class="card-body">
-            <p class="text-muted" th:text="${esSaludo} ? 'Este saludo se enviara el 31 de diciembre a los proveedores activos.' : 'Completa los datos y el sistema enviara la promocion cada noche a las 22:35.'"></p>
+            <p class="text-muted" th:text="${esSaludo} ? 'Este saludo se enviara el 31 de diciembre a los proveedores activos.' : 'Completa los datos y el sistema enviara la promocion todos los 5 de cada mes.'"></p>
             <form th:action="@{/promocion/crear}" th:object="${promocion}" method="post">
               <input type="hidden" th:field="*{tipo}">
               <div class="form-group">
                 <label for="titulo">Titulo</label>
-                <input id="titulo" type="text" th:field="*{titulo}" class="form-control" placeholder="Promocion verano..." required>
+                <input id="titulo" type="text" th:field="*{titulo}" class="form-control" required>
               </div>
               <div class="form-group">
                 <label for="contenido">Contenido del correo</label>
@@ -59,7 +59,7 @@
                 Este saludo se enviara automaticamente el 31 de diciembre a todos los proveedores activos.
               </div>
               <div th:if="${!esSaludo}" class="alert alert-info">
-                Esta promocion se enviara automaticamente todos los dias a las 22:35 a los usuarios activos.
+                Esta promocion se enviara automaticamente el 5 de cada mes a los usuarios activos.
               </div>
               <div class="d-flex justify-content-end">
                 <a th:href="@{/promocion/listar}" class="btn btn-outline-secondary mr-2">Cancelar</a>

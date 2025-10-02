@@ -44,7 +44,7 @@
             <a th:href="@{/promocion/listar}" class="btn btn-link">Volver</a>
           </div>
           <div class="card-body">
-            <p class="text-muted" th:text="${esSaludo} ? 'Actualiza el mensaje que recibiran los proveedores el 31 de diciembre.' : 'Actualiza el contenido que se enviara diariamente a los usuarios.'"></p>
+            <p class="text-muted" th:text="${esSaludo} ? 'Actualiza el mensaje que recibiran los proveedores el 31 de diciembre.' : 'Actualiza el contenido que se enviara mensualmente a los usuarios.'"></p>
             <form th:action="@{/promocion/modificar/{id}(id=${promocion.id})}" th:object="${promocion}" method="post">
               <input type="hidden" th:field="*{tipo}">
               <div class="form-group">
@@ -59,7 +59,7 @@
                 Recorda que este mensaje se envia el 31 de diciembre a los proveedores activos.
               </div>
               <div th:if="${!esSaludo}" class="alert alert-info">
-                Esta promocion se envia diariamente a las 22:35 a los usuarios activos.
+                Esta promocion se envia todos los 5 de cada mes a los usuarios activos.
               </div>
               <div class="d-flex justify-content-end">
                 <a th:href="@{/promocion/listar}" class="btn btn-outline-secondary mr-2">Cancelar</a>
