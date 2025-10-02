@@ -1,0 +1,136 @@
+<!-- src/main/resources/templates/usuario/crear.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro de Usuario</title>
+
+  <!-- Bootstrap 4 (SB Admin 2 uses Bootstrap 4) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Small CSS to reproduce SB Admin 2 sidebar behavior/looks -->
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --sidebar-collapsed: 80px;
+      --primary-start: #4e73df;
+      --primary-end: #224abe;
+    }
+
+    body { font-family: "Nunito", "Segoe UI", Roboto, Arial, sans-serif; }
+
+    /* sidebar */
+    .sidebar { list-style: none; margin: 0; padding: 0; position: fixed; top: 0; left: 0; height: 100vh;
+               width: var(--sidebar-width); transition: width .2s ease; z-index: 1000; }
+    .bg-gradient-primary {
+      background: linear-gradient(180deg, var(--primary-start) 10%, var(--primary-end) 100%) !important;
+    }
+    .sidebar .nav-link { color: rgba(255,255,255,.95); padding: .75rem 1rem; display:flex; align-items:center; }
+    .sidebar .nav-link .fas { width: 22px; margin-right: .75rem; }
+    .sidebar .sidebar-brand { height: 4.5rem; padding: 1rem; color: white; text-decoration: none; display:flex; align-items:center; }
+    .sidebar .collapse-inner { background: #fff; }
+    .sidebar .collapse-item { color: #3a3b45; display:block; padding:.5rem 1rem; text-decoration:none; }
+    .sidebar-divider { border-top: 1px solid rgba(255,255,255,.15); margin: .5rem 0; }
+
+    /* wrapper/content */
+    #wrapper.toggled .sidebar { width: var(--sidebar-collapsed); }
+    #wrapper { display:flex; align-items:stretch; min-height:100vh; transition:margin-left .2s ease; }
+    #content-wrapper { margin-left: var(--sidebar-width); width: 100%; transition: margin-left .2s ease; }
+    #wrapper.toggled #content-wrapper { margin-left: var(--sidebar-collapsed); }
+
+    /* adjust brand small rotated icon */
+    .rotate-n-15 { transform: rotate(-15deg); display:inline-block; }
+
+    /* card center */
+    .register-card { margin: 4rem auto; }
+    .form-control-user { border-radius: .35rem; padding: .75rem 1rem; }
+
+    /* small responsive tweaks */
+    @media (max-width: 768px) {
+      .sidebar { left: -100%; position: fixed; }
+      #wrapper.toggled .sidebar { left: 0; }
+      #content-wrapper { margin-left: 0; }
+    }
+  </style>
+</head>
+<body id="page-top">
+
+<div id="wrapper">
+
+  <!-- sidebar fragment -->
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <!-- content -->
+  <div id="content-wrapper" class="d-flex flex-column">
+
+    <div id="content">
+
+      <!-- topbar fragment -->
+      <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+      <!-- Page Content -->
+      <div class="container-fluid">
+        <div class="d-flex justify-content-center align-items-start" style="padding-top: 40px;">
+          <div class="card o-hidden border-0 shadow-lg register-card" style="max-width: 700px; width: 100%;">
+            <div class="card-body p-0">
+              <div class="row">
+                <div class="col-lg-5 d-none d-lg-block bg-register-image" style="background-image:url('https://source.unsplash.com/collection/190727/600x800'); background-size:cover;"></div>
+                <div class="col-lg-7">
+                  <div class="p-5">
+                    <div class="text-center mb-4">
+                      <h1 class="h4 text-gray-900">Crear un Pais</h1>
+                    </div>
+
+                    <form th:action="@{/pais/crear}" th:object="${pais}" method="post" class="pais">
+
+                      <div class="form-group row">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                          <input type="text" th:field="*{nombre}" class="form-control form-control-user" placeholder="Nombre" required>
+                        </div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary btn-user btn-block">Agregar</button>
+                       <a th:href="@{/pais/volverEdit}" class="btn btn-primary" title="Volver">
+                        
+                    </form>
+
+                    <hr>
+               
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- /.container-fluid -->
+
+    </div> <!-- /#content -->
+
+  </div> <!-- /#content-wrapper -->
+
+</div> <!-- /#wrapper -->
+
+<!-- SCRIPTS (jQuery, Popper, Bootstrap JS) -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+<!-- Tiny JS: sidebar toggle (SB Admin behavior) -->
+<script>
+  (function($){
+    $(document).ready(function(){
+      // toggle sidebar (button in sidebar fragment)
+      $('#sidebarToggle, #sidebarToggleTop').on('click', function(e){
+        e.preventDefault();
+        $('#wrapper').toggleClass('toggled');
+      });
+
+      // ensure collapse arrows work (Bootstrap 4 collapse handles the rest)
+    });
+  })(jQuery);
+</script>
+</body>
+</html>

@@ -7,8 +7,11 @@ import com.fioritech.demo.bussines.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -17,7 +20,7 @@ public class UsuarioService {
     private final PersonaService personaService;
     private final UsuarioRepository usuarioRepository;
 
-    public UsuarioService(PersonaService personaService, UsuarioRepository usuarioRepository) {
+    public UsuarioService(PersonaService personaService, UsuarioRepository usuarioRepository) throws BusinessException {
         this.personaService = personaService;
         this.usuarioRepository = usuarioRepository;
     }
@@ -82,5 +85,41 @@ public class UsuarioService {
             throw new BusinessException("El usuario con id " + id + " esta eliminado");
         }
         return usuario;
+    }
+
+    public Usuario login(String cuenta, String clave) {
+        try {
+            if (cuenta == null || cuenta.trim().isEmpty()) {
+                throw new BusinessException("Debe indicar la cuenta");
+            }
+
+            if (clave == null || clave.trim().isEmpty()) {
+                throw new BusinessException("Debe indicar la clave");
+            }
+
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByCuenta(cuenta);
+
+            if (usuarioOpt.isEmpty()) {
+                throw new BusinessException("No existe usuario para la cuenta indicada");
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            if (usuario.isEliminado()) {
+                throw new BusinessException("El usuario está eliminado");
+            }
+
+            if (!usuario.getClave().equals(clave)) {
+                throw new BusinessException("La clave es incorrecta");
+            }
+
+            return usuario;
+
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BusinessException("Error de Sistemas");
+        }
     }
 }

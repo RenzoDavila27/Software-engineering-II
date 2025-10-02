@@ -55,4 +55,8 @@ public class PaisController {
         paisService.eliminarPais(id);
         return "redirect:/pais/listar";
     }
+    @GetMapping("/volverEdit")
+    public String volver() {
+        return "redirect:/pais/listar";
+    }
 }
