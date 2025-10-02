@@ -1,6 +1,8 @@
 package com.fioritech.demo.bussines.controller;
 
+import com.fioritech.demo.bussines.domain.Direccion;
 import com.fioritech.demo.bussines.domain.Proveedor;
+import com.fioritech.demo.bussines.logic.service.DireccionService;
 import com.fioritech.demo.bussines.logic.service.ProveedorService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -14,14 +16,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Collection;
+
 @Controller
 @RequestMapping("/proveedor")
 public class ProveedorController {
 
     private final ProveedorService proveedorService;
+    private final DireccionService direccionService;
 
-    public ProveedorController(ProveedorService proveedorService) {
+    public ProveedorController(ProveedorService proveedorService, DireccionService direccionService) {
         this.proveedorService = proveedorService;
+        this.direccionService = direccionService;
     }
 
     @GetMapping("/listar")
@@ -74,5 +80,10 @@ public class ProveedorController {
                 .headers(headers)
                 .contentLength(contenido.length)
                 .body(contenido);
+    }
+
+    @ModelAttribute("direcciones")
+    public Collection<Direccion> cargarDirecciones() {
+        return direccionService.listarDirecciones();
     }
 }

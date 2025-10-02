@@ -7,7 +7,7 @@ public class Proveedor extends Persona{
 
     private String cuit;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "direccion_id")
     private Direccion direccion;
 

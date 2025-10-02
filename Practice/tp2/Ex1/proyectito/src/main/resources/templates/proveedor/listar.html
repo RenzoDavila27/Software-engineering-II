@@ -81,11 +81,12 @@
                     <th>Teléfono</th>
                     <th>Correo</th>
                     <th>CUIT</th>
+                    <th>Dirección</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr th:if="${#lists.isEmpty(proveedores)}">
-                    <td colspan="7" class="text-center text-muted">No hay proveedores registrados.</td>
+                    <td colspan="8" class="text-center text-muted">No hay proveedores registrados.</td>
                   </tr>
                   <tr th:each="proveedor : ${proveedores}">
                     <td>
@@ -102,6 +103,7 @@
                     <td th:text="${proveedor.telefono}"></td>
                     <td th:text="${proveedor.correo}"></td>
                     <td th:text="${proveedor.cuit}"></td>
+                    <td th:text="${proveedor.direccion == null ? '' : proveedor.direccion.calle + ' ' + proveedor.direccion.numeracion + ' - ' + proveedor.direccion.localidad?.nombre}"></td>
                   </tr>
                 </tbody>
               </table>

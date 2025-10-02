@@ -1,5 +1,6 @@
 package com.fioritech.demo.bussines.logic.service;
 
+import com.fioritech.demo.bussines.domain.Direccion;
 import com.fioritech.demo.bussines.domain.Proveedor;
 import com.fioritech.demo.bussines.logic.exception.BusinessException;
 import com.fioritech.demo.bussines.logic.util.ValidationUtils;
@@ -21,10 +22,14 @@ import java.util.Collection;
 public class ProveedorService {
 
     private final PersonaService personaService;
+    private final DireccionService direccionService;
     private final ProveedorRepository proveedorRepository;
 
-    public ProveedorService(PersonaService personaService, ProveedorRepository proveedorRepository) {
+    public ProveedorService(PersonaService personaService,
+                            DireccionService direccionService,
+                            ProveedorRepository proveedorRepository) {
         this.personaService = personaService;
+        this.direccionService = direccionService;
         this.proveedorRepository = proveedorRepository;
     }
 
@@ -38,6 +43,8 @@ public class ProveedorService {
         proveedor.setTelefono(proveedor.getTelefono().trim());
         proveedor.setCorreo(proveedor.getCorreo().trim());
         proveedor.setCuit(proveedor.getCuit().trim());
+        Direccion direccion = direccionService.buscarDireccionPorId(proveedor.getDireccion().getId());
+        proveedor.setDireccion(direccion);
         proveedor.setEliminado(false);
         return proveedorRepository.save(proveedor);
     }
@@ -50,6 +57,9 @@ public class ProveedorService {
         existente.setTelefono(cambios.getTelefono().trim());
         existente.setCorreo(cambios.getCorreo().trim());
         existente.setCuit(cambios.getCuit().trim());
+
+        Direccion direccion = direccionService.buscarDireccionPorId(cambios.getDireccion().getId());
+        existente.setDireccion(direccion);
         return proveedorRepository.save(existente);
     }
 
@@ -162,6 +172,9 @@ public class ProveedorService {
         personaService.verificarAtributos(proveedor);
         if (ValidationUtils.isBlank(proveedor.getCuit())) {
             throw new BusinessException("El CUIT es obligatorio");
+        }
+        if (proveedor.getDireccion() == null || proveedor.getDireccion().getId() == null) {
+            throw new BusinessException("La dirección es obligatoria");
         }
     }
 

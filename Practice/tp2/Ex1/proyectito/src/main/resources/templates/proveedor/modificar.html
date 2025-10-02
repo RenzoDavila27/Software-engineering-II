@@ -81,9 +81,24 @@
                   <label class="font-weight-bold">CUIT</label>
                   <input type="text" th:field="*{cuit}" class="form-control form-control-user" required>
                 </div>
+                <div class="alert alert-info" th:if="${#lists.isEmpty(direcciones)}">
+                  No hay direcciones disponibles. Debe crear una dirección antes de asociarla al proveedor.
+                </div>
+
+                <div class="form-group">
+                  <label class="font-weight-bold">Dirección</label>
+                  <select th:field="*{direccion.id}" class="form-control" required th:disabled="${#lists.isEmpty(direcciones)}">
+                    <option value="" disabled>Seleccione una dirección</option>
+                    <option th:each="direccion : ${direcciones}"
+                            th:value="${direccion.id}"
+                            th:text="${direccion.calle + ' ' + direccion.numeracion + ' - ' + direccion.localidad?.nombre}"
+                            th:selected="${direccion.id == proveedor.direccion?.id}">
+                    </option>
+                  </select>
+                </div>
 
                 <div class="d-flex justify-content-between">
-                  <button type="submit" class="btn btn-success">
+                  <button type="submit" class="btn btn-success" th:disabled="${#lists.isEmpty(direcciones)}">
                     <i class="fas fa-save"></i> Guardar cambios
                   </button>
                   <a th:href="@{/proveedor/listar}" class="btn btn-secondary">
