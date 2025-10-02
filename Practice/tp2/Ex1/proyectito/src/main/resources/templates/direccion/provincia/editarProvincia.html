@@ -1,10 +1,9 @@
-<!-- src/main/resources/templates/pais/crear.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Alta de País</title>
+  <title>Editar Provincia</title>
 
   <!-- Bootstrap 4 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
@@ -65,14 +64,24 @@
             <div class="card-body p-5">
 
               <div class="text-center mb-4">
-                <h1 class="h4 text-gray-900">Alta de País</h1>
+                <h1 class="h4 text-gray-900">Editar Provincia</h1>
               </div>
 
-              <form th:action="@{/pais/crear}" th:object="${pais}" method="post" class="pais">
+              <form th:action="@{/provincia/modificar/{id} (id=${provincia.id})}" th:object="${provincia}" method="post" class="provincia">
+
+                <input type="hidden" name="id" th:field="*{id}">
 
                 <div class="form-group">
                   <input type="text" th:field="*{nombre}" class="form-control form-control-user"
-                         placeholder="Nombre del país" required>
+                         placeholder="Nombre de la Provincia" required>
+                </div>
+                <div class="form-group">
+                  <select th:field="*{pais.id}" class="form-control">
+                        <option th:each="pais : ${listaPais}" 
+                            th:value="${pais.id}" 
+                            th:text="${pais.nombre}">
+                        </option>
+                    </select>
                 </div>
 
                 <!-- Botones alineados -->
@@ -80,7 +89,7 @@
                   <button type="submit" class="btn btn-success">
                     <i class="fas fa-check"></i> Aceptar
                   </button>
-                  <a th:href="@{/pais/volverEdit}" class="btn btn-secondary">
+                  <a th:href="@{/provincia/volverEdit}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Volver
                   </a>
                 </div>

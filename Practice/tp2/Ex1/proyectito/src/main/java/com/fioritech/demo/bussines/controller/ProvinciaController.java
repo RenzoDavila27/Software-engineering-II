@@ -25,28 +25,28 @@ public class ProvinciaController {
 
     @GetMapping("/listar")
     public String listarProvincias(Model model) {
-        model.addAttribute("provincias", provinciaService.listarProvincias());
-        return "provincia/listar";
+        model.addAttribute("listaProvincia", provinciaService.listarProvincias());
+        return "direccion/provincia/listarProvincia";
     }
 
     @GetMapping("/crear")
-    public String crearProvinciaForm(Model model) {
+    public String crearProvincia(Model model) {
         model.addAttribute("provincia", new Provincia());
-        model.addAttribute("paises", paisService.listarPaises());
-        return "provincia/crear";
+        model.addAttribute("listaPais", paisService.listarPaises());
+        return "direccion/provincia/crearProvincia";
     }
 
-    @PostMapping("/crear")
+    @PostMapping("/crearForm")
     public String crearProvincia(@ModelAttribute Provincia provincia) {
         provinciaService.crearProvincia(provincia);
         return "redirect:/provincia/listar";
     }
 
-    @GetMapping("/modificar/{id}")
+    @GetMapping("/modificarForm/{id}")
     public String modificarProvinciaForm(@PathVariable Long id, Model model) {
         model.addAttribute("provincia", provinciaService.buscarProvinciaPorId(id));
-        model.addAttribute("paises", paisService.listarPaises());
-        return "provincia/modificar";
+        model.addAttribute("listaPais", paisService.listarPaises());
+        return "direccion/provincia/editarProvincia";
     }
 
     @PostMapping("/modificar/{id}")
@@ -58,6 +58,11 @@ public class ProvinciaController {
     @GetMapping("/eliminar/{id}")
     public String eliminarProvincia(@PathVariable Long id) {
         provinciaService.eliminarProvincia(id);
+        return "redirect:/provincia/listar";
+    }
+
+    @GetMapping("/volverEdit")
+    public String volver() {
         return "redirect:/provincia/listar";
     }
 }

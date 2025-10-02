@@ -84,7 +84,6 @@
                       <h1 class="h4 text-gray-900">Crear una cuenta</h1>
                     </div>
 
-                    <!-- FORM: asegurate que tu controller ponga 'usuario' en el modelo -->
                     <form th:action="@{/usuario/crear}" th:object="${usuario}" method="post" class="user">
 
                       <div class="form-group row">
@@ -100,8 +99,7 @@
                         <input type="text" th:field="*{telefono}" class="form-control form-control-user" placeholder="Teléfono" required>
                       </div>
 
-                      <!-- IMPORTANTE: usa el nombre de la propiedad que exista en tu bean Usuario.
-                           Si tu bean tiene 'correoElectronico', cambia *{correoElectronico} -->
+                     
                       <div class="form-group">
                         <input type="email" th:field="*{correo}" class="form-control form-control-user" placeholder="Correo electrónico" required>
                       </div>

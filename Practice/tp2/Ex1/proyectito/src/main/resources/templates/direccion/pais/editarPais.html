@@ -65,10 +65,12 @@
             <div class="card-body p-5">
 
               <div class="text-center mb-4">
-                <h1 class="h4 text-gray-900">Alta de País</h1>
+                <h1 class="h4 text-gray-900">Editar País</h1>
               </div>
 
-              <form th:action="@{/pais/crear}" th:object="${pais}" method="post" class="pais">
+              <form th:action="@{/pais/modificar/{id} (id=${pais.id})}" th:object="${pais}" method="post" class="pais">
+
+                <input type="hidden" name="id" th:field="*{id}">
 
                 <div class="form-group">
                   <input type="text" th:field="*{nombre}" class="form-control form-control-user"
