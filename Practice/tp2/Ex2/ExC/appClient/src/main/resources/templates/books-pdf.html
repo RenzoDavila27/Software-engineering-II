@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title th:text="${pageTitle}">Visualizar PDF</title>
+      <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+      <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+      <link rel="stylesheet" href="css/responsive.css" th:href="@{/css/responsive.css}">
+      <link rel="icon" href="images/fevicon.png" th:href="@{/images/fevicon.png}" type="image/gif" />
+      <style>
+         .pdf-viewer {
+            width: 100%;
+            min-height: 75vh;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            border-radius: .25rem;
+         }
+      </style>
+   </head>
+   <body class="main-layout Books-bg">
+      <header>
+         <div class="header">
+            <div class="container">
+               <div class="row">
+                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                     <div class="full">
+                        <div class="center-desk">
+                           <div class="logo"><a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="logo"></a></div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                     <div class="menu-area">
+                        <div class="limit-box">
+                           <nav class="main-menu">
+                              <ul class="menu-area-main">
+                                 <li><a th:href="@{/}">Inicio</a></li>
+                                 <li class="active"><a th:href="@{/libros}">Libros</a></li>
+                                 <li><a th:href="@{/usuarios}">Usuarios</a></li>
+                                 <li><a th:href="@{/autores}">Autores</a></li>
+                              </ul>
+                           </nav>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </header>
+      <main>
+         <div class="container py-5">
+            <div class="row justify-content-center">
+               <div class="col-lg-10">
+                  <div class="card shadow-sm border-0">
+                     <div class="card-header bg-white border-0">
+                        <h2 class="h4 mb-1" th:text="${libro != null ? libro.titulo : 'Libro'}">Libro</h2>
+                        <p class="text-muted mb-0">
+                           <small th:text="${libro != null ? 'ID libro: ' + libro.id : ''}">ID</small>
+                        </p>
+                     </div>
+                     <div class="card-body">
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                        <div th:if="${archivo != null}">
+                           <p class="mb-3">
+                              <strong th:text="${archivo.nombreArchivo}">archivo.pdf</strong>
+                              <span class="text-muted ms-2"
+                                    th:text="${archivo.tamano != null ? #numbers.formatInteger(archivo.tamano, 0) + ' bytes' : ''}">0 bytes</span>
+                           </p>
+                           <iframe class="pdf-viewer" th:src="@{|/libros/${libro.id}/archivo/stream|}" title="PDF"></iframe>
+                        </div>
+                        <div th:if="${archivo == null}">
+                           <p class="text-muted mb-0">No hay archivo PDF disponible para este libro.</p>
+                        </div>
+                     </div>
+                     <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                        <a class="btn btn-light" th:href="@{/libros}">Volver al listado</a>
+                        <a class="btn btn-outline-secondary" th:href="@{|/libros/${libro.id}?mode=consultar|}">Volver al detalle</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+   </body>
+</html>
