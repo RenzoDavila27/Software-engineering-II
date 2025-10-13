@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <!-- basic -->
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <!-- mobile metas -->
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+      <!-- site metas -->
+      <title>Autores | Biblioteca Aurora</title>
+      <meta name="keywords" content="">
+      <meta name="description" content="Perfiles de autores disponibles en la Biblioteca Aurora.">
+      <meta name="author" content="">
+      <!-- bootstrap css -->
+      <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+      <!-- style css -->
+      <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+      <!-- Responsive-->
+      <link rel="stylesheet" href="css/responsive.css" th:href="@{/css/responsive.css}">
+      <!-- fevicon -->
+      <link rel="icon" href="images/fevicon.png" th:href="@{/images/fevicon.png}" type="image/gif" />
+      <!-- Scrollbar Custom CSS -->
+      <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
+      <!-- Tweaks for older IEs-->
+      <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+   </head>
+   <!-- body -->
+   <body class="main-layout contact_page">
+      <!-- loader  -->
+      <div class="loader_bg">
+         <div class="loader"><img src="images/loading.gif" th:src="@{/images/loading.gif}" alt="#" /></div>
+      </div>
+      <!-- end loader -->
+      <!-- header -->
+      <header>
+         <!-- header inner -->
+         <div class="header">
+            <div class="container">
+               <div class="row">
+                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                     <div class="full">
+                        <div class="center-desk">
+                           <div class="logo"> <a href="index.html" th:href="@{/}"><img src="images/logo.png" th:src="@{/images/logo.png}" alt="#"></a> </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                     <div class="menu-area">
+                        <div class="limit-box">
+                           <nav class="main-menu">
+                              <ul class="menu-area-main">
+                                 <li> <a href="index.html" th:href="@{/}">Inicio</a> </li>
+                                 <li><a href="books.html" th:href="@{/libros}">Libros</a></li>
+                                 <li><a href="users.html" th:href="@{/usuarios}">Usuarios</a></li>
+                                 <li class="active"><a href="authors.html" th:href="@{/autores}">Autores</a></li>
+                              </ul>
+                           </nav>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <!-- end header inner -->
+      </header>
+      <!-- end header -->
+      <div class="contact-bg">
+         <div class="container">
+            <div class="row">
+               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                  <div class="abouttitle">
+                     <h2>Autores destacados</h2>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Authors -->
+      <div class="Contact">
+         <div class="container">
+            <div class="row mb-3" th:if="${successMessage}">
+               <div class="col">
+                  <div class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+               </div>
+            </div>
+            <div class="row mb-3" th:if="${errorMessage}">
+               <div class="col">
+                  <div class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="d-flex justify-content-between align-items-start titlepage3">
+                     <h2>Perfiles</h2>
+                     <a class="btn btn-primary" th:href="@{/autores/nuevo}"><span class="me-1">+</span> Nuevo autor</a>
+                  </div>
+               </div>
+            </div>
+            <div class="row g-4" th:if="${autores != null and !autores.isEmpty()}">
+               <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12" th:each="autor : ${autores}">
+                  <div class="card h-100 shadow-sm border-0">
+                     <div class="card-body">
+                        <h3 class="card-title h5 mb-2" th:text="|${autor.nombre} ${autor.apellido}|">Nombre autor</h3>
+                        <p class="card-text" th:if="${autor.biografia != null}" th:text="${autor.biografia}">Biografia</p>
+                        <p class="card-text text-muted" th:if="${autor.biografia == null}">Sin biografia registrada.</p>
+                     </div>
+                     <div class="card-footer bg-white border-0 pt-0">
+                        <div class="btn-group w-100" role="group">
+                           <a class="btn btn-outline-primary" th:href="@{|/autores/${autor.id}?mode=consultar|}">Consultar</a>
+                           <a class="btn btn-outline-secondary" th:href="@{|/autores/${autor.id}?mode=modificar|}">Modificar</a>
+                           <a class="btn btn-outline-danger" th:href="@{|/autores/${autor.id}?mode=eliminar|}">Eliminar</a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="row" th:if="${autores == null or autores.isEmpty()}">
+               <div class="col">
+                  <div class="alert alert-info" role="alert">
+                     No se encontraron autores registrados.
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="Books">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-10 offset-md-1">
+                  <div class="titlepage">
+                     <h2>Relacion con <strong class="black">el catalogo</strong></h2>
+                     <span>Identifica rapidamente que obras pertenecen a cada autor y coordina eventos de firma o presentaciones.</span> 
+                  </div>
+               </div>
+            </div>
+            <div class="row box">
+               <div class="col-md-12">
+                  <p>Biblioteca Aurora sincroniza las fichas de autores con los libros registrados, permitiendo filtrar por series, coautorias y ediciones especiales. Integrado con la pagina de Libros para mostrar disponibilidad y estadisticas de prestamos.</p>
+               </div>
+            </div>
+            <div class="container">
+               <div class="row">
+                  <div class="col-md-12">
+                     <div class="read-more">
+                        <a href="books.html" th:href="@{/libros}">Ir al catalogo</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- end Authors -->
+      <!-- footer -->
+      <footer>
+         <div class="footer">
+            <div class="container">
+               <div class="row pdn-top-30">
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                     <div class="Follow">
+                        <h3>Follow Us</h3>
+                     </div>
+                     <ul class="location_icon">
+                        <li> <a href="#"><img src="icon/facebook.png" th:src="@{/icon/facebook.png}" alt="Facebook"></a></li>
+                        <li> <a href="#"><img src="icon/Twitter.png" th:src="@{/icon/Twitter.png}" alt="Twitter"></a></li>
+                        <li> <a href="#"><img src="icon/linkedin.png" th:src="@{/icon/linkedin.png}" alt="LinkedIn"></a></li>
+                        <li> <a href="#"><img src="icon/instagram.png" th:src="@{/icon/instagram.png}" alt="Instagram"></a></li>
+                     </ul>
+                  </div>
+                  <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                     <div class="Follow">
+                        <h3>Newsletter</h3>
+                     </div>
+                     <input class="Newsletter" placeholder="Ingresa tu email" type="email" name="newsletter">
+                     <button class="Subscribe" type="button">Suscribirse</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="copyright">
+            <div class="container">
+               <p>Copyright 2019 All Right Reserved By <a href="https://html.design/">Free html Templates</a></p>
+            </div>
+         </div>
+      </footer>
+      <!-- end footer -->
+      <!-- Javascript files-->
+      <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+      <script src="js/popper.min.js" th:src="@{/js/popper.min.js}"></script>
+      <script src="js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+      <script src="js/jquery-3.0.0.min.js" th:src="@{/js/jquery-3.0.0.min.js}"></script>
+      <script src="js/plugin.js" th:src="@{/js/plugin.js}"></script>
+      <!-- sidebar -->
+      <script src="js/jquery.mCustomScrollbar.concat.min.js" th:src="@{/js/jquery.mCustomScrollbar.concat.min.js}"></script>
+      <script src="js/custom.js" th:src="@{/js/custom.js}"></script>
+   </body>
+</html>
