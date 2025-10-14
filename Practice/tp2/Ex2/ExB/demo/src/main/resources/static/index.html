@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Películas Detalladas IMDb</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Estilo para que las cards se vean en una cuadrícula */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .movie-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .movie-card img {
+            width: 100%;
+            height: 400px; /* Altura fija para la imagen */
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <h2>Lista Detallada de Próximos Estrenos</h2>
+    
+    <button class="btn btn-success mb-4" onclick="cargarListaDetallada()">
+        Cargar Lista de Películas
+    </button>
+
+    <div id="contenedorPeliculas" class="movie-grid">
+        <p id="mensajeInicial">Haga clic en el botón para cargar los datos...</p>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8080/api/imdb';
+        const contenedor = document.getElementById("contenedorPeliculas");
+
+        // Función para cargar los detalles de la lista completa
+        async function cargarListaDetallada() {
+            // Limpiar y mostrar estado de carga
+            contenedor.innerHTML = '<p>Cargando lista completa...</p>';
+
+            try {
+                // ⭐️ Llama al endpoint que devuelve el DTO MovieDetailsDto[]
+                const url = `${BASE_URL}/proximos-estrenos`; 
+                const res = await fetch(url);
+                
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    contenedor.innerHTML = `<div class="alert alert-danger">Error ${res.status}: Fallo al cargar la lista. Mensaje: ${errorText}</div>`;
+                    return;
+                }
+                
+                // La respuesta es la lista de objetos detallados
+                const listaPeliculas = await res.json();
+                
+                contenedor.innerHTML = ''; // Limpiar el mensaje de carga
+
+                if (listaPeliculas.length === 0) {
+                     contenedor.innerHTML = '<p>No se encontraron películas en la lista.</p>';
+                     return;
+                }
+
+                // ⭐️ Iterar sobre la lista y crear una "card" para cada película
+                listaPeliculas.forEach(pelicula => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    
+                    // Asumiendo que primaryImage contiene la URL de la imagen
+                    const imageUrl = pelicula.primaryImage || 'placeholder.jpg'; 
+                    const releaseYear = pelicula.releaseDate ? pelicula.releaseDate.substring(0, 4) : 'N/A';
+                    
+                    card.innerHTML = `
+                        <img src="${imageUrl}" alt="${pelicula.primaryTitle} Poster">
+                        <div class="p-3">
+                            <h5 class="card-title">${pelicula.primaryTitle} (${releaseYear})</h5>
+                            <p class="card-text">${pelicula.description.substring(0, 150)}...</p>
+                            <span class="badge bg-warning text-dark me-2">
+                                Rating: ${pelicula.averageRating || 'N/A'} / 10
+                            </span>
+                            <span class="badge bg-info">
+                                Duración: ${pelicula.runtimeMinutes || 'N/A'} min
+                            </span>
+                        </div>
+                    `;
+                    contenedor.appendChild(card);
+                });
+
+            } catch (error) {
+                contenedor.innerHTML = `<div class="alert alert-warning">
+                    Error de Conexión: Asegúrese de que Spring Boot esté corriendo. Detalles: ${error.message}
+                </div>`;
+            }
+        }
+    </script>
+</body>
+</html>
