@@ -1,0 +1,6 @@
+com\example\apiexterna\controllers\ImdbController.class
+com\example\apiexterna\models\Imdb.class
+com\example\apiexterna\config\WebClientConfig.class
+com\example\apiexterna\models\MovieDetailsDTO.class
+com\example\apiexterna\DemoApplication.class
+com\example\apiexterna\services\ImdbService.class
