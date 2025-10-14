@@ -1,0 +1,92 @@
+package com.books.demo.controller.rest;
+
+import com.books.demo.bussiness.logic.error.ErrorServiceException;
+import com.books.demo.bussiness.logic.service.LocalidadService;
+import com.books.demo.controller.rest.dto.LocalidadDto;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/localidades")
+public class LocalidadController {
+
+    @Autowired
+    private final LocalidadService localidadService;
+    
+    public LocalidadController(LocalidadService localidadService) {
+        this.localidadService = localidadService;
+    }
+
+    @GetMapping
+    public ResponseEntity<?> listarLocalidadesActivas() {
+        try {
+            List<LocalidadDto> localidades = localidadService.listarActivas()
+                    .stream()
+                    .map(LocalidadDto::fromEntity)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(localidades);
+        } catch (ErrorServiceException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al listar localidades.");
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+        try {
+            return localidadService.buscarPorId(id)
+                    .map(LocalidadDto::fromEntity)
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (ErrorServiceException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> crearLocalidad(@RequestBody LocalidadDto localidadDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(LocalidadDto.fromEntity(localidadService.crearLocalidad(localidadDto.toEntity())));
+        } catch (ErrorServiceException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarLocalidad(@PathVariable Long id, @RequestBody LocalidadDto localidadDto) {
+        try {
+            return ResponseEntity.ok(LocalidadDto.fromEntity(localidadService.modificarLocalidad(id, localidadDto.toEntity())));
+        } catch (ErrorServiceException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarLocalidad(@PathVariable Long id) {
+        try {
+            localidadService.eliminarLocalidad(id);
+            return ResponseEntity.noContent().build();
+        } catch (ErrorServiceException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+}

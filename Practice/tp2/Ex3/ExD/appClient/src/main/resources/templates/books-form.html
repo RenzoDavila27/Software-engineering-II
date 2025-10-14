@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Nuevo Libro</title>
+      <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+      <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+      <link rel="stylesheet" href="css/responsive.css" th:href="@{/css/responsive.css}">
+      <link rel="icon" href="images/fevicon.png" th:href="@{/images/fevicon.png}" type="image/gif" />
+   </head>
+   <body class="main-layout Books-bg">
+      <header>
+         <div class="header">
+            <div class="container">
+               <div class="row">
+                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                     <div class="full">
+                        <div class="center-desk">
+                           <div class="logo"><a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="logo"></a></div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                     <div class="menu-area">
+                        <div class="limit-box">
+                           <nav class="main-menu">
+                              <ul class="menu-area-main">
+                                 <li><a th:href="@{/}">Inicio</a></li>
+                                 <li class="active"><a th:href="@{/libros}">Libros</a></li>
+                                 <li><a th:href="@{/usuarios}">Usuarios</a></li>
+                                 <li><a th:href="@{/autores}">Autores</a></li>
+                              </ul>
+                           </nav>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </header>
+      <main>
+         <div class="container py-5">
+            <div class="row justify-content-center">
+               <div class="col-lg-9">
+                  <div class="card shadow-sm border-0">
+                     <div class="card-header bg-white border-0">
+                        <h2 class="h4 mb-0">Registrar nuevo libro</h2>
+                     </div>
+                     <div class="card-body">
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                        <form th:action="@{/libros}" method="post" th:object="${libro}" class="row g-3">
+                           <div class="col-md-6">
+                              <label class="form-label">Título</label>
+                              <input type="text" class="form-control" th:field="*{titulo}" placeholder="Título del libro" required>
+                           </div>
+                           <div class="col-md-6">
+                              <label class="form-label">Fecha de publicación</label>
+                              <input type="date" class="form-control" th:field="*{fecha}">
+                           </div>
+                           <div class="col-md-6">
+                              <label class="form-label">Género</label>
+                              <input type="text" class="form-control" th:field="*{genero}" placeholder="Género">
+                           </div>
+                           <div class="col-md-6">
+                              <label class="form-label">Páginas</label>
+                              <input type="number" min="0" class="form-control" th:field="*{paginas}" placeholder="Cantidad de páginas">
+                           </div>
+                           <div class="col-md-6">
+                              <label class="form-label">Asignar a socio</label>
+                              <select class="form-select" th:field="*{personaId}">
+                                 <option value="">Seleccionar socio</option>
+                                 <option th:each="persona : ${personasDisponibles}" th:value="${persona.id}"
+                                         th:text="|${persona.nombre} ${persona.apellido} (DNI ${persona.dni})|">
+                                 </option>
+                              </select>
+                           </div>
+                           <div class="col-md-6">
+                              <label class="form-label">Autores vinculados</label>
+                              <div class="border rounded p-2" style="max-height: 220px; overflow-y: auto;">
+                                 <div class="form-check" th:each="autor : ${autoresDisponibles}">
+                                    <input class="form-check-input" type="checkbox" th:value="${autor.id}" th:field="*{autoresIds}" id="autor-form-checkbox-[[${autor.id}]]">
+                                    <label class="form-check-label" th:for="${'autor-form-checkbox-' + autor.id}" th:text="|${autor.nombre} ${autor.apellido}|">Autor</label>
+                                 </div>
+                                 <p class="text-muted mb-0" th:if="${autoresDisponibles == null or autoresDisponibles.isEmpty()}">No hay autores disponibles.</p>
+                              </div>
+                           </div>
+                           <div class="col-12 d-flex justify-content-end gap-2">
+                              <a class="btn btn-outline-secondary" th:href="@{/libros}">Cancelar</a>
+                              <button type="submit" class="btn btn-primary">Crear libro</button>
+                           </div>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+   </body>
+</html>
