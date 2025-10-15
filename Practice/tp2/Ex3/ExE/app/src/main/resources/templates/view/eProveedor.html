@@ -40,6 +40,9 @@
                         <label for="nombre" class="form-label">Nombre</label>
                         <input type="text" id="nombre" class="form-control" th:field="*{nombre}" th:disabled="${isDisabled}" placeholder="Ingresá el nombre del proveedor" required />
                     </div>
+
+                    <label for="direccion">Dirección:</label>
+                    <input type="text" id="direccion" class="form-control" th:field="*{direccion}" th:disabled="${isDisabled}" placeholder="Ingresá la dirección del proveedor(calle,ciudad,provincia,pais)" required />
                 </div>
                 <div class="card-footer bg-white d-flex justify-content-between p-3">
                     <a class="btn btn-outline-secondary" th:href="@{'/' + ${nameEntityLower} + '/cancelar'}">
