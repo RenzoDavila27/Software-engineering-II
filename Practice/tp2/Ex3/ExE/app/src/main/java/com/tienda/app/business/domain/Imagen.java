@@ -1,6 +1,8 @@
 package com.tienda.app.business.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +20,10 @@ public class Imagen extends BaseEntity<Long> {
     private String mime;
     @Lob
     private byte[] contenido;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "articulo_id", nullable = false)
+    private Articulo articulo;
 
     @Override
     public Long getId() {

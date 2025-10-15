@@ -1,5 +1,7 @@
 package com.tienda.app.business.logic.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.tienda.app.business.domain.Imagen;
@@ -34,6 +36,10 @@ public class ImagenService extends BaseService<Imagen, Long> {
                     throw new ErrorServiceException("Debe indicar el contenido de la imagen");
                 }
 
+                if (imagen.getArticulo() == null || imagen.getArticulo().isEliminado()) {
+                    throw new ErrorServiceException("Debe indicar un artículo válido para la imagen");
+                }
+
                 if (imagen.isEliminado()) {
                     throw new ErrorServiceException("La imagen indicada se encuentra eliminada");
                 }
@@ -55,6 +61,14 @@ public class ImagenService extends BaseService<Imagen, Long> {
             }
         } catch (ErrorServiceException e) {
             throw e;
+        } catch (Exception e) {
+            throw new ErrorServiceException("Error de Sistemas");
+        }
+    }
+
+    public List<Imagen> listarActivasPorArticulo(Long articuloId) throws ErrorServiceException {
+        try {
+            return ((ImagenRepository) repository).findAllByArticuloIdAndEliminadoFalse(articuloId);
         } catch (Exception e) {
             throw new ErrorServiceException("Error de Sistemas");
         }

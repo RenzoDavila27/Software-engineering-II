@@ -103,7 +103,10 @@
                     <div class="col mb-5" th:each="articulo : ${articulos}">
                         <div class="card h-100 shadow-sm border-0">
                             <div class="position-relative">
-                                <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Imagen de artículo" />
+                                <img class="card-img-top"
+                                     th:src="${articulo.imagenes != null and !#lists.isEmpty(articulo.imagenes)} ? @{/articulo/imagenes/{imagenId}/contenido(imagenId=${articulo.imagenes[0].id})} : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'"
+                                     th:alt="'Imagen de ' + ${articulo.nombre}"
+                                     alt="Imagen de artículo" />
                                 <div class="badge bg-primary text-white position-absolute top-0 start-0 m-3 text-uppercase" th:if="${articulo.proveedor != null}" th:text="${articulo.proveedor.nombre}">Proveedor</div>
                             </div>
                             <div class="card-body p-4">

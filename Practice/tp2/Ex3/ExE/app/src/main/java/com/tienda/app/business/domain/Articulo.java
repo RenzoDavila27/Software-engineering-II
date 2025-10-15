@@ -1,11 +1,17 @@
 package com.tienda.app.business.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,6 +25,10 @@ public class Articulo extends BaseEntity<Long> {
 
     @ManyToOne(optional = false)
     private Proveedor proveedor;
+
+    @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
+    private List<Imagen> imagenes = new ArrayList<>();
 
     @Override
     public Long getId() {

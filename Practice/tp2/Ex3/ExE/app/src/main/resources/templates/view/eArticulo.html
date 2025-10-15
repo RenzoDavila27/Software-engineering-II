@@ -36,6 +36,13 @@
                 <div class="card-body p-4">
                     <input type="hidden" th:field="*{id}" />
 
+                    <div class="d-flex justify-content-end mb-3" th:if="${item != null and item.id != null}">
+                        <a class="btn btn-outline-primary" th:href="@{'/articulo/' + ${item.id} + '/imagenes'}">
+                            <i class="bi-images me-1"></i>
+                            Gestionar imágenes
+                        </a>
+                    </div>
+
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
                         <input type="text" id="nombre" class="form-control" th:field="*{nombre}" th:disabled="${isDisabled}" placeholder="Ingresá el nombre del artículo" required />

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Imágenes del artículo</title>
+        <link rel="stylesheet" th:href="@{/css/styles.css}" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="container py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Imágenes del artículo</h1>
+                    <p class="text-muted mb-0">
+                        Administrá las imágenes asociadas a
+                        <span class="fw-semibold" th:text="${articulo.nombre}">este artículo</span>.
+                    </p>
+                </div>
+                <a class="btn btn-outline-secondary" th:href="@{'/articulo/modificar/' + ${articulo.id}}">
+                    <i class="bi-arrow-left me-1"></i>
+                    Volver al artículo
+                </a>
+            </div>
+
+            <div th:if="${msgError != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi-exclamation-triangle me-2"></i>
+                <span th:text="${msgError}">Se produjo un error.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+
+            <div th:if="${msgExito != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi-check-circle me-2"></i>
+                <span th:text="${msgExito}">Operación realizada correctamente.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Agregar imágenes</h2>
+                    <form class="row g-3 align-items-center" method="post" enctype="multipart/form-data" th:action="@{'/articulo/' + ${articulo.id} + '/imagenes'}">
+                        <div class="col-12 col-md-8">
+                            <input class="form-control" type="file" id="archivos" name="archivos" multiple accept="image/*" />
+                            <div class="form-text">Podés seleccionar una o varias imágenes (formatos comunes como JPG, PNG, GIF).</div>
+                        </div>
+                        <div class="col-12 col-md-4 text-md-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi-upload me-1"></i>
+                                Subir imágenes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Imágenes cargadas</h2>
+                    <p class="text-muted mb-0" th:if="${imagenes == null or #lists.isEmpty(imagenes)}">
+                        Aún no agregaste imágenes al artículo.
+                    </p>
+                    <div th:if="${imagenes != null and !#lists.isEmpty(imagenes)}" class="row row-cols-1 row-cols-md-3 g-3">
+                        <div class="col" th:each="imagen : ${imagenes}">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <img class="card-img-top" th:src="@{'/articulo/imagenes/' + ${imagen.id} + '/contenido'}" th:alt="'Imagen de ' + ${articulo.nombre}" />
+                                <div class="card-body">
+                                    <h3 class="h6 mb-1 text-truncate" th:text="${imagen.nombre}">Nombre de la imagen</h3>
+                                    <p class="text-muted small mb-0" th:text="${imagen.mime}">Tipo de archivo</p>
+                                </div>
+                                <div class="card-footer bg-white d-flex justify-content-between">
+                                    <a class="btn btn-outline-secondary btn-sm" th:href="@{'/articulo/imagenes/' + ${imagen.id} + '/contenido'}" target="_blank" rel="noopener">
+                                        <i class="bi-eye me-1"></i>
+                                        Ver
+                                    </a>
+                                    <form th:action="@{'/articulo/' + ${articulo.id} + '/imagenes/' + ${imagen.id} + '/eliminar'}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi-trash me-1"></i>
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

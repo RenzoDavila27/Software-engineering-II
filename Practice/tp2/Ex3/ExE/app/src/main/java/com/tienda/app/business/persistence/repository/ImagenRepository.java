@@ -1,5 +1,7 @@
 package com.tienda.app.business.persistence.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,4 +14,6 @@ public interface ImagenRepository extends BaseRepository<Imagen, Long> {
          + " WHERE LOWER(i.nombre) = LOWER(:nombre) "
          + "   AND i.eliminado = FALSE")
     Imagen buscarImagenPorNombre(@Param("nombre") String nombre);
+
+    List<Imagen> findAllByArticuloIdAndEliminadoFalse(Long articuloId);
 }
