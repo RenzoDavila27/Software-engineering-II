@@ -1,0 +1,253 @@
+package com.fioritech.demo.bussines.logic.service;
+
+import com.fioritech.demo.bussines.domain.Direccion;
+import com.fioritech.demo.bussines.domain.Proveedor;
+import com.fioritech.demo.bussines.logic.exception.BusinessException;
+import com.fioritech.demo.bussines.logic.service.template.CrudTemplateService;
+import com.fioritech.demo.bussines.logic.util.ValidationUtils;
+import com.fioritech.demo.bussines.repository.ProveedorRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+
+@Service
+@Transactional
+public class ProveedorService extends CrudTemplateService<Proveedor, Long> {
+
+    private final PersonaService personaService;
+    private final DireccionService direccionService;
+    private final ProveedorRepository proveedorRepository;
+
+    public ProveedorService(PersonaService personaService,
+                            DireccionService direccionService,
+                            ProveedorRepository proveedorRepository) {
+        this.personaService = personaService;
+        this.direccionService = direccionService;
+        this.proveedorRepository = proveedorRepository;
+    }
+
+    public Proveedor crearProveedor(Proveedor proveedor) {
+        return crearEntidad(proveedor);
+    }
+
+    public Proveedor modificarProveedor(Long id, Proveedor cambios) {
+        return modificarEntidad(id, cambios);
+    }
+
+    public void eliminarProveedor(Long id) {
+        eliminarEntidad(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Proveedor> listarProveedores() {
+        return listarEntidades();
+    }
+
+    @Transactional(readOnly = true)
+    public Proveedor buscarProveedorPorId(Long id) {
+        return buscarEntidad(id);
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] exportarProveedoresPdf() {
+        Collection<Proveedor> proveedores = listarEntidades();
+
+        try (PDDocument document = new PDDocument(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            escribirListadoProveedores(document, proveedores);
+            document.save(out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new BusinessException("No se pudo generar el PDF de proveedores", e);
+        }
+    }
+
+    private void escribirListadoProveedores(PDDocument document, Collection<Proveedor> proveedores) throws IOException {
+        PDPage page = new PDPage();
+        document.addPage(page);
+
+        float margin = 50f;
+        float leading = 16f;
+        float yPosition = page.getMediaBox().getHeight() - margin;
+
+        PDPageContentStream content = new PDPageContentStream(document, page);
+        try {
+            content.beginText();
+            content.setFont(PDType1Font.HELVETICA_BOLD, 16);
+            content.newLineAtOffset(margin, yPosition);
+            content.showText("Listado de Proveedores");
+            content.endText();
+
+            yPosition -= 2 * leading;
+
+            content.beginText();
+            content.setFont(PDType1Font.HELVETICA, 12);
+            content.newLineAtOffset(margin, yPosition);
+
+            if (proveedores.isEmpty()) {
+                content.showText("No hay proveedores registrados");
+            } else {
+                for (Proveedor proveedor : proveedores) {
+                    if (yPosition <= margin) {
+                        content.endText();
+                        content.close();
+
+                        page = new PDPage();
+                        document.addPage(page);
+                        content = new PDPageContentStream(document, page);
+
+                        yPosition = page.getMediaBox().getHeight() - margin;
+
+                        content.beginText();
+                        content.setFont(PDType1Font.HELVETICA_BOLD, 16);
+                        content.newLineAtOffset(margin, yPosition);
+                        content.showText("Listado de Proveedores");
+                        content.endText();
+
+                        yPosition -= 2 * leading;
+
+                        content.beginText();
+                        content.setFont(PDType1Font.HELVETICA, 12);
+                        content.newLineAtOffset(margin, yPosition);
+                    }
+
+                    String linea = construirLineaProveedor(proveedor);
+                    content.showText(linea);
+                    content.newLineAtOffset(0, -leading);
+                    yPosition -= leading;
+                }
+            }
+            content.endText();
+        } finally {
+            content.close();
+        }
+    }
+
+    private String construirLineaProveedor(Proveedor proveedor) {
+        String id = proveedor.getId() == null ? "" : proveedor.getId().toString();
+        String nombre = proveedor.getNombre() == null ? "" : proveedor.getNombre();
+        String apellido = proveedor.getApellido() == null ? "" : proveedor.getApellido();
+        String cuit = proveedor.getCuit() == null ? "" : proveedor.getCuit();
+        String telefono = proveedor.getTelefono() == null ? "" : proveedor.getTelefono();
+
+        return String.format("ID: %s | %s %s | CUIT: %s | Tel: %s",
+                id,
+                nombre,
+                apellido,
+                cuit,
+                telefono);
+    }
+
+    public void verificarAtributos(Proveedor proveedor) {
+        personaService.verificarAtributos(proveedor);
+        if (ValidationUtils.isBlank(proveedor.getCuit())) {
+            throw new BusinessException("El CUIT es obligatorio");
+        }
+        if (proveedor.getDireccion() == null
+                || proveedor.getDireccion().getLocalidad() == null
+                || proveedor.getDireccion().getLocalidad().getId() == null) {
+            throw new BusinessException("La dirección es obligatoria");
+        }
+    }
+
+    @Override
+    protected void validarEntidad(Proveedor proveedor) {
+        verificarAtributos(proveedor);
+    }
+
+    @Override
+    protected void validarEntidadNueva(Proveedor proveedor) {
+        if (proveedor.getId() != null) {
+            throw new BusinessException("El proveedor ya tiene un id asignado");
+        }
+    }
+
+    @Override
+    protected void antesDeCrear(Proveedor proveedor) {
+        normalizarDatos(proveedor);
+        prepararDireccionParaGuardar(proveedor);
+        proveedor.setEliminado(false);
+    }
+
+    @Override
+    protected void antesDeModificar(Proveedor existente, Proveedor cambios) {
+        prepararDireccionExistente(existente, cambios);
+    }
+
+    @Override
+    protected void aplicarCambios(Proveedor existente, Proveedor cambios) {
+        existente.setNombre(cambios.getNombre().trim());
+        existente.setApellido(cambios.getApellido().trim());
+        existente.setTelefono(cambios.getTelefono().trim());
+        existente.setCorreo(cambios.getCorreo().trim());
+        existente.setCuit(cambios.getCuit().trim());
+    }
+
+    @Override
+    protected void marcarEliminado(Proveedor proveedor) {
+        proveedor.setEliminado(true);
+    }
+
+    @Override
+    protected Proveedor guardar(Proveedor proveedor) {
+        return proveedorRepository.save(proveedor);
+    }
+
+    @Override
+    protected Proveedor obtenerPorId(Long id) {
+        return obtenerProveedorActivo(id);
+    }
+
+    @Override
+    protected Collection<Proveedor> obtenerListado() {
+        return proveedorRepository.buscarProveedoresActivos();
+    }
+
+    private void normalizarDatos(Proveedor proveedor) {
+        proveedor.setNombre(proveedor.getNombre().trim());
+        proveedor.setApellido(proveedor.getApellido().trim());
+        proveedor.setTelefono(proveedor.getTelefono().trim());
+        proveedor.setCorreo(proveedor.getCorreo().trim());
+        proveedor.setCuit(proveedor.getCuit().trim());
+    }
+
+    private void prepararDireccionParaGuardar(Proveedor proveedor) {
+        if (proveedor.getDireccion() == null) {
+            throw new BusinessException("La dirección es obligatoria");
+        }
+        Direccion direccion = direccionService.crearDireccion(proveedor.getDireccion());
+        proveedor.setDireccion(direccion);
+    }
+
+    private void prepararDireccionExistente(Proveedor existente, Proveedor cambios) {
+        if (cambios.getDireccion() == null) {
+            throw new BusinessException("La dirección es obligatoria");
+        }
+        Direccion direccionActualizada;
+        if (cambios.getDireccion().getId() == null) {
+            direccionActualizada = direccionService.crearDireccion(cambios.getDireccion());
+        } else {
+            direccionActualizada = direccionService.modificarDireccion(
+                    cambios.getDireccion().getId(),
+                    cambios.getDireccion());
+        }
+        existente.setDireccion(direccionActualizada);
+    }
+
+    private Proveedor obtenerProveedorActivo(Long id) {
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe el proveedor con id " + id));
+        if (proveedor.isEliminado()) {
+            throw new BusinessException("El proveedor con id " + id + " esta eliminado");
+        }
+        return proveedor;
+    }
+}
+

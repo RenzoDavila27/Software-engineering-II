@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editar Departamento</title>
+
+  <!-- Bootstrap 4 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --sidebar-collapsed: 80px;
+      --primary-start: #4e73df;
+      --primary-end: #224abe;
+    }
+
+    body { font-family: "Nunito", "Segoe UI", Roboto, Arial, sans-serif; }
+
+    /* sidebar */
+    .sidebar { list-style: none; margin: 0; padding: 0; position: fixed; top: 0; left: 0; height: 100vh;
+               width: var(--sidebar-width); transition: width .2s ease; z-index: 1000; }
+    .bg-gradient-primary {
+      background: linear-gradient(180deg, var(--primary-start) 10%, var(--primary-end) 100%) !important;
+    }
+    .sidebar .nav-link { color: rgba(255,255,255,.95); padding: .75rem 1rem; display:flex; align-items:center; }
+    .sidebar .nav-link .fas { width: 22px; margin-right: .75rem; }
+    .sidebar .sidebar-brand { height: 4.5rem; padding: 1rem; color: white; text-decoration: none; display:flex; align-items:center; }
+    .sidebar-divider { border-top: 1px solid rgba(255,255,255,.15); margin: .5rem 0; }
+
+    /* wrapper/content */
+    #wrapper.toggled .sidebar { width: var(--sidebar-collapsed); }
+    #wrapper { display:flex; align-items:stretch; min-height:100vh; transition:margin-left .2s ease; }
+    #content-wrapper { margin-left: var(--sidebar-width); width: 100%; transition: margin-left .2s ease; }
+    #wrapper.toggled #content-wrapper { margin-left: var(--sidebar-collapsed); }
+
+    /* card center */
+    .register-card { margin: 5rem auto; }
+    .form-control-user { border-radius: .35rem; padding: .75rem 1rem; }
+  </style>
+</head>
+<body id="page-top">
+
+<div id="wrapper">
+
+  <!-- sidebar fragment -->
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <!-- content -->
+  <div id="content-wrapper" class="d-flex flex-column">
+
+    <div id="content">
+
+      <!-- topbar fragment -->
+      <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+      <!-- Page Content -->
+      <div class="container-fluid">
+        <div class="d-flex justify-content-center align-items-start" style="padding-top: 40px;">
+          <div class="card o-hidden border-0 shadow-lg register-card" style="max-width: 500px; width: 100%;">
+            <div class="card-body p-5">
+
+              <div class="text-center mb-4">
+                <h1 class="h4 text-gray-900">Editar Departamento</h1>
+              </div>
+
+              <form th:action="@{/departamento/modificar/{id} (id=${departamento.id})}" th:object="${departamento}" method="post" class="departamento">
+
+                <input type="hidden" name="id" th:field="*{id}">
+
+                <div class="form-group">
+                  <input type="text" th:field="*{nombre}" class="form-control form-control-user"
+                         placeholder="Nombre del Departamento" required>
+                </div>
+                <div class="form-group">
+                  <select id="idPais" class="form-control">
+                        <option th:each="pais : ${listaPais}" 
+                            th:value="${pais.id}" 
+                            th:text="${pais.nombre}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                  <select th:field="*{provincia.id}" class="form-control">
+                        <option th:each="provincia : ${listaProvincia}" 
+                            th:value="${provincia.id}" 
+                            th:text="${provincia.nombre}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Botones alineados -->
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check"></i> Aceptar
+                  </button>
+                  <a th:href="@{/departamento/volverEdit}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                  </a>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div> <!-- /.container-fluid -->
+
+    </div> <!-- /#content -->
+
+  </div> <!-- /#content-wrapper -->
+
+</div> <!-- /#wrapper -->
+
+<!-- SCRIPTS -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+<script>
+  (function($){
+    $(document).ready(function(){
+      $('#sidebarToggle, #sidebarToggleTop').on('click', function(e){
+        e.preventDefault();
+        $('#wrapper').toggleClass('toggled');
+      });
+    });
+  })(jQuery);
+</script>
+</body>
+</html>

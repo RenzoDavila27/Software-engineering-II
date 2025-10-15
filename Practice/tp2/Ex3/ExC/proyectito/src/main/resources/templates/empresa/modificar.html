@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modificar Empresa</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --sidebar-collapsed: 80px;
+      --primary-start: #4e73df;
+      --primary-end: #224abe;
+    }
+
+    body { font-family: "Nunito", "Segoe UI", Roboto, Arial, sans-serif; }
+
+    .sidebar { list-style: none; margin: 0; padding: 0; position: fixed; top: 0; left: 0; height: 100vh;
+               width: var(--sidebar-width); transition: width .2s ease; z-index: 1000; }
+    .bg-gradient-primary {
+      background: linear-gradient(180deg, var(--primary-start) 10%, var(--primary-end) 100%) !important;
+    }
+    #wrapper.toggled .sidebar { width: var(--sidebar-collapsed); }
+    #wrapper { display:flex; align-items:stretch; min-height:100vh; transition:margin-left .2s ease; }
+    #content-wrapper { margin-left: var(--sidebar-width); width: 100%; transition: margin-left .2s ease; }
+    #wrapper.toggled #content-wrapper { margin-left: var(--sidebar-collapsed); }
+
+    .register-card { margin: 5rem auto; }
+    .form-control-user { border-radius: .35rem; padding: .75rem 1rem; }
+
+    @media (max-width: 768px) {
+      .sidebar { left: -100%; position: fixed; }
+      #wrapper.toggled .sidebar { left: 0; }
+      #content-wrapper { margin-left: 0; }
+    }
+  </style>
+</head>
+<body id="page-top">
+
+<div id="wrapper">
+
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div id="content-wrapper" class="d-flex flex-column">
+
+    <div id="content">
+
+      <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+      <div class="container-fluid">
+        <div class="d-flex justify-content-center align-items-start" style="padding-top: 40px;">
+          <div class="card o-hidden border-0 shadow-lg register-card" style="max-width: 500px; width: 100%;">
+            <div class="card-body p-5">
+
+              <div class="text-center mb-4">
+                <h1 class="h4 text-gray-900">Modificar Empresa</h1>
+              </div>
+
+              <form th:action="@{/empresa/modificar/{id}(id=${empresa.id})}" th:object="${empresa}" method="post">
+
+                <div class="form-group">
+                  <label class="font-weight-bold">Razón social</label>
+                  <input type="text" th:field="*{razonSocial}" class="form-control form-control-user" required>
+                </div>
+
+                <div class="border rounded p-3 mb-3"
+                     th:with="dir=*{direccion},
+                               loc=${dir == null ? null : dir.localidad},
+                               dep=${loc == null ? null : loc.departamento},
+                               prov=${dep == null ? null : dep.provincia},
+                               pais=${prov == null ? null : prov.pais}">
+                  <h5 class="font-weight-bold mb-3">Datos de la dirección</h5>
+
+                  <input type="hidden" th:field="*{direccion.id}">
+
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Calle</label>
+                      <input type="text" th:field="*{direccion.calle}" class="form-control" placeholder="Calle" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Numeración</label>
+                      <input type="text" th:field="*{direccion.numeracion}" class="form-control" placeholder="Número" required>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Barrio</label>
+                      <input type="text" th:field="*{direccion.barrio}" class="form-control" placeholder="Barrio">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Manzana</label>
+                      <input type="text" th:field="*{direccion.manzana}" class="form-control" placeholder="Manzana">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Casa / Departamento</label>
+                      <input type="text" th:field="*{direccion.casaDepartamento}" class="form-control" placeholder="Casa / Departamento">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Referencia</label>
+                      <input type="text" th:field="*{direccion.referencia}" class="form-control" placeholder="Referencia">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Latitud</label>
+                      <input type="text" th:field="*{direccion.latitud}" class="form-control" placeholder="Latitud">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label class="font-weight-bold">Longitud</label>
+                      <input type="text" th:field="*{direccion.longitud}" class="form-control" placeholder="Longitud">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="font-weight-bold">País</label>
+                    <select id="paisSelect" th:field="*{direccion.localidad.departamento.provincia.pais.id}" class="form-control" required>
+                      <option value="" disabled th:selected="${pais == null}">Seleccioná un país</option>
+                      <option th:each="pais : ${paises}"
+                              th:value="${pais.id}"
+                              th:text="${pais.nombre}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="font-weight-bold">Provincia</label>
+                    <select id="provinciaSelect" th:field="*{direccion.localidad.departamento.provincia.id}" class="form-control" required>
+                      <option value="" disabled th:selected="${prov == null}">Seleccioná una provincia</option>
+                      <option th:each="prov : ${provincias}"
+                              th:value="${prov.id}"
+                              th:data-pais="${prov.pais.id}"
+                              th:text="${prov.nombre}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="font-weight-bold">Departamento</label>
+                    <select id="departamentoSelect" th:field="*{direccion.localidad.departamento.id}" class="form-control" required>
+                      <option value="" disabled th:selected="${dep == null}">Seleccioná un departamento</option>
+                      <option th:each="dep : ${departamentos}"
+                              th:value="${dep.id}"
+                              th:data-provincia="${dep.provincia.id}"
+                              th:text="${dep.nombre}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="font-weight-bold">Localidad</label>
+                    <select id="localidadSelect" th:field="*{direccion.localidad.id}" class="form-control" required>
+                      <option value="" disabled th:selected="${loc == null}">Seleccioná una localidad</option>
+                      <option th:each="loc : ${localidades}"
+                              th:value="${loc.id}"
+                              th:data-departamento="${loc.departamento.id}"
+                              th:text="|${loc.nombre} (${loc.codPostal})|">
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                  <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Guardar cambios
+                  </button>
+                  <a th:href="@{/empresa/listar}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                  </a>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+<script>
+  (function($){
+    $(document).ready(function(){
+      $('#sidebarToggle, #sidebarToggleTop').on('click', function(e){
+        e.preventDefault();
+        $('#wrapper').toggleClass('toggled');
+      });
+    });
+  })(jQuery);
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const paisSelect = document.getElementById('paisSelect');
+    const provinciaSelect = document.getElementById('provinciaSelect');
+    const departamentoSelect = document.getElementById('departamentoSelect');
+    const localidadSelect = document.getElementById('localidadSelect');
+
+    if (!paisSelect || !provinciaSelect || !departamentoSelect || !localidadSelect) {
+      return;
+    }
+
+    const filterByParent = (parentValue, select, datasetKey) => {
+      let keepCurrent = false;
+      Array.from(select.options).forEach(option => {
+        if (!option.value) {
+          option.hidden = false;
+          return;
+        }
+        const matches = !parentValue || option.dataset[datasetKey] === parentValue;
+        option.hidden = !matches;
+        if (matches && option.value === select.value) {
+          keepCurrent = true;
+        }
+      });
+
+      if (!keepCurrent && select.value) {
+        select.value = '';
+      }
+    };
+
+    const handlePaisChange = () => {
+      filterByParent(paisSelect.value, provinciaSelect, 'pais');
+      handleProvinciaChange();
+    };
+
+    const handleProvinciaChange = () => {
+      filterByParent(provinciaSelect.value, departamentoSelect, 'provincia');
+      handleDepartamentoChange();
+    };
+
+    const handleDepartamentoChange = () => {
+      filterByParent(departamentoSelect.value, localidadSelect, 'departamento');
+    };
+
+    paisSelect.addEventListener('change', handlePaisChange);
+    provinciaSelect.addEventListener('change', handleProvinciaChange);
+    departamentoSelect.addEventListener('change', handleDepartamentoChange);
+
+    handlePaisChange();
+  });
+</script>
+</body>
+</html>
