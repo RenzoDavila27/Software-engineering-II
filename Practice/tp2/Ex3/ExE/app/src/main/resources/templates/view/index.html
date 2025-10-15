@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Catálogo de artículos disponibles en la tienda" />
+        <meta name="author" content="Tienda App" />
+        <title th:text="${pageTitle}">Tienda App</title>
+        <link rel="icon" type="image/x-icon" th:href="@{/assets/favicon.ico}" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css" rel="stylesheet" />
+        <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand fw-bold text-uppercase" th:href="@{/}">Tienda App</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Alternar navegación">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{/}">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/articulo/list}">Catálogo</a></li>
+                        <li class="nav-item" th:if="${esAdmin}">
+                            <a class="nav-link" th:href="@{/proveedor/list}">Proveedores</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-2 ms-lg-3">
+                        <a class="btn btn-outline-dark" th:href="@{/carrito/list}">
+                            <i class="bi-cart-fill me-1"></i>
+                            Carrito
+                        </a>
+                        <a class="btn btn-primary" th:href="@{/login}" th:if="${usuarioActual == null}">
+                            <i class="bi-person-fill me-1"></i>
+                            Iniciar sesión
+                        </a>
+                        <div class="dropdown" th:if="${usuarioActual != null}">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="usuarioMenu"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi-person-circle me-1"></i>
+                                <span th:text="${usuarioActual.nombre}">Usuario</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioMenu">
+                                <li>
+                                    <span class="dropdown-item-text text-muted">
+                                        Sesión iniciada
+                                    </span>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Gestioná tus artículos</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">Administrá el catálogo y visualizá los productos disponibles</p>
+                </div>
+            </div>
+        </header>
+        <section class="py-5">
+            <div class="container px-4 px-lg-5 mt-5">
+                <div th:if="${msgExito != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi-check-circle me-2"></i>
+                    <span th:text="${msgExito}">Acción realizada correctamente.</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+                <div th:if="${msgError != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi-exclamation-triangle me-2"></i>
+                    <span th:text="${msgError}">Se produjo un error.</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+                <div class="row gx-4 gx-lg-5 align-items-center mb-4">
+                    <div class="col">
+                        <h2 class="fw-bold mb-0">Catálogo destacado</h2>
+                        <p class="text-muted mb-0">Estos son los artículos activos en el sistema.</p>
+                    </div>
+                    <div class="col-auto">
+                        <span class="badge bg-dark text-white fs-6 px-3 py-2">
+                            <i class="bi-box-seam me-1"></i>
+                            <span th:text="${articulos != null ? #lists.size(articulos) : 0}">0</span>
+                            artículos
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col">
+                        <a class="btn btn-primary btn-lg" th:href="@{/articulo/alta}" th:if="${usuarioActual != null}">
+                            <i class="bi-plus-circle me-2"></i>
+                            Crear artículo
+                        </a>
+                        <a class="btn btn-outline-primary btn-lg" th:href="@{/login}" th:if="${usuarioActual == null}">
+                            <i class="bi-person-fill me-2"></i>
+                            Iniciar sesión para crear artículos
+                        </a>
+                    </div>
+                </div>
+                <div th:if="${articulos != null and !articulos.isEmpty()}" class="row gx-4 gx-lg-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    <div class="col mb-5" th:each="articulo : ${articulos}">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="position-relative">
+                                <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Imagen de artículo" />
+                                <div class="badge bg-primary text-white position-absolute top-0 start-0 m-3 text-uppercase" th:if="${articulo.proveedor != null}" th:text="${articulo.proveedor.nombre}">Proveedor</div>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <h5 class="fw-bolder" th:text="${articulo.nombre}">Nombre del artículo</h5>
+                                    <p class="text-muted mb-1" th:if="${articulo.proveedor != null}">
+                                        <i class="bi-truck me-1"></i>
+                                        <span th:text="${'Proveedor: ' + articulo.proveedor.nombre}">Proveedor: -</span>
+                                    </p>
+                                    <span class="fs-5 fw-semibold text-primary" th:text="${articulo.precio != null ? '$' + #numbers.formatDecimal(articulo.precio, 0, 'COMMA', 2, 'POINT') : 'Precio no disponible'}">$0.00</span>
+                                </div>
+                            </div>
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <a class="btn btn-outline-dark flex-grow-1" th:href="@{'/articulo/consultar/' + ${articulo.id}}">Ver</a>
+                                        <a class="btn btn-dark flex-grow-1" th:href="@{'/articulo/modificar/' + ${articulo.id}}" th:if="${esAdmin}">Editar</a>
+                                    </div>
+                                    <form th:if="${usuarioActual != null}" th:action="@{/carrito/agregar}" method="post" class="d-grid">
+                                        <input type="hidden" name="articuloId" th:value="${articulo.id}" />
+                                        <input type="hidden" name="cantidad" value="1" />
+                                        <input type="hidden" name="redirect" value="/" />
+                                        <button type="submit" class="btn btn-outline-success">
+                                            <i class="bi-cart-plus me-1"></i>
+                                            Agregar al carrito
+                                        </button>
+                                    </form>
+                                    <a th:if="${usuarioActual == null}" class="btn btn-outline-primary" th:href="@{/login}">
+                                        <i class="bi-person-plus me-1"></i>
+                                        Iniciar sesión para comprar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${articulos == null or articulos.isEmpty()}" class="text-center py-5 bg-light rounded-3 border border-dashed">
+                    <i class="bi-box text-muted display-4 d-block mb-3"></i>
+                    <h3 class="fw-semibold">Todavía no hay artículos cargados</h3>
+                    <p class="text-muted mb-4">Creá tu primer artículo para empezar a construir el catálogo.</p>
+                </div>
+            </div>
+        </section>
+        <footer class="py-5 bg-dark">
+            <div class="container">
+                <p class="m-0 text-center text-white">&copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2023</span> Tienda App - Gestión de artículos</p>
+            </div>
+        </footer>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/scripts.js}"></script>
+    </body>
+</html>

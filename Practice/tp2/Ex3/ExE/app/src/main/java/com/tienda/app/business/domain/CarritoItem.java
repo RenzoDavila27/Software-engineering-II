@@ -1,7 +1,7 @@
 package com.tienda.app.business.domain;
 
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,12 +10,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class Usuario extends BaseEntity<Long> {
+public class CarritoItem extends BaseEntity<Long> {
 
-    private String nombre;
-    private String password;
-    private Boolean administrador = Boolean.FALSE;
+    @ManyToOne(optional = false)
+    private Carrito carrito;
+
+    @ManyToOne(optional = false)
+    private Articulo articulo;
+
+    private Integer cantidad = 1;
+
+    private Double precioUnitario = 0d;
 
     @Override
     public Long getId() {
@@ -35,5 +40,11 @@ public class Usuario extends BaseEntity<Long> {
     @Override
     public void setEliminado(Boolean eliminado) {
         this.eliminado = eliminado;
+    }
+
+    public Double getSubtotal() {
+        double precio = precioUnitario != null ? precioUnitario : 0d;
+        int cantidadActual = cantidad != null ? cantidad : 0;
+        return precio * cantidadActual;
     }
 }

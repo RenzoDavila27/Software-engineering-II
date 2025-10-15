@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Listado de artículos</title>
+        <link rel="stylesheet" th:href="@{/css/styles.css}" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="container py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Listado de artículos</h1>
+                    <p class="text-muted mb-0">Gestioná los artículos activos del sistema.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-outline-secondary" th:href="@{/}">
+                        <i class="bi-house me-1"></i>
+                        Inicio
+                    </a>
+                    <a class="btn btn-primary" th:href="@{/articulo/alta}" th:if="${usuarioActual != null}">
+                        <i class="bi-plus-circle me-1"></i>
+                        Nuevo artículo
+                    </a>
+                    <a class="btn btn-outline-primary" th:href="@{/login}" th:if="${usuarioActual == null}">
+                        <i class="bi-person-fill me-1"></i>
+                        Iniciar sesión
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${msgExito != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi-check-circle me-2"></i>
+                <span th:text="${msgExito}">Acción realizada correctamente.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+            <div th:if="${msgError != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi-exclamation-triangle me-2"></i>
+                <span th:text="${msgError}">Se produjo un error.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+
+            <div th:if="${items != null and !items.isEmpty()}">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Proveedor</th>
+                                <th scope="col" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="articulo : ${items}">
+                                <td th:text="${articulo.nombre}">Nombre</td>
+                                <td th:text="${articulo.precio != null ? '$' + #numbers.formatDecimal(articulo.precio, 0, 'COMMA', 2, 'POINT') : '-'}">$0.00</td>
+                                <td th:text="${articulo.proveedor != null ? articulo.proveedor.nombre : 'Sin proveedor'}">Proveedor</td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a class="btn btn-sm btn-outline-secondary" th:href="@{'/articulo/consultar/' + ${articulo.id}}">
+                                            <i class="bi-eye"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-primary" th:href="@{'/articulo/modificar/' + ${articulo.id}}" th:if="${usuarioActual != null}">
+                                            <i class="bi-pencil-square"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-danger" th:href="@{'/articulo/baja/' + ${articulo.id}}" th:if="${usuarioActual != null}">
+                                            <i class="bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div th:if="${items == null or items.isEmpty()}" class="text-center py-5 bg-light rounded-3 border border-dashed">
+                <i class="bi-box text-muted display-4 d-block mb-3"></i>
+                <h3 class="fw-semibold">No se encontraron artículos</h3>
+                <p class="text-muted mb-4">Cargá un nuevo artículo para comenzar a gestionarlos.</p>
+                <a class="btn btn-primary btn-lg px-4" th:href="@{/articulo/alta}" th:if="${usuarioActual != null}">
+                    <i class="bi-plus-circle me-2"></i>
+                    Crear artículo
+                </a>
+                <a class="btn btn-outline-primary btn-lg px-4" th:href="@{/login}" th:if="${usuarioActual == null}">
+                    <i class="bi-person-fill me-2"></i>
+                    Iniciar sesión para crear artículos
+                </a>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

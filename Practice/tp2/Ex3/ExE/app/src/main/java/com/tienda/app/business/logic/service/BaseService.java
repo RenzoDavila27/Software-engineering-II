@@ -3,7 +3,9 @@ package com.tienda.app.business.logic.service;
 import java.util.List;
 import java.util.Optional;
 
-
+import com.tienda.app.business.domain.BaseEntity;
+import com.tienda.app.business.logic.error.ErrorServiceException;
+import com.tienda.app.business.persistence.repository.BaseRepository;
 
 public abstract class BaseService<T extends BaseEntity<ID>, ID> {
 

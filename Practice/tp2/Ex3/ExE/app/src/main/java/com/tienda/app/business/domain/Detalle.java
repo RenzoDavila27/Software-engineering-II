@@ -2,26 +2,41 @@ package com.tienda.app.business.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import com.tienda.app.business.domain.BaseEntity;
-import com.tienda.app.business.domain.Articulo;
-import com.tienda.app.business.domain.Imagen;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Detalle extends BaseEntity<Long> {
-    
-    
-    @ManyToOne
+
+    @ManyToOne(optional = false)
     private Articulo articulo;
-    @ManyToOne
+
+    @ManyToOne(optional = false)
     private Imagen imagen;
 
-    
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public Boolean isEliminado() {
+        return eliminado;
+    }
+
+    @Override
+    public void setEliminado(Boolean eliminado) {
+        this.eliminado = eliminado;
+    }
 }
