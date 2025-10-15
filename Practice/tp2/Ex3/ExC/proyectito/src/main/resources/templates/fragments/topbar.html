@@ -1,0 +1,20 @@
+<!-- src/main/resources/templates/fragments/topbar.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="topbar">
+  <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+    <!-- Sidebar Toggle (Topbar) -->
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+      <i class="fa fa-bars"></i>
+    </button>
+    <!-- Aquí podés agregar buscador / usuario / notificaciones -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="collapse-item" th:href="@{/usuario/logout}">LOGOUT</a>>
+      </li>
+    </ul>
+  </nav>
+</div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Empresas</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --sidebar-collapsed: 80px;
+      --primary-start: #4e73df;
+      --primary-end: #224abe;
+    }
+
+    body { font-family: "Nunito", "Segoe UI", Roboto, Arial, sans-serif; }
+
+    .sidebar { list-style: none; margin: 0; padding: 0; position: fixed; top: 0; left: 0; height: 100vh;
+               width: var(--sidebar-width); transition: width .2s ease; z-index: 1000; }
+    .bg-gradient-primary {
+      background: linear-gradient(180deg, var(--primary-start) 10%, var(--primary-end) 100%) !important;
+    }
+    .sidebar .nav-link { color: rgba(255,255,255,.95); padding: .75rem 1rem; display:flex; align-items:center; }
+    .sidebar .nav-link .fas { width: 22px; margin-right: .75rem; }
+    .sidebar .sidebar-brand { height: 4.5rem; padding: 1rem; color: white; text-decoration: none; display:flex; align-items:center; }
+    .sidebar-divider { border-top: 1px solid rgba(255,255,255,.15); margin: .5rem 0; }
+
+    #wrapper.toggled .sidebar { width: var(--sidebar-collapsed); }
+    #wrapper { display:flex; align-items:stretch; min-height:100vh; transition:margin-left .2s ease; }
+    #content-wrapper { margin-left: var(--sidebar-width); width: 100%; transition: margin-left .2s ease; }
+    #wrapper.toggled #content-wrapper { margin-left: var(--sidebar-collapsed); }
+
+    @media (max-width: 768px) {
+      .sidebar { left: -100%; position: fixed; }
+      #wrapper.toggled .sidebar { left: 0; }
+      #content-wrapper { margin-left: 0; }
+    }
+  </style>
+</head>
+<body id="page-top">
+
+<div id="wrapper">
+
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+      <div class="container-fluid mt-4">
+
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Empresas registradas</h6>
+            <div class="btn-group" role="group">
+              <a th:href="@{/empresa/exportar}" class="btn btn-outline-success btn-sm" title="Descargar Excel">
+                <i class="fas fa-file-excel"></i> Descargar Excel
+              </a>
+              <a th:href="@{/empresa/crear}" class="btn btn-primary btn-sm" title="Nueva empresa">
+                <i class="fas fa-plus"></i> Nueva Empresa
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+
+            <div th:if="${msgExito != null}" class="alert alert-success" th:text="${msgExito}"></div>
+            <div th:if="${msgError != null}" class="alert alert-danger" th:text="${msgError}"></div>
+
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th style="width: 220px;">Acciones</th>
+                    <th style="width: 120px;">ID</th>
+                    <th>Razón Social</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:if="${#lists.isEmpty(empresas)}">
+                    <td colspan="3" class="text-center text-muted">No hay empresas registradas.</td>
+                  </tr>
+                  <tr th:each="empresa : ${empresas}">
+                    <td>
+                      <div class="btn-group btn-group-sm" role="group">
+                        <a th:href="@{/empresa/modificar/{id}(id=${empresa.id})}" class="btn btn-warning" title="Modificar">
+                          <i class="fas fa-pencil-alt"></i>
+                        </a>
+                        <a th:href="@{/empresa/eliminar/{id}(id=${empresa.id})}" class="btn btn-danger" title="Eliminar">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                        <a th:if="${empresa.direccion != null}" th:href="@{/empresa/mapa/{id}(id=${empresa.direccion.id})}"
+                           class="btn btn-info" title="Ver ubicación" target="_blank">
+                          <i class="fas fa-map-marker-alt"></i> Ubicación
+                        </a>
+                      </div>
+                    </td>
+                    <td th:text="${empresa.id}"></td>
+                    <td th:text="${empresa.razonSocial}"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+<script>
+  (function($){
+    $(document).ready(function(){
+      $('#sidebarToggle, #sidebarToggleTop').on('click', function(e){
+        e.preventDefault();
+        $('#wrapper').toggleClass('toggled');
+      });
+    });
+  })(jQuery);
+</script>
+</body>
+</html>

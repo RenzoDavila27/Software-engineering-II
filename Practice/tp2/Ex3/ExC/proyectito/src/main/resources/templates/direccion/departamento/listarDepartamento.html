@@ -1,0 +1,210 @@
+<!-- src/main/resources/templates/usuario/listar.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Departamentos</title>
+
+   <!-- Bootstrap 4 (SB Admin 2 uses Bootstrap 4) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Small CSS to reproduce SB Admin 2 sidebar behavior/looks -->
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --sidebar-collapsed: 80px;
+      --primary-start: #4e73df;
+      --primary-end: #224abe;
+    }
+
+    body { font-family: "Nunito", "Segoe UI", Roboto, Arial, sans-serif; }
+
+    /* sidebar */
+    .sidebar { list-style: none; margin: 0; padding: 0; position: fixed; top: 0; left: 0; height: 100vh;
+               width: var(--sidebar-width); transition: width .2s ease; z-index: 1000; }
+    .bg-gradient-primary {
+      background: linear-gradient(180deg, var(--primary-start) 10%, var(--primary-end) 100%) !important;
+    }
+    .sidebar .nav-link { color: rgba(255,255,255,.95); padding: .75rem 1rem; display:flex; align-items:center; }
+    .sidebar .nav-link .fas { width: 22px; margin-right: .75rem; }
+    .sidebar .sidebar-brand { height: 4.5rem; padding: 1rem; color: white; text-decoration: none; display:flex; align-items:center; }
+    .sidebar .collapse-inner { background: #fff; }
+    .sidebar .collapse-item { color: #3a3b45; display:block; padding:.5rem 1rem; text-decoration:none; }
+    .sidebar-divider { border-top: 1px solid rgba(255,255,255,.15); margin: .5rem 0; }
+
+    /* wrapper/content */
+    #wrapper.toggled .sidebar { width: var(--sidebar-collapsed); }
+    #wrapper { display:flex; align-items:stretch; min-height:100vh; transition:margin-left .2s ease; }
+    #content-wrapper { margin-left: var(--sidebar-width); width: 100%; transition: margin-left .2s ease; }
+    #wrapper.toggled #content-wrapper { margin-left: var(--sidebar-collapsed); }
+
+    /* adjust brand small rotated icon */
+    .rotate-n-15 { transform: rotate(-15deg); display:inline-block; }
+
+    /* card center */
+    .register-card { margin: 4rem auto; }
+    .form-control-user { border-radius: .35rem; padding: .75rem 1rem; }
+
+    /* small responsive tweaks */
+    @media (max-width: 768px) {
+      .sidebar { left: -100%; position: fixed; }
+      #wrapper.toggled .sidebar { left: 0; }
+      #content-wrapper { margin-left: 0; }
+    }
+  </style>
+</head>
+<body id="page-top">
+
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+      <!-- Page Content -->
+      <div class="container-fluid mt-4">
+
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Departamentos Registrados</h6>
+            <a th:href="@{/departamento/crearForm}" class="btn btn-primary btn-sm">
+              <i class="fas fa-plus"></i> Nuevo Departamento
+            </a>
+          </div>
+          <div class="card-body">
+
+            <!-- Mensajes -->
+            <div th:if="${msgExito != null}" class="alert alert-success" th:text="${msgExito}"></div>
+            <div th:if="${msgError != null}" class="alert alert-danger" th:text="${msgError}"></div>
+
+            <!-- Tabla de usuarios -->
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Acciones</th>
+                    <th>Nombre</th>
+                    <th>Provincia</th>
+                    <th>Pais</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="departamento : ${listaDepartamento}">
+                    <td>
+                      <a href="#" class="btn btn-success btn-sm" 
+                        data-toggle="modal" 
+                        data-target="#verDepartamentoModal"
+                        th:data-nombre="${departamento.nombre}"
+                        th:data-provincia="${departamento.provincia?.nombre}"
+                        th:data-pais="${departamento.provincia?.pais?.nombre}">
+                        <i class="fas fa-eye"></i>
+                      </a>
+                      <a th:href="@{/departamento/modificarForm/{id}(id=${departamento.id})}" class="btn btn-warning btn-sm" title="Modificar">
+                        <i class="fas fa-pencil-alt"></i>
+                      </a>
+                      <a th:href="@{/departamento/eliminar/{id}(id=${departamento.id})}" class="btn btn-danger btn-sm confirmar" title="Baja">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </td>
+                    <td th:text="${departamento.nombre}"></td>
+                    <td th:text="${departamento.provincia?.nombre}"></td>
+                    <td th:text="${departamento.provincia?.pais.nombre}"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+      </div> <!-- /.container-fluid -->
+
+    </div> <!-- /#content -->
+  </div> <!-- /#content-wrapper -->
+
+</div> <!-- /#wrapper -->
+
+<!-- Modal Ver País -->
+<div class="modal fade" id="verDepartamentoModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Detalle del Departamento</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" id="departamentoNombre" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Provincia</label>
+            <input type="text" id="departamentoProvincia" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Pais</label>
+            <input type="text" id="departamentoPais" class="form-control" readonly>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+<!-- Tiny JS: sidebar toggle (SB Admin behavior) -->
+<script>
+  (function($){
+    $(document).ready(function(){
+      // toggle sidebar (button in sidebar fragment)
+      $('#sidebarToggle, #sidebarToggleTop').on('click', function(e){
+        e.preventDefault();
+        $('#wrapper').toggleClass('toggled');
+      });
+
+      // ensure collapse arrows work (Bootstrap 4 collapse handles the rest)
+    });
+  })(jQuery);
+</script>
+<script>
+  $('#verDepartamentoModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Botón que disparó el modal
+    var nombre = button.data('nombre');
+    var pais = button.data('pais');
+    var provincia = button.data('provincia');
+
+    var modal = $(this);
+    modal.find('#departamentoNombre').val(nombre);
+    modal.find('#departamentoProvincia').val(provincia);
+    modal.find('#departamentoPais').val(pais);
+  });
+</script>
+
+</body>
+</html>

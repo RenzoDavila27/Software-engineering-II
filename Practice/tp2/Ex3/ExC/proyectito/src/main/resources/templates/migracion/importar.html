@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Migración de Proveedores</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --sidebar-collapsed: 80px;
+      --primary-start: #4e73df;
+      --primary-end: #224abe;
+    }
+
+    body { font-family: "Nunito", "Segoe UI", Roboto, Arial, sans-serif; }
+
+    .sidebar { list-style: none; margin: 0; padding: 0; position: fixed; top: 0; left: 0; height: 100vh;
+               width: var(--sidebar-width); transition: width .2s ease; z-index: 1000; }
+    .bg-gradient-primary {
+      background: linear-gradient(180deg, var(--primary-start) 10%, var(--primary-end) 100%) !important;
+    }
+    #wrapper.toggled .sidebar { width: var(--sidebar-collapsed); }
+    #wrapper { display:flex; align-items:stretch; min-height:100vh; transition:margin-left .2s ease; }
+    #content-wrapper { margin-left: var(--sidebar-width); width: 100%; transition: margin-left .2s ease; }
+    #wrapper.toggled #content-wrapper { margin-left: var(--sidebar-collapsed); }
+
+    @media (max-width: 768px) {
+      .sidebar { left: -100%; position: fixed; }
+      #wrapper.toggled .sidebar { left: 0; }
+      #content-wrapper { margin-left: 0; }
+    }
+  </style>
+</head>
+<body id="page-top">
+
+<div id="wrapper">
+
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+      <div class="container-fluid mt-4">
+
+        <div class="row">
+          <div class="col-lg-8 col-xl-6">
+            <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Migración de proveedores</h6>
+              </div>
+              <div class="card-body">
+
+                <div th:if="${msgExito != null}" class="alert alert-success" th:text="${msgExito}"></div>
+                <div th:if="${msgError != null}" class="alert alert-danger" th:text="${msgError}"></div>
+
+                <p>Adjunta el archivo <strong>migracion.txt</strong> con los datos separados por punto y coma
+                  siguiendo el orden indicado a continuación:</p>
+
+                <ul>
+                  <li><code>NOMBRE;APELLIDO;TELEFONO;CORREOELECTRONICO;CUIT;CALLE;NUMERO;LOCALIDAD;DEPARTAMENTO;PROVINCIA;PAIS;</code></li>
+                  <li>Ejemplo: <code>Juan;Pérez;3511234567;juan.perez@example.com;20-12345678-9;San Martín;1234;Córdoba;Capital;Córdoba;Argentina;</code></li>
+                </ul>
+
+                <form th:action="@{/migracion/proveedores}" method="post" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <label for="archivo">Archivo de migración</label>
+                    <input type="file" name="archivo" id="archivo" class="form-control-file" accept=".txt" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-file-import"></i> Procesar archivo
+                  </button>
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-12">
+            <div class="card shadow mb-4" th:if="${resultado != null}">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Resultado de la migración</h6>
+              </div>
+              <div class="card-body">
+                <div class="row text-center mb-3">
+                  <div class="col-md-4">
+                    <h5 class="text-primary">Procesados</h5>
+                    <p class="lead" th:text="${resultado.registrosProcesados}">0</p>
+                  </div>
+                  <div class="col-md-4">
+                    <h5 class="text-success">Creados</h5>
+                    <p class="lead" th:text="${resultado.registrosCreados}">0</p>
+                  </div>
+                  <div class="col-md-4">
+                    <h5 class="text-warning">Omitidos</h5>
+                    <p class="lead" th:text="${resultado.registrosOmitidos}">0</p>
+                  </div>
+                </div>
+
+                <div th:if="${resultado.tieneAdvertencias()}" class="alert alert-info">
+                  <ul class="mb-0">
+                    <li th:each="advertencia : ${resultado.advertencias}" th:text="${advertencia}"></li>
+                  </ul>
+                </div>
+
+                <div th:if="${resultado.tieneErrores()}" class="alert alert-warning">
+                  <h6 class="font-weight-bold">Registros con inconvenientes</h6>
+                  <ul class="mb-0">
+                    <li th:each="error : ${resultado.errores}" th:text="${error}"></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+<script>
+  (function($){
+    $(document).ready(function(){
+      $('#sidebarToggle, #sidebarToggleTop').on('click', function(e){
+        e.preventDefault();
+        $('#wrapper').toggleClass('toggled');
+      });
+    });
+  })(jQuery);
+</script>
+</body>
+</html>
