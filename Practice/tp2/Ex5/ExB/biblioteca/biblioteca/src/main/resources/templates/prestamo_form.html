@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments/head :: head('Biblioteca - Nuevo Préstamo', 'https://use.fontawesome.com/releases/v5.6.3/css/all.css')}"></head>
+
+    <body>
+        <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+        <div class="container m-5">
+            <h2 class="mb-4">Confirmar Préstamo</h2>
+
+            <div th:if="${error}!=null" class="card text-white bg-danger mb-3 mensajeError">
+                <div class="card-body">
+                    <h5 class="card-title">Error</h5>
+                    <p class="card-text" th:text="${error}"></p>
+                </div>
+            </div>
+
+            <form th:action="@{/prestamo/solicitar}" method="post" class="card p-4">
+                <input type="hidden" name="idLibro" th:value="${libro.id}">
+
+                <div class="mb-3">
+                    <label class="form-label">Libro</label>
+                    <input type="text" class="form-control" th:value="${libro.titulo}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Autor</label>
+                    <input type="text" class="form-control" th:value="${libro.autor != null ? libro.autor.nombre : 'Sin autor'}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Editorial</label>
+                    <input type="text" class="form-control" th:value="${libro.editorial != null ? libro.editorial.nombre : 'Sin editorial'}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <span class="badge bg-info text-dark">
+                        Disponibles:
+                        <span th:text="${disponibles}"></span>
+                    </span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Confirmar préstamo</button>
+                    <a th:href="@{/libro/lista}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+
+        <footer class="text-muted py-5">
+            <div class="containerFooter">
+                <p class="mb-1">Album example is &copy; Bootstrap,<br>but please download and customize it for yourself!</p>
+                <p class="mb-0">New to Bootstrap? <a href="/"><br>Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
+                <p class="float-end mb-1">
+                    <a href="#" style="text-decoration:none"><span>⬆️</span> Back to top</a>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+                crossorigin="anonymous"></script>
+    </body>
+</html>
