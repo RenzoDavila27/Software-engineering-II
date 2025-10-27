@@ -33,9 +33,9 @@ public class ImdbService {
 
     public Mono<List<MovieDetailsDTO>> obtenerListaProximosEstrenos() {
     return webClient.get()
-        .uri("/api/imdb/top-box-office") // ⬅️ Nuevo endpoint de lista detallada
+        .uri("/api/imdb/top-box-office") // Nuevo endpoint de lista detallada
         .retrieve()
-        .bodyToFlux(MovieDetailsDTO.class) // ⬅️ Usamos bodyToFlux para mapear un array de objetos
+        .bodyToFlux(MovieDetailsDTO.class) // Usamos bodyToFlux para mapear un array de objetos
         .collectList(); // Lo convertimos en un Mono<List<MovieDetailsDto>>
     }
 }
