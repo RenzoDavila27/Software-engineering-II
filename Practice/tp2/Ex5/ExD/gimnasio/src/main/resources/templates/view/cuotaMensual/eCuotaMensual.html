@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>CUOTA MENSUAL</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">
+      <hr>
+      <div class="container">
+
+        <div class="card">
+          <h4 class="card-header"><strong>EDIT CUOTA MENSUAL</strong></h4>
+          <div class="card-body">
+
+            <form th:action="@{/cuotaMensual/aceptarEditCuotaMensual}" method="post" th:object="${cuotaMensual}">
+                <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="hidden" th:field="*{id}">
+                                <label for="nombre">Nombre</label>
+                                <input type="text" class="form-control" th:field="*{socio.nombre}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="apellido">Apellido</label>
+                                <input type="text" class="form-control" th:field="*{socio.apellido}" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="mes">Mes</label>
+                                <select id="tipo" th:field="*{mes}" class="form-control" th:disabled="${isDisabled}">
+                                    <option th:each="mes : ${Mes}" 
+                                    th:value="${mes}" 
+                                    th:text="${mes}">Tipo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="anio">Año</label>
+                                <input type="text" class="form-control" th:field="*{anio}" readonly>
+                            </div>
+                        </div>
+                      </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="estadocuota">Estado Cuota</label>
+                                <select id="tipo" th:field="*{estado}" class="form-control" th:disabled="${isDisabled}">
+                                    <option th:each="estado : ${estadoCuotaMensual}" 
+                                    th:value="${estado}" 
+                                    th:text="${estado}">Tipo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fechaVencimiento">Fecha de Vencimiento</label>
+                                <input type="date" class="form-control" th:field="*{fechaVencimiento}" required th:disabled="${isDisabled}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="valorCuota">Valor de la Cuota</label>
+                                <input type="text" class="form-control" th:field="*{valorCuota.valorCuota}" readonly>
+                            </div>
+                        </div>
+                      </div>
+
+              <hr>
+              <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary" th:disabled="${isDisabled}">ACEPTAR</button>
+               <a class="btn btn-primary" th:href="@{/cuotaMensual/cancelarEditCuotaMensual}" role="button">CANCELAR</a>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
+  </body>
+</html>

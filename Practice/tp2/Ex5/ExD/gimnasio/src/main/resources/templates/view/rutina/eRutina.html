@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>RUTINA</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">
+      <hr>
+      <div class="container">
+
+        <div class="card">
+          <h4 class="card-header"><strong>EDIT RUTINA</strong></h4>
+          <div class="card-body">
+
+            <form th:action="@{/rutina/aceptarEditRutina}" method="post" th:object="${rutina}">
+
+              <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
+              <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+
+                    <input type="hidden" name="id" th:field="*{id}">
+
+                    <div class="mb-3">
+                      <label for="profesor" class="form-label d-block">Profesor</label>
+                      <select class="form-select" th:field="*{profesor.id}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{profesor} == null">Seleccione</option>
+                        <option th:each="prof : ${profesores}" th:value="${prof.id}" th:text="|${prof.nombre} ${prof.apellido}|"></option>
+                      </select>
+                      <input type="hidden" th:if="${isDisabled}" name="profesor.id"
+                             th:value="${rutina != null && rutina.profesor != null ? rutina.profesor.id : ''}">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="socio" class="form-label d-block">Socio</label>
+                      <select class="form-select" th:field="*{socio.id}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{socio} == null">Seleccione</option>
+                        <option th:each="socio : ${socios}" th:value="${socio.id}" th:text="|${socio.nombre} ${socio.apellido}|"></option>
+                      </select>
+                      <input type="hidden" th:if="${isDisabled}" name="socio.id"
+                             th:value="${rutina != null && rutina.socio != null ? rutina.socio.id : ''}">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                      <input type="date" class="form-control" th:field="*{fechaInicio}" required th:disabled="${isDisabled}">
+                      <input type="hidden" th:if="${isDisabled}" name="fechaInicio"
+                             th:value="${rutina != null && rutina.fechaInicio != null ? #temporals.format(rutina.fechaInicio, 'yyyy-MM-dd') : ''}">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="fechaFinalizacion" class="form-label">Fecha Finalización</label>
+                      <input type="date" class="form-control" th:field="*{fechaFinalizacion}" th:disabled="${isDisabled}">
+                      <input type="hidden" th:if="${isDisabled}" name="fechaFinalizacion"
+                             th:value="${rutina != null && rutina.fechaFinalizacion != null ? #temporals.format(rutina.fechaFinalizacion, 'yyyy-MM-dd') : ''}">
+                    </div>
+
+                    <div class="mb-3" th:if="${!isDisabled}">
+                      <label class="form-label">Estado</label>
+                      <input type="text" class="form-control" th:value="${rutina != null && rutina.estadoRutina != null ? #strings.capitalize(rutina.estadoRutina.name().toLowerCase()) : 'En proceso'}" readonly>
+                    </div>
+
+                    <div class="mb-3" th:if="${isDisabled}">
+                      <label for="estadoRutina" class="form-label d-block">Estado</label>
+                      <input type="text" class="form-control"
+                             th:value="${rutina != null && rutina.estadoRutina != null ? #strings.capitalize(rutina.estadoRutina.name().toLowerCase()) : 'En proceso'}"
+                             readonly>
+                      <input type="hidden" name="estadoRutina"
+                             th:value="${rutina != null && rutina.estadoRutina != null ? rutina.estadoRutina : ''}">
+                    </div>
+
+                    <div class="mb-3" th:if="${!isDisabled}">
+                      <label for="estadoRutina" class="form-label d-block">Cambiar Estado</label>
+                      <select class="form-select" th:field="*{estadoRutina}" th:disabled="${isDisabled}">
+                        <option value="" disabled th:selected="*{estadoRutina} == null">Seleccione</option>
+                        <option th:each="estado : ${estadosRutina}" th:value="${estado}" th:text="${#strings.capitalize(estado.name().toLowerCase())}"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <h5>Detalles de la Rutina</h5>
+                      <table class="table table-sm">
+                        <thead>
+                          <tr>
+                            <th>Fecha</th>
+                            <th>Actividad</th>
+                            <th>Estado</th>
+                            <th th:if="${isDisabled != true}" class="text-center">Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody id="detallesRutinaBody">
+                          <tr th:each="detalle, stat : ${detallesRutina}" th:attr="data-index=${stat.index}">
+                            <td>
+                              <input type="hidden" data-field="id"
+                                     th:name="${'detalles[' + stat.index + '].id'}"
+                                     th:value="${detalle.id}"
+                                     th:if="${detalle.id != null}">
+                              <input type="hidden" data-field="fecha"
+                                     th:name="${'detalles[' + stat.index + '].fecha'}"
+                                     th:value="${detalle.fecha != null ? #temporals.format(detalle.fecha, 'yyyy-MM-dd') : ''}"
+                                     th:if="${isDisabled == true}">
+                              <input type="date" class="form-control" data-field="fecha"
+                                     th:name="${'detalles[' + stat.index + '].fecha'}"
+                                     th:value="${detalle.fecha != null ? #temporals.format(detalle.fecha, 'yyyy-MM-dd') : ''}"
+                                     th:attr="required=${isDisabled != true}"
+                                     th:disabled="${isDisabled}" th:if="${isDisabled != true}">
+                              <span th:if="${isDisabled == true}"
+                                    th:text="${detalle.fecha != null ? #temporals.format(detalle.fecha, 'dd/MM/yyyy') : ''}"></span>
+                            </td>
+                            <td>
+                              <input type="hidden" data-field="actividad"
+                                     th:name="${'detalles[' + stat.index + '].actividad'}"
+                                     th:value="${detalle.actividad}"
+                                     th:if="${isDisabled == true}">
+                              <input type="text" class="form-control" data-field="actividad"
+                                     th:name="${'detalles[' + stat.index + '].actividad'}"
+                                     th:value="${detalle.actividad}"
+                                     th:attr="required=${isDisabled != true}"
+                                     th:disabled="${isDisabled}" th:if="${isDisabled != true}">
+                              <span th:if="${isDisabled == true}" th:text="${detalle.actividad}"></span>
+                            </td>
+                            <td th:with="canEditEstadoDetalle=${(session.rol != 'ADMINISTRADOR' and session.rol != 'EMPLEADO') or (isDisabled != true)}">
+                              <select class="form-select" data-field="estadoDetalle"
+                                      th:name="${'detalles[' + stat.index + '].estadoDetalle'}"
+                                      th:attr="required=${(session.rol != 'ADMINISTRADOR' and session.rol != 'EMPLEADO') or (isDisabled != true)}"
+                                      th:disabled="${(session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO') and isDisabled}"
+                                      th:if="${canEditEstadoDetalle}">
+                                <option value="" disabled th:selected="${detalle.estadoDetalle == null}">Seleccione</option>
+                                <option th:each="estado : ${T(com.fioritech.gimnasio.business.domain.enums.EstadoDetalleRutina).values()}"
+                                        th:value="${estado}"
+                                        th:selected="${estado == detalle.estadoDetalle}"
+                                        th:text="${#strings.capitalize(estado.name().toLowerCase())}"></option>
+                              </select>
+                              <input type="hidden" data-field="estadoDetalle"
+                                     th:name="${'detalles[' + stat.index + '].estadoDetalle'}"
+                                     th:value="${detalle.estadoDetalle}"
+                                     th:if="${!canEditEstadoDetalle}">
+                              <span th:if="${!canEditEstadoDetalle}"
+                                    th:text="${detalle.estadoDetalle != null ? #strings.capitalize(detalle.estadoDetalle.name().toLowerCase()) : 'Sin estado'}"></span>
+                            </td>
+                            <td th:if="${isDisabled != true}" class="text-center align-middle">
+                              <button type="button" class="btn btn-outline-danger btn-sm remove-detalle">Eliminar</button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div th:if="${isDisabled != true and (session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO')}" class="mt-2" >
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addDetalleBtn">Agregar Detalle</button>
+                      </div>
+
+                      <template id="detalle-template">
+                        <tr data-index="__INDEX__">
+                          <td>
+                            <input type="date" class="form-control" data-field="fecha" name="detalles[__INDEX__].fecha" required>
+                          </td>
+                          <td>
+                            <input type="text" class="form-control" data-field="actividad" name="detalles[__INDEX__].actividad" required>
+                          </td>
+                          <td>
+                            <select class="form-select" data-field="estadoDetalle" name="detalles[__INDEX__].estadoDetalle" required>
+                              <option value="" disabled selected>Seleccione</option>
+                              <option th:each="estado : ${T(com.fioritech.gimnasio.business.domain.enums.EstadoDetalleRutina).values()}"
+                                      th:value="${estado}"
+                                      th:text="${#strings.capitalize(estado.name().toLowerCase())}"></option>
+                            </select>
+                          </td>
+                          <td class="text-center align-middle" th:if = "${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}">
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-detalle">Eliminar</button>
+                          </td>
+
+                        </tr>
+                      </template>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+              <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary"
+                       th:disabled="${(session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO') ? isDisabled : false}">ACEPTAR</button>
+               <a class="btn btn-primary" th:href="@{/rutina/cancelarEditRutina}" role="button">CANCELAR</a>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      document.addEventListener('DOMContentLoaded', function () {
+        var isDisabled = /*[[${isDisabled != null ? isDisabled : false}]]*/ false;
+        if (isDisabled) {
+          return;
+        }
+
+        var detallesBody = document.getElementById('detallesRutinaBody');
+        var addButton = document.getElementById('addDetalleBtn');
+        var template = document.getElementById('detalle-template');
+
+        if (!detallesBody || !template) {
+          return;
+        }
+
+        var reindexRows = function () {
+          var rows = detallesBody.querySelectorAll('tr');
+          rows.forEach(function (row, index) {
+            row.setAttribute('data-index', index);
+            row.querySelectorAll('[data-field]').forEach(function (input) {
+              var field = input.getAttribute('data-field');
+              if (field) {
+                input.setAttribute('name', 'detalles[' + index + '].' + field);
+              }
+            });
+          });
+        };
+
+        if (addButton) {
+          addButton.addEventListener('click', function () {
+            var content = template.content;
+            if (!content) {
+              return;
+            }
+            var clone = content.firstElementChild.cloneNode(true);
+            detallesBody.appendChild(clone);
+            reindexRows();
+          });
+        }
+
+        detallesBody.addEventListener('click', function (event) {
+          if (event.target.classList.contains('remove-detalle')) {
+            var row = event.target.closest('tr');
+            if (row) {
+              row.remove();
+              reindexRows();
+            }
+          }
+        });
+
+        reindexRows();
+      });
+      /*]]>*/
+    </script>
+
+  </body>
+</html>
