@@ -112,12 +112,12 @@ public class LibroController {
     //////////////////////////////////////////
     //////////////////////////////////////////
     
-    @GetMapping("/modificar/{isbn}")
-    public String irEditModificar(@PathVariable Long isbn, ModelMap modelo) {
+    @GetMapping("/modificar/{id}")
+    public String irEditModificar(@PathVariable String id, ModelMap modelo) {
       
        try {
-    	   
-        modelo.put("libro", libroService.buscarLibroPorIsbn(isbn));
+        Libro libro = libroService.buscarLibro(id);
+        modelo.put("libro", libro);
         
         List<Autor> autores = autorService.listarAutor();
         List<Editorial> editoriales = editorialService.listarEditorial();
@@ -128,12 +128,19 @@ public class LibroController {
         return "libro_modificar.html";
         
        }catch(Exception e) {
-      	 return null;   
+      	 return "redirect:/libro/lista";   
        } 
     }
 
-    @PostMapping("/modificar/{isbn}")
-    public String aceptarEditModificar(@PathVariable Long isbn, String titulo, Integer ejemplares, String idAutor, String idEditorial, ModelMap modelo, MultipartFile archivo) {
+    @PostMapping("/modificar/{id}")
+    public String aceptarEditModificar(@PathVariable String id,
+                                       @RequestParam Long isbn,
+                                       @RequestParam String titulo,
+                                       @RequestParam Integer ejemplares,
+                                       @RequestParam String idAutor,
+                                       @RequestParam String idEditorial,
+                                       ModelMap modelo,
+                                       @RequestParam(required = false) MultipartFile archivo) {
         try {
         	
             List<Autor> autores = autorService.listarAutor();
@@ -142,7 +149,7 @@ public class LibroController {
             modelo.addAttribute("autores", autores);
             modelo.addAttribute("editoriales", editoriales);
 
-            libroService.modificarLibro(archivo, "", isbn, titulo, ejemplares, idAutor, idEditorial);
+            libroService.modificarLibro(archivo, id, isbn, titulo, ejemplares, idAutor, idEditorial);
             
                         
             return "redirect:/regresoPage";
@@ -156,6 +163,12 @@ public class LibroController {
              autores = autorService.listarAutor();
              editoriales = editorialService.listarEditorial();
         	}catch(Exception e) {} 
+        	
+        	try {
+        		modelo.put("libro", libroService.buscarLibro(id));
+        	}catch(Exception ignored) {
+        		modelo.put("libro", null);
+        	}
             
             modelo.put("error", ex.getMessage());
             

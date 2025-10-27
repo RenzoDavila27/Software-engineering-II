@@ -15,6 +15,8 @@ public class Libro {
     private Long isbn;
     private String titulo;
     private Integer ejemplares;
+    private Integer ejemplaresPrestados;
+    private Integer ejemplaresRestantes;
     @ManyToOne
     private Autor autor;
     @ManyToOne
@@ -58,6 +60,22 @@ public class Libro {
 
     public void setEjemplares(Integer ejemplares) {
         this.ejemplares = ejemplares;
+    }
+
+    public Integer getEjemplaresPrestados() {
+        return ejemplaresPrestados;
+    }
+
+    public void setEjemplaresPrestados(Integer ejemplaresPrestados) {
+        this.ejemplaresPrestados = ejemplaresPrestados;
+    }
+
+    public Integer getEjemplaresRestantes() {
+        return ejemplaresRestantes;
+    }
+
+    public void setEjemplaresRestantes(Integer ejemplaresRestantes) {
+        this.ejemplaresRestantes = ejemplaresRestantes;
     }
 
     public Autor getAutor() {

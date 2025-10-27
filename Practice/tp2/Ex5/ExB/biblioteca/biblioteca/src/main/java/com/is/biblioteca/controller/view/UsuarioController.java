@@ -138,10 +138,10 @@ public class UsuarioController {
 		
 	  } catch (ErrorServiceException e) {
           modelo.put("error", e.getMessage());
-          return "usuario_list";
+          return "usuario_list.html";
       } catch (Exception e) {
           modelo.put("error", "Error de Sistemas");
-          return "usuario_list";
+          return "usuario_list.html";
       }	
 	}
 
@@ -156,7 +156,7 @@ public class UsuarioController {
 
 			modelo.put("exito", "Usuario actualizado correctamente!");
 
-			return "redirect:/admin/dashboard";
+			return "redirect:/admin/usuarios";
 
 		} catch (ErrorServiceException ex) {
 

@@ -89,6 +89,8 @@ public class LibroService {
 			libro.setIsbn(isbn);
 			libro.setTitulo(titulo);
 			libro.setEjemplares(ejemplares);
+			libro.setEjemplaresPrestados(0);
+			libro.setEjemplaresRestantes(ejemplares);
 			libro.setAutor(autor);
 			libro.setEditorial(editorial);
 			libro.setEliminado(false);
@@ -138,6 +140,12 @@ public class LibroService {
 			libro.setIsbn(isbn);
 			libro.setTitulo(titulo);
 			libro.setEjemplares(ejemplares);
+			Integer ejemplaresPrestados = libro.getEjemplaresPrestados() != null ? libro.getEjemplaresPrestados() : 0;
+			if (ejemplaresPrestados > ejemplares) {
+				throw new ErrorServiceException("La cantidad total de ejemplares no puede ser menor que los prestados");
+			}
+			libro.setEjemplaresPrestados(ejemplaresPrestados);
+			libro.setEjemplaresRestantes(ejemplares - ejemplaresPrestados);
 			libro.setAutor(autor);
 			libro.setEditorial(editorial);
 

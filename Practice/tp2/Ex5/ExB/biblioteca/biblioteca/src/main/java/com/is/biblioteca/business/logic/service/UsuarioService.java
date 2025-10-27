@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +17,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.is.biblioteca.business.domain.entity.Imagen;
@@ -35,37 +38,28 @@ public class UsuarioService implements UserDetailsService {
 	@Autowired
     private ImagenService imagenService;
 	
-    public void validar(String nombre, String email, String clave, String confirmacion) throws ErrorServiceException {
-       try { 
-    	   
-    	
+    private void validarDatosBasicos(String nombre, String email) throws ErrorServiceException {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new ErrorServiceException("Debe indicar el nombre");
         }
-        
+
         if (email == null || email.trim().isEmpty()) {
             throw new ErrorServiceException("Debe indicar el Email");
         }
-        
+    }
+
+    private void validarClave(String clave, String confirmacion) throws ErrorServiceException {
         if (clave == null || clave.trim().isEmpty() || clave.length() < 6) {
-            throw new ErrorServiceException("Ka contrasela debe tener al menos 6 caracteres");
+            throw new ErrorServiceException("La contraseña debe tener al menos 6 caracteres");
         }
-        
+
         if (confirmacion == null || confirmacion.trim().isEmpty()) {
             throw new ErrorServiceException("Debe indicar la confirmación de clave");
         }
-        
+
         if (!clave.trim().equals(confirmacion.trim())) {
             throw new ErrorServiceException("La clave debe ser igual a su confirmación");
         }
-        
-      }catch(ErrorServiceException e) {  
-		   throw e;  
-	  }catch(Exception e) {
-		   e.printStackTrace();
-		   throw new ErrorServiceException("Error de Sistemas");
-	  }  
-
     }
     
     @Transactional
@@ -73,7 +67,8 @@ public class UsuarioService implements UserDetailsService {
 
       try {	
     	  
-        validar(nombre, email, clave, confirmacion);
+        validarDatosBasicos(nombre, email);
+        validarClave(clave, confirmacion);
         
         Usuario usuario = new Usuario();
         usuario.setId(UUID.randomUUID().toString());
@@ -103,21 +98,34 @@ public class UsuarioService implements UserDetailsService {
 
     	try {
     		
-    		validar(nombre, email, clave, confirmacion);
+    		validarDatosBasicos(nombre, email);
     		
             Usuario usuario = buscarUsuario(idUsuario);
             usuario.setNombre(nombre);
             usuario.setEmail(email);
-            usuario.setRol(Rol.USER);
-            usuario.setPassword(new BCryptPasswordEncoder().encode(clave));
+
+            boolean claveIngresada = clave != null && !clave.trim().isEmpty();
+            boolean confirmacionIngresada = confirmacion != null && !confirmacion.trim().isEmpty();
+
+            if (claveIngresada || confirmacionIngresada) {
+                validarClave(clave, confirmacion);
+                usuario.setPassword(new BCryptPasswordEncoder().encode(clave));
+            }
 
             String idImagen = null;
             if (usuario.getImagen() != null) {
             	idImagen = usuario.getImagen().getId();
             }
             
-            Imagen imagen = imagenService.modificarImagen(idImagen, archivo);
-            usuario.setImagen(imagen);
+            if (archivo != null && !archivo.isEmpty()) {
+                Imagen imagen;
+                if (idImagen != null) {
+                    imagen = imagenService.modificarImagen(idImagen, archivo);
+                } else {
+                    imagen = imagenService.crearImagen(archivo);
+                }
+                usuario.setImagen(imagen);
+            }
             
             return repository.save(usuario);
             
@@ -291,6 +299,9 @@ public class UsuarioService implements UserDetailsService {
             List<GrantedAuthority> permisos = new ArrayList<>();
             GrantedAuthority p = new SimpleGrantedAuthority("ROLE_" + usuario.getRol().toString());
             permisos.add(p);
+            ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            HttpSession session = requestAttributes.getRequest().getSession(true);
+            session.setAttribute("usuariosession", usuario);
             return new User(usuario.getEmail(), usuario.getPassword(), permisos);
         }else {
             return null;

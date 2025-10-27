@@ -15,11 +15,11 @@ public class InicioAplicacionService {
 		
 		try {
 			
-			//try {
-				//usuarioService.buscarUsuarioPorNombre("Administrador");
-			//} catch (ErrorServiceException e) {
-				usuarioService.crearUsuario("Administrador", "administrador@administrador", "1234567", "1234567", null);
-			//}
+			var adminExistente = usuarioService.buscarUsuarioPorEmail("administrador@administrador");
+			if (adminExistente == null) {
+				var admin = usuarioService.crearUsuario("Administrador", "administrador@administrador", "1234567", "1234567", null);
+				usuarioService.cambiarRol(admin.getId());
+			}
 			
         } catch (Exception ex){
             ex.printStackTrace();
