@@ -10,6 +10,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
         </processorPath>
         <module name="gimnasio" />
+        <module name="gimnasio (2)" />
         <module name="gimnasio (1)" />
       </profile>
     </annotationProcessing>
@@ -21,6 +22,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="gimnasio" options="-parameters" />
       <module name="gimnasio (1)" options="-parameters" />
+      <module name="gimnasio (2)" options="-parameters" />
     </option>
   </component>
 </project>
