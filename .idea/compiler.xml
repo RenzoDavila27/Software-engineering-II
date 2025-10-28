@@ -2,7 +2,13 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for gimnasio" enabled="true">
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="biblioteca" />
+      </profile>
+      <profile name="Annotation profile for contactos" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -10,16 +16,18 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
         </processorPath>
         <module name="gimnasio" />
-        <module name="gimnasio (2)" />
-        <module name="gimnasio (1)" />
+        <module name="contactos" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="biblioteca" target="17" />
+      <module name="gimnasio (1)" target="17" />
+      <module name="gimnasio (2)" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="biblioteca" options="-parameters" />
+      <module name="contactos" options="-parameters" />
       <module name="gimnasio" options="-parameters" />
       <module name="gimnasio (1)" options="-parameters" />
       <module name="gimnasio (2)" options="-parameters" />
