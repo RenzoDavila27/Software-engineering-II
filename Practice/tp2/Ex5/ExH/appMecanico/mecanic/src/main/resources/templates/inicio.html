@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mecánica FioriTech – Inicio</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Estilos personalizados -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    .hero {
+      background: url('/img/garage-banner.jpg') no-repeat center center;
+      background-size: cover;
+      height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      font-size: 1.25rem;
+    }
+    .services .icon {
+      font-size: 3rem;
+      color: #ffbc00;
+    }
+    .footer {
+      background: #222;
+      color: #aaa;
+      padding: 2rem 0;
+    }
+    .footer a {
+      color: #ffbc00;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background-color: #ffbc00;
+      border-color: #ffbc00;
+    }
+    .btn-primary:hover {
+      background-color: #e6ac00;
+      border-color: #e6ac00;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand text-warning" href="#">FioriTech</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" th:href="@{/inicio}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/cliente/list}">Clientes</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/vehiculo/list}">Vehículos</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/listarMecanico}">Personal</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/listarAdmin}">Administracion</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Cerrar Sesión</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container text-center">
+    <h1>Mecánica FioriTech</h1>
+    <p>Gestiona tu taller de autos con precisión y velocidad</p>
+  </div>
+</section>
+
+<!-- Servicios incluidos -->
+<section class="services py-5">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-md-4">
+        <div class="icon mb-3"><i class="fas fa-car-repair"></i></div>
+        <h4>Mantenimiento General</h4>
+        <p>Diagnóstico y reparación completa de autos y vehículos ligeros.</p>
+      </div>
+      <div class="col-md-4">
+        <div class="icon mb-3"><i class="fas fa-tools"></i></div>
+        <h4>Mecánicos Especializados</h4>
+        <p>Equipo profesional autorizado para atender cualquier tipo de avería.</p>
+      </div>
+      <div class="col-md-4">
+        <div class="icon mb-3"><i class="fas fa-history"></i></div>
+        <h4>Historial Detallado</h4>
+        <p>Control total del historial de arreglos y mantenimiento para cada vehículo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonios / Estadísticas -->
+<section class="stats bg-light py-5">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-4">
+        <h2 class="text-warning">+1.234</h2>
+        <p>Vehículos atendidos</p>
+      </div>
+      <div class="col-4">
+        <h2 class="text-warning">+567</h2>
+        <p>Clientes satisfechos</p>
+      </div>
+      <div class="col-4">
+        <h2 class="text-warning">15</h2>
+        <p>Años de experiencia</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container text-center">
+    <p>© 2025 Mecánica FioriTech. Todos los derechos reservados.</p>
+    <p>Síguenos en:
+      <a href="#"><i class="fab fa-facebook fa-lg mx-2"></i></a>
+      <a href="#"><i class="fab fa-instagram fa-lg mx-2"></i></a>
+      <a href="#"><i class="fab fa-twitter fa-lg mx-2"></i></a>
+    </p>
+  </div>
+</footer>
+
+<!-- Bootstrap JS y dependencias -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

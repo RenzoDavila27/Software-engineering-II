@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${titleEdit}">Edición de Vehículo</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Estilos personalizados -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      background-color: #f8f9fa;
+    }
+    .navbar-brand { color: #ffbc00 !important; }
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      margin-top: 2rem;
+      max-width: 700px;
+    }
+    label { font-weight: 600; }
+    .btn-primary {
+      background-color: #ffbc00;
+      border-color: #ffbc00;
+    }
+    .btn-primary:hover {
+      background-color: #e6ac00;
+      border-color: #e6ac00;
+    }
+    .select2-container--default .select2-selection--single {
+      height: 38px;
+      padding: 5px 10px;
+      border-radius: 0.25rem;
+      border: 1px solid #ced4da;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand text-warning" href="#">FioriTech</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" th:href="@{/inicio}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/cliente/list}">Clientes</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/vehiculo/list}">Vehículos</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/listarMecanico}">Personal</a></li>
+        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/listarAdmin}">Administracion</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Cerrar Sesión</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Formulario -->
+<div class="container d-flex justify-content-center">
+  <div class="form-container">
+    <h2 class="mb-4 text-center" th:text="${titleEdit}">Edición de Vehículo</h2>
+
+    <div th:if="${msgError}" class="alert alert-danger" th:text="${msgError}"></div>
+
+    <form th:action="@{/vehiculo/actualizar}" th:object="${item}" method="post">
+      <input type="hidden" th:field="*{id}" />
+
+      <div class="mb-3">
+        <label>Marca:</label>
+        <input type="text" class="form-control" th:field="*{marca}" th:disabled="${isDisabled}" />
+      </div>
+
+      <div class="mb-3">
+        <label>Modelo:</label>
+        <input type="text" class="form-control" th:field="*{modelo}" th:disabled="${isDisabled}" />
+      </div>
+
+      <div class="mb-3">
+        <label>Patente:</label>
+        <input type="text" class="form-control" th:field="*{patente}" th:disabled="${isDisabled}" />
+      </div>
+
+      <div class="mb-3">
+        <label>Dueño:</label>
+        <select class="form-select select2" th:field="*{cliente.id}" th:disabled="${isDisabled}">
+          <option th:each="c : ${clientes}" th:value="${c.id}" 
+                  th:text="${c.nombre + ' ' + c.apellido + ' (DNI: ' + c.documento + ')'}"
+                  th:selected="${item.cliente != null} ? ${c.id} == ${item.cliente.id} : false">
+          </option>
+        </select>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary" th:if="!${isDisabled}">Guardar</button>
+        <a th:href="@{/vehiculo/cancelar}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bootstrap JS y dependencias -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- jQuery y Select2 JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('.select2').select2({
+          placeholder: "Selecciona un cliente",
+          allowClear: true
+      });
+  });
+</script>
+
+</body>
+</html>
