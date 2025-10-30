@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.mecanic.bussines.logic.error.ErrorServiceException;
+import com.example.mecanic.bussines.domain.enumeration.Rol;
 
 @Service
 public class inicioService {
@@ -17,7 +18,7 @@ public class inicioService {
 			
 			var adminExistente = usuarioService.buscarUsuarioPorNombre("administrador");
 			if (adminExistente == null) {
-				usuarioService.alta("Administrador", "1234567", "1234567");
+				usuarioService.alta("Administrador", "1234567", "1234567",Rol.ADMIN);
 			}
 			
         } catch (Exception ex){

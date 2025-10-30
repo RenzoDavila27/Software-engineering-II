@@ -38,13 +38,13 @@ public class InicioController {
         return "login.html";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MECANICO')")
     @GetMapping("/inicio")
     public String inicio(HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuariosession");
 
         if (usuario != null) {
-            if ("ADMIN".equals(usuario.getRol().toString())) {
+            if ("ADMIN".equals(usuario.getRol().toString()) || "MECANICO".equals(usuario.getRol().toString()) ) {
                 return "inicio.html";
             } else {
                 return "login.html"; 

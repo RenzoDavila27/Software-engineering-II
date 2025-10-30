@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>EDIT SUCURSAL</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">     
+      <hr>
+      <div class="container"> 
+
+        <div class="card">
+          <h4 class="card-header"><strong>EDIT SUCURSAL</strong></h4>              
+          <div class="card-body">
+			
+            <form th:action="@{/sucursal/aceptarEditSucursal}" th:object="${sucursal}" method="post">
+			
+			  <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>    
+			  <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div> 
+			  
+              <div class="row">
+                <div class="col-md-6"> 
+                  <div class="form-group">
+                    <!-- Solo mostrar el hidden si ya existe -->
+                    <input type="hidden" th:field="*{id}" th:if="*{id != null}">
+                            
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" th:field="*{nombre}" placeholder="Escriba el nombre de la sucursal" required="required" th:disabled="${isDisabled}">
+                  </div>
+                </div>           
+        
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="empresa">Empresa</label>
+                    <select class="form-control" th:field="*{empresa.id}" th:disabled="${isDisabled}">
+                      <option th:each="empresa : ${listaEmpresa}" 
+                              th:value="${empresa.id}" 
+                              th:text="${empresa.nombre}">
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="pais">Pais</label>
+                    <select class="form-control" name="idPaisSeleccionada" th:disabled="${isDisabled}">
+                      <option th:each="pais : ${listaPais}" 
+                              th:value="${pais.id}" 
+                              th:text="${pais.nombre}"
+                              th:selected="${pais.id} == ${sucursal.direccion?.localidad?.departamento?.provincia?.pais?.id}">
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="provincia">Provincia</label>
+                    <select class="form-control" name="idProvinciaSeleccionada" th:disabled="${isDisabled}">
+                      <option th:each="prov : ${listaProvincia}" 
+                              th:value="${prov.id}" 
+                              th:text="${prov.nombre}"
+                              th:selected="${prov.id} == ${sucursal.direccion?.localidad?.departamento?.provincia?.id}">
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="departamento">Departamento</label>
+                    <select class="form-control" name="idDepartamentoSeleccionada" th:disabled="${isDisabled}">
+                      <option th:each="dep : ${listaDepartamento}" 
+                              th:value="${dep.id}" 
+                              th:text="${dep.nombre}"
+                              th:selected="${dep.id} == ${sucursal.direccion?.localidad?.departamento?.id}">
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bloque Dirección -->
+              <h5>Dirección</h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="localidad">Localidad</label>
+                    <select class="form-control" th:field="*{direccion.localidad.id}" th:disabled="${isDisabled}">
+                      <option th:each="loc : ${listaLocalidad}" 
+                              th:value="${loc.id}" 
+                              th:text="${loc.nombre}">
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6"> 
+                  <div class="form-group">
+                    <label for="calle">Calle</label>
+                    <input type="text" class="form-control" th:field="*{direccion.calle}" placeholder="Escriba la calle de la sucursal" required="required" th:disabled="${isDisabled}">
+                  </div>
+                </div>
+                <div class="col-md-6"> 
+                  <div class="form-group">
+                    <label for="numeracion">Numeración</label>
+                    <input type="text" class="form-control" th:field="*{direccion.numeracion}" placeholder="Escriba la numeración de la sucursal" required="required" th:disabled="${isDisabled}">
+                  </div>
+                </div>      
+              </div>
+
+              <div class="row">
+                <div class="col-md-6"> 
+                  <div class="form-group">
+                    <label for="barrio">Barrio</label>
+                    <input type="text" class="form-control" th:field="*{direccion.barrio}" placeholder="Escriba el nombre del barrio" required="required" th:disabled="${isDisabled}">
+                  </div>
+                </div>
+                <div class="col-md-6"> 
+                  <div class="form-group">
+                    <label for="manzanaPiso">Manzana/Piso</label>
+                    <input type="text" class="form-control" th:field="*{direccion.manzanaPiso}" placeholder="" th:disabled="${isDisabled}">
+                  </div>
+                </div>      
+              </div>
+
+              <div class="row">
+                <div class="col-md-6"> 
+                  <div class="form-group">
+                    <label for="casaDepartamento">Casa/Departamento</label>
+                    <input type="text" class="form-control" th:field="*{direccion.casaDepartamento}" placeholder="" th:disabled="${isDisabled}">
+                  </div>
+                </div>
+                <div class="col-md-6"> 
+                  <div class="form-group">
+                    <label for="referencia">Referencia</label>
+                    <input type="text" class="form-control" th:field="*{direccion.referencia}" placeholder="Agregar Referencia (opcional)" th:disabled="${isDisabled}">
+                  </div>
+                </div>      
+              </div>
+              
+              <hr>
+			  <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary" th:disabled="${isDisabled}">ACEPTAR</button>   
+			   <a class="btn btn-primary" th:href="@{/sucursal/cancelarEditSucursal}" role="button">CANCELAR</a>
+			  </div>
+			   
+			</form>
+			 
+          </div>
+        </div>
+      </div> 
+	  
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script> 
+	    
+  </body>
+</html>

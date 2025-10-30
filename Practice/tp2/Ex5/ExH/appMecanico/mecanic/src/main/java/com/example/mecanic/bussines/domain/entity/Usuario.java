@@ -13,8 +13,8 @@ public class Usuario extends BaseEntity<Long> {
     private String nombre;
     private String clave;
   
-    @Enumerated(EnumType.STRING)
-    private Rol rol = Rol.ADMIN;
+    @Enumerated(EnumType.ORDINAL)
+    private Rol rol;
 
     public Usuario() {
     }

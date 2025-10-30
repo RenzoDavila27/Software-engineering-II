@@ -30,8 +30,8 @@ public class SeguridadWeb {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((authz) -> authz
-                .requestMatchers("/vehiculo/**").hasAnyRole("MECANICO","ADMIN")
-                .requestMatchers("/admin/*").hasRole("ADMIN")
+                .requestMatchers("/vehiculo/**","/cliente/**","/historial/**").hasAnyRole("MECANICO","ADMIN")
+                .requestMatchers("/mecanico/**").hasRole("ADMIN")
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/**").permitAll()
                 .anyRequest().authenticated()
             )

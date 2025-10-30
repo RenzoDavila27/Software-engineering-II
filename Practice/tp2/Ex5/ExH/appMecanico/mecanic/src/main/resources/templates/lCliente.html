@@ -54,26 +54,8 @@
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand text-warning" href="/inicio">FioriTech</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-            aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" th:href="@{/inicio}">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/cliente/list}">Clientes</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/vehiculo/list}">Vehículos</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/listarMecanico}">Personal</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/listarAdmin}">Administracion</a></li>
-        <li class="nav-item"><a class="nav-link" href="/logout">Cerrar Sesión</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.com/extras/spring-security">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,26 +60,7 @@
 <body>
 
 <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand text-warning" href="#">FioriTech</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-            aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" th:href="@{/inicio}">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/cliente/list}">Clientes</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/vehiculo/list}">Vehículos</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/listarMecanico}">Personal</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/listarAdmin}">Administracion</a></li>
-        <li class="nav-item"><a class="nav-link" href="/logout">Cerrar Sesión</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <!-- Hero Section -->
 <section class="hero">

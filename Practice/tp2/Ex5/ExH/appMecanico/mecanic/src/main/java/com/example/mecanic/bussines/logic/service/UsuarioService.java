@@ -32,13 +32,13 @@ public class UsuarioService implements UserDetailsService{
     private UsuarioRepository usuarioRepository;
 
     @Transactional
-    public Usuario alta(String nombre, String clave, String clave2) throws ErrorServiceException {
+    public Usuario alta(String nombre, String clave, String clave2,Rol rol) throws ErrorServiceException {
         try{
-            validar(nombre, clave, clave2);
+            validar(nombre, clave, clave2,rol);
             Usuario usuario = new Usuario();
             usuario.setNombre(nombre);
             usuario.setClave(new BCryptPasswordEncoder().encode(clave));
-            usuario.setRol(Rol.MECANICO);
+            usuario.setRol(rol);
             usuario.setEliminado(false);
             usuarioRepository.save(usuario);
             return usuario;
@@ -49,15 +49,17 @@ public class UsuarioService implements UserDetailsService{
         }
     }
 
-    public Usuario modificar(Long id, String nombre,String clave, String clave2) throws ErrorServiceException {
+    @Transactional
+    public Usuario modificar(Long id, String nombre,String clave, String clave2,Rol rol) throws ErrorServiceException {
         try {
-            validar(nombre, clave, clave2);
+            validar(nombre, clave, clave2,rol);
             Optional<Usuario> respuesta = usuarioRepository.findById(id);
             if (respuesta.isPresent()) {
                 
                 Usuario usuario = respuesta.get();
                 usuario.setNombre(nombre);
                 usuario.setClave(new BCryptPasswordEncoder().encode(clave));
+                usuario.setRol(rol);
                 usuarioRepository.save(usuario);
                 return usuario;
             } else {
@@ -70,6 +72,7 @@ public class UsuarioService implements UserDetailsService{
         }
     }
 
+    @Transactional
     public void eliminar(Long id) throws ErrorServiceException {
         try {
             Optional<Usuario> respuesta = usuarioRepository.findById(id);
@@ -95,12 +98,15 @@ public class UsuarioService implements UserDetailsService{
         return usuarioRepository.listarUsuarioActivo();
     }
 
-    public void validar(String nombre, String clave, String clave2) throws ErrorServiceException {
+    public void validar(String nombre, String clave, String clave2,Rol rol) throws ErrorServiceException {
         if (nombre == null || nombre.isEmpty()) {
             throw new ErrorServiceException("El nombre de usuario no puede ser nulo o estar vacio");
         }
         if (clave == null || clave.isEmpty() || clave.length() < 6) {
             throw new ErrorServiceException("La clave no puede ser nula, estar vacia o tener menos de 6 caracteres");
+        }
+        if (rol == null){
+            throw new ErrorServiceException("Indique el rol del usuario");
         }
         if (!clave.equals(clave2)) {
             
