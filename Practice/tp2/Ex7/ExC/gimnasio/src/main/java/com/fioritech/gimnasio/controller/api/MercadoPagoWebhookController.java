@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,14 @@ public class MercadoPagoWebhookController {
 
     public MercadoPagoWebhookController(MercadoPagoService mercadoPagoService) {
         this.mercadoPagoService = mercadoPagoService;
+    }
+
+    @GetMapping("/webhook")
+    public ResponseEntity<String> handshake(
+        @RequestParam(value = "type", required = false) String type,
+        @RequestParam(value = "topic", required = false) String topic) {
+        LOGGER.debug("GET webhook handshake. type={}, topic={}", type, topic);
+        return ResponseEntity.ok("ok");
     }
 
     @PostMapping("/webhook")

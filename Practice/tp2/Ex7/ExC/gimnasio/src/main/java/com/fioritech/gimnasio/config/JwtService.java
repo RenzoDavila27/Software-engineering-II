@@ -22,6 +22,9 @@ public class JwtService {
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
 
+    @Value("${application.security.jwt.expiration-ms:86400000}")
+    private long jwtExpirationMs;
+
     /**
      * Extrae el nombre de usuario (en tu caso, 'nombreUsuario') del token.
      */
@@ -40,11 +43,13 @@ public class JwtService {
      * Genera un token JWT con claims (datos) extra.
      */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        long now = System.currentTimeMillis();
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + jwtExpirationMs))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -60,7 +65,8 @@ public class JwtService {
     // --- Métodos privados de utilidad ---
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        Date expiration = extractExpiration(token);
+        return expiration != null && expiration.before(new Date());
     }
 
     private Date extractExpiration(String token) {

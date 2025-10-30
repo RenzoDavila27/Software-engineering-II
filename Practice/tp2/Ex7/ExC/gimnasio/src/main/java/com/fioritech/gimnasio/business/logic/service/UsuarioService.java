@@ -2,26 +2,26 @@ package com.fioritech.gimnasio.business.logic.service;
 
 import com.fioritech.gimnasio.business.domain.Usuario;
 import com.fioritech.gimnasio.business.domain.enums.RolUsuario;
-import com.fioritech.gimnasio.business.domain.enums.TipoMensaje;
 import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.persistence.repository.UsuarioRepository;
-
-import jakarta.persistence.NoResultException;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 @Transactional
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -30,7 +30,7 @@ public class UsuarioService {
         validarNombreUnico(nombreUsuario, null);
         Usuario usuario = new Usuario();
         usuario.setNombreUsuario(nombreUsuario.trim());
-        usuario.setClave(clave);
+        usuario.setClave(passwordEncoder.encode(clave));
         usuario.setRol(rol);
         return usuarioRepository.save(usuario);
     }
@@ -69,7 +69,7 @@ public class UsuarioService {
             if (clave.length() < 6) {
                 throw new BusinessException("La clave debe tener al menos 6 caracteres");
             }
-            usuario.setClave(clave);
+            usuario.setClave(passwordEncoder.encode(clave));
         }
         if (rol != null) {
             usuario.setRol(rol);
@@ -114,7 +114,7 @@ public class UsuarioService {
 
     public Usuario modificarClave(String id, String claveActual, String nuevaClave, String confirmarClave) {
         Usuario usuario = buscarUsuario(id);
-        if (!usuario.getClave().equals(claveActual)) {
+        if (!passwordEncoder.matches(claveActual, usuario.getClave())) {
             throw new BusinessException("La clave actual es incorrecta");
         }
         if (nuevaClave == null || nuevaClave.length() < 6) {
@@ -123,7 +123,7 @@ public class UsuarioService {
         if (!nuevaClave.equals(confirmarClave)) {
             throw new BusinessException("La nueva clave y su confirmacion no coinciden");
         }
-        usuario.setClave(nuevaClave);
+        usuario.setClave(passwordEncoder.encode(nuevaClave));
         return usuarioRepository.save(usuario);
     }
 
@@ -132,34 +132,49 @@ public class UsuarioService {
     }
 
     public Usuario login(String cuenta, String clave){
-    	
-    	try {
-    		
-    		if (cuenta == null || cuenta.trim().isEmpty()) {
+        try {
+            if (cuenta == null || cuenta.trim().isEmpty()) {
                 throw new BusinessException("Debe indicar la cuenta");
             }
 
             if (clave == null || clave.trim().isEmpty()) {
                 throw new BusinessException("Debe indicar la clave");
             }
-            
-            Usuario usuario = null; 
-            try {		
-             usuario = usuarioRepository.buscarUsuarioPorCuentaYClave(cuenta, clave);
-             if (usuario == null || usuario.isEliminado()) {
-            	throw new BusinessException("No existe usuario para la cuenta indicada"); 
-             }
-            } catch (NoResultException ex) {
-            	throw new BusinessException("No existe usuario para la cuenta o clave indicada");
+
+            Usuario usuario;
+            try {
+                usuario = buscarUsuarioPorNombre(cuenta);
+            } catch (BusinessException ex) {
+                throw new BusinessException("No existe usuario para la cuenta o clave indicada");
             }
-    		
+
+            if (usuario == null || usuario.isEliminado()) {
+                throw new BusinessException("No existe usuario para la cuenta indicada");
+            }
+
+            boolean passwordValido = passwordEncoder.matches(clave, usuario.getClave());
+
+            if (!passwordValido && !esPasswordEncriptada(usuario.getClave()) && usuario.getClave().equals(clave)) {
+                usuario.setClave(passwordEncoder.encode(clave));
+                usuario = usuarioRepository.save(usuario);
+                passwordValido = true;
+            }
+
+            if (!passwordValido) {
+                throw new BusinessException("No existe usuario para la cuenta o clave indicada");
+            }
+
             return usuario;
-            
-    	}catch(BusinessException e) {  
-         	throw e;  
-        }catch(Exception e) {
-         	e.printStackTrace();
-         	throw new BusinessException("Error de Sistemas");
-        } 
+
+        } catch(BusinessException e) {
+            throw e;
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new BusinessException("Error de Sistemas");
+        }
+    }
+
+    private boolean esPasswordEncriptada(String clave) {
+        return clave != null && clave.startsWith("$2");
     }
 }

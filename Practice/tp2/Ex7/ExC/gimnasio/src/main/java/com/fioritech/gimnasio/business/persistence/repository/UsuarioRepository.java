@@ -16,9 +16,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     @Query("SELECT u FROM Usuario u WHERE u.eliminado = false AND u.rol = :tipo")
     public Collection<Usuario> listarUsuariosPorTipo(@Param("tipo")RolUsuario tipo);
 
-    @Query("SELECT u FROM Usuario u WHERE u.nombreUsuario = :cuenta AND u.clave = :clave AND u.eliminado = false")
-    public Usuario buscarUsuarioPorCuentaYClave(@Param("cuenta")String cuenta, @Param("clave")String clave);
-
     @Query("SELECT u FROM Usuario u WHERE u.nombreUsuario = :nombreUsuario AND u.eliminado = false")
     public Optional<Usuario> findByNombreUsuario(String nombreUsuario);
 }

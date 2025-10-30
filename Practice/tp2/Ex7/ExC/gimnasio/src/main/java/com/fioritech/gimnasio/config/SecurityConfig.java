@@ -33,16 +33,20 @@ public class SecurityConfig {
                 
                 // 2a. Rutas Públicas (las mismas que en shouldNotFilter)
                 .requestMatchers(
-                    "/", "/view/login","/login", "/error",
-                     "/bootstrap/**", "/images/**", "/tinymce/**"
+                    "/", "/view/login","/login", "/logout", "/error",
+                     "/bootstrap/**", "/images/**", "/tinymce/**",
+                    "/mercadopago/webhook"
                 ).permitAll()
 
                 // 2b. Reglas para SOCIO
                 // (Puede acceder SOCIO, EMPLEADO, y ADMINISTRADOR)
                 .requestMatchers(
-                    "/cuotaMensual/listaCuotaMensual", "/factura/listaFactura", 
-                    "/rutina/listaRutina", "/usuario/logout", "/inicio"
-                    // TODO: Añadir las URLs exactas para socios
+                    "/view/inicio", "/inicio",
+                    "/cuotaMensual/listaCuotaMensual", "/cuotaMensual/consultar/**",
+                    "/factura/listaFactura", "/factura/consultar/**",
+                    "/rutina/listaRutina", "/rutina/consultar/**",
+                    "/mercadopago/success", "/mercadopago/failure", "/mercadopago/pending",
+                    "/api/mercadopago/preferences"
                 ).hasAnyAuthority(
                     RolUsuario.SOCIO.name(),
                     RolUsuario.EMPLEADO.name(),
@@ -52,9 +56,37 @@ public class SecurityConfig {
                 // 2c. Reglas para EMPLEADO
                 // (Puede acceder EMPLEADO y ADMINISTRADOR)
                 .requestMatchers(
-                    "/promocion/listaPromocion", "/pais/listaPais",
-                    "/empleado/listaEmpleado"
-                    // TODO: Añadir las URLs exactas para empleados
+                    "/cuotaMensual/altaCuotaMensual", "/cuotaMensual/modificar/**",
+                    "/cuotaMensual/baja/**", "/cuotaMensual/aceptarEditCuotaMensual",
+                    "/cuotaMensual/cancelarEditCuotaMensual", "/cuotaMensual/buscarCuotasDeSocio",
+                    "/cuotaMensual/volver",
+                    "/factura/altaFactura", "/factura/modificar/**", "/factura/baja/**",
+                    "/factura/aceptarEditFactura", "/factura/cancelarEditFactura",
+                    "/rutina/altaRutina", "/rutina/modificar/**", "/rutina/baja/**",
+                    "/rutina/aceptarEditRutina", "/rutina/cancelarEditRutina",
+                    "/socio/listaSocio", "/socio/altaSocio", "/socio/consultar/**",
+                    "/socio/modificar/**", "/socio/baja/**", "/socio/aceptarEditSocio",
+                    "/socio/cancelarEditSocio",
+                    "/empleado/listaEmpleado", "/empleado/altaEmpleado", "/empleado/consultar/**",
+                    "/empleado/modificar/**", "/empleado/baja/**", "/empleado/aceptarEditEmpleado",
+                    "/empleado/cancelarEditEmpleado",
+                    "/promocion/listaPromocion", "/promocion/altaPromocion", "/promocion/consultar/**",
+                    "/promocion/modificar/**", "/promocion/baja/**", "/promocion/aceptarEditPromocion",
+                    "/promocion/cancelarEditPromocion", "/promocion/enviarMensaje/**",
+                    "/mensaje/listaMensaje", "/mensaje/altaMensaje", "/mensaje/consultar/**",
+                    "/mensaje/modificar/**", "/mensaje/baja/**", "/mensaje/aceptarEditMensaje",
+                    "/mensaje/cancelarEditMensaje", "/mensaje/enviarMensaje/**",
+                    "/pais/listaPais", "/pais/altaPais", "/pais/consultar/**",
+                    "/pais/modificar/**", "/pais/baja/**", "/pais/aceptarEditPais", "/pais/cancelarEditPais",
+                    "/provincia/listaProvincia", "/provincia/altaProvincia", "/provincia/consultar/**",
+                    "/provincia/modificar/**", "/provincia/baja/**", "/provincia/aceptarEditProvincia",
+                    "/provincia/cancelarEditProvincia",
+                    "/departamento/listaDepartamento", "/departamento/altaDepartamento",
+                    "/departamento/consultar/**", "/departamento/modificar/**", "/departamento/baja/**",
+                    "/departamento/aceptarEditDepartamento", "/departamento/cancelarEditDepartamento",
+                    "/localidad/listaLocalidad", "/localidad/altaLocalidad", "/localidad/consultar/**",
+                    "/localidad/modificar/**", "/localidad/baja/**", "/localidad/aceptarEditLocalidad",
+                    "/localidad/cancelarEditLocalidad"
                 ).hasAnyAuthority(
                     RolUsuario.EMPLEADO.name(),
                     RolUsuario.ADMINISTRADOR.name()
@@ -62,9 +94,18 @@ public class SecurityConfig {
 
                 // 2d. Reglas para ADMINISTRADOR
                 .requestMatchers(
-                    "/sucursal/listaSucursal", "/empresa/listaEmpresa",
-                    "/valorCuota/listaValorCuota", "/formaDePago/listaFormaDePago"
-                    // TODO: Añadir las URLs exactas para admin
+                    "/sucursal/listaSucursal", "/sucursal/altaSucursal", "/sucursal/consultar/**",
+                    "/sucursal/modificar/**", "/sucursal/baja/**", "/sucursal/aceptarEditSucursal",
+                    "/sucursal/cancelarEditSucursal",
+                    "/empresa/listaEmpresa", "/empresa/altaEmpresa", "/empresa/consultar/**",
+                    "/empresa/modificar/**", "/empresa/baja/**", "/empresa/aceptarEditEmpresa",
+                    "/empresa/cancelarEditEmpresa",
+                    "/valorCuota/listaValorCuota", "/valorCuota/altaValorCuota",
+                    "/valorCuota/consultar/**", "/valorCuota/modificar/**", "/valorCuota/baja/**",
+                    "/valorCuota/aceptarEditValorCuota", "/valorCuota/cancelarEditValorCuota",
+                    "/formaDePago/listaFormaDePago", "/formaDePago/altaFormaDePago",
+                    "/formaDePago/consultar/**", "/formaDePago/modificar/**", "/formaDePago/baja/**",
+                    "/formaDePago/aceptarEditFormaDePago", "/formaDePago/cancelarEditFormaDePago"
                 ).hasAuthority(RolUsuario.ADMINISTRADOR.name())
 
                 // 2e. Todas las demás rutas requieren autenticación

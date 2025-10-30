@@ -13,13 +13,20 @@
         <module name="gimnasio (2)" />
         <module name="gimnasio (1)" />
       </profile>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="biblioteca" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="biblioteca" target="17" />
+      <module name="contactos" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="biblioteca" options="-parameters" />
       <module name="gimnasio" options="-parameters" />
       <module name="gimnasio (1)" options="-parameters" />
       <module name="gimnasio (2)" options="-parameters" />

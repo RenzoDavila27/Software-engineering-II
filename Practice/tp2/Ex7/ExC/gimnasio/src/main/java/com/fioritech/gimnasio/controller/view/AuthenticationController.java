@@ -27,11 +27,25 @@ public class AuthenticationController {
 
     @Autowired
     private final JwtService jwtService;
-    
+
+
+    @GetMapping("/login")
+    public String login() {
+        return "view/login";
+    }
+
+    @GetMapping("/view/inicio")
+    public String inicioView() {
+        return "view/inicio";
+    }
+
+
     /**
      * Procesa el intento de login.
      * Reemplaza la lógica de HttpSession por la creación de una cookie JWT.
      */
+
+
     @PostMapping("/login")
     public String loginUsuario(
             @RequestParam(value = "cuenta") String cuenta,
