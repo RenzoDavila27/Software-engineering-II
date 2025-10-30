@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrarse - Biblioteca Fioritech</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../css/style.css" th:href="@{/css/style.css}">
+</head>
+<body class="main-layout inner_page auth-page">
+<header>
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                    <div class="full">
+                        <div class="center-desk">
+                            <div class="logo">
+                                <a th:href="@{/}"><img src="../images/logo.png" th:src="@{/images/logo.png}" alt="Logo"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                    <div class="menu-area">
+                        <div class="limit-box">
+                            <nav class="main-menu">
+                                <ul class="menu-area-main">
+                                    <li><a th:href="@{/}">Inicio</a></li>
+                                    <li><a th:href="@{/auth/login}">Iniciar sesión</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<section class="auth-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-xl-5">
+                <div class="auth-card shadow-sm">
+                    <div class="auth-card__header text-center mb-4">
+                        <h2 class="auth-card__title">Crear <strong class="black">Cuenta</strong></h2>
+                        <p class="auth-card__subtitle">Complete sus datos para obtener acceso al catálogo.</p>
+                    </div>
+                    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+                    <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post" class="auth-form">
+                        <div class="mb-3">
+                            <label class="form-label">Usuario</label>
+                            <input class="form-control" type="text" placeholder="Ingrese un usuario"
+                                   th:field="*{username}">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('username')}"
+                                 th:errors="*{username}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo electrónico</label>
+                            <input class="form-control" type="email" placeholder="nombre@ejemplo.com"
+                                   th:field="*{email}">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}"
+                                 th:errors="*{email}"></div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Contraseña</label>
+                            <input class="form-control" type="password" placeholder="Ingrese una contraseña segura"
+                                   th:field="*{password}">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}"
+                                 th:errors="*{password}"></div>
+                        </div>
+                        <div class="d-grid">
+                            <button class="send_btn auth-submit" type="submit">Registrarse</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title th:text="${pageTitle}">Detalle de Autor</title>
+      <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+      <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+      <link rel="stylesheet" href="css/responsive.css" th:href="@{/css/responsive.css}">
+      <link rel="icon" href="images/fevicon.png" th:href="@{/images/fevicon.png}" type="image/gif" />
+   </head>
+   <body class="main-layout contact_page">
+      <header>
+         <div class="header">
+            <div class="container">
+               <div class="row">
+                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                     <div class="full">
+                        <div class="center-desk">
+                           <div class="logo"> <a href="index.html" th:href="@{/}"><img src="images/logo.png" th:src="@{/images/logo.png}" alt="#"></a> </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                     <div class="menu-area">
+                        <div th:replace="fragments/navbar :: navbar('authors')"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </header>
+      <main>
+         <div class="container py-5">
+            <div class="row justify-content-center">
+               <div class="col-lg-8">
+                  <div class="card shadow-sm border-0">
+                     <div class="card-header bg-white border-0">
+                        <h2 class="h4 mb-1" th:text="${pageTitle}">Detalle</h2>
+                        <p class="text-muted mb-0"><small>ID autor: <span th:text="${autor.id}">0</span></small></p>
+                     </div>
+                     <div class="card-body">
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+                        <div th:switch="${mode}">
+                           <div th:case="'consultar'">
+                              <dl class="row mb-0">
+                                 <dt class="col-sm-4">Nombre</dt>
+                                 <dd class="col-sm-8" th:text="${autor.nombre}">Nombre</dd>
+                                 <dt class="col-sm-4">Apellido</dt>
+                                 <dd class="col-sm-8" th:text="${autor.apellido}">Apellido</dd>
+                                 <dt class="col-sm-4">Biografia</dt>
+                                 <dd class="col-sm-8" th:text="${autor.biografia}">Biografia</dd>
+                              </dl>
+                           </div>
+                           <form th:case="'modificar'" th:action="@{|/autores/${autor.id}/modificar|}" method="post" th:object="${autor}" class="row g-3">
+                              <input type="hidden" th:field="*{id}">
+                              <div class="col-md-6">
+                                 <label class="form-label">Nombre</label>
+                                 <input type="text" class="form-control" th:field="*{nombre}" placeholder="Nombre" required>
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">Apellido</label>
+                                 <input type="text" class="form-control" th:field="*{apellido}" placeholder="Apellido" required>
+                              </div>
+                              <div class="col-12">
+                                 <label class="form-label">Biografia</label>
+                                 <textarea class="form-control" rows="5" th:field="*{biografia}" placeholder="Resumen o notas sobre el autor"></textarea>
+                              </div>
+                              <div class="col-12 d-flex justify-content-end gap-2">
+                                 <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                 <a class="btn btn-outline-secondary" th:href="@{|/autores/${autor.id}?mode=consultar|}">Cancelar</a>
+                              </div>
+                           </form>
+                           <div th:case="'eliminar'">
+                              <div class="alert alert-warning">
+                                 Esta accion eliminara al autor y todos los libros asociados. Confirme si desea continuar.
+                              </div>
+                              <dl class="row">
+                                 <dt class="col-sm-4">Nombre completo</dt>
+                                 <dd class="col-sm-8" th:text="|${autor.nombre} ${autor.apellido}|">Nombre Apellido</dd>
+                                 <dt class="col-sm-4">Biografia</dt>
+                                 <dd class="col-sm-8" th:text="${autor.biografia}">Biografia</dd>
+                              </dl>
+                              <div th:if="${librosAutor != null and !librosAutor.isEmpty()}" class="mb-3">
+                                 <h6>Libros que se eliminarán:</h6>
+                                 <ul class="list-group">
+                                    <li class="list-group-item" th:each="libro : ${librosAutor}" th:text="${libro.titulo}">Libro</li>
+                                 </ul>
+                              </div>
+                              <form th:action="@{|/autores/${autor.id}/eliminar|}" method="post" class="d-flex gap-2 justify-content-end">
+                                 <button type="submit" class="btn btn-danger">Confirmar eliminacion</button>
+                                 <a class="btn btn-outline-secondary" th:href="@{|/autores/${autor.id}?mode=consultar|}">Cancelar</a>
+                              </form>
+                           </div>
+                           <div th:case="*">
+                              <p class="text-muted">Modo desconocido.</p>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="card-footer bg-white border-0 d-flex flex-wrap gap-2 justify-content-between">
+                        <a class="btn btn-light" th:href="@{/autores}">Volver al listado</a>
+                        <div class="d-flex gap-2" th:if="${mode == 'consultar'}">
+                           <a class="btn btn-outline-secondary" th:href="@{|/autores/${autor.id}?mode=modificar|}">Modificar</a>
+                           <a class="btn btn-outline-danger" th:href="@{|/autores/${autor.id}?mode=eliminar|}">Eliminar</a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <script src="js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+   </body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Nuevo Autor</title>
+      <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+      <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+      <link rel="stylesheet" href="css/responsive.css" th:href="@{/css/responsive.css}">
+      <link rel="icon" href="images/fevicon.png" th:href="@{/images/fevicon.png}" type="image/gif" />
+   </head>
+   <body class="main-layout contact_page">
+      <header>
+         <div class="header">
+            <div class="container">
+               <div class="row">
+                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                     <div class="full">
+                        <div class="center-desk">
+                           <div class="logo"><a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="logo"></a></div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                     <div class="menu-area">
+                        <div th:replace="fragments/navbar :: navbar('authors')"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </header>
+      <main>
+         <div class="container py-5">
+            <div class="row justify-content-center">
+               <div class="col-lg-8">
+                  <div class="card shadow-sm border-0">
+                     <div class="card-header bg-white border-0">
+                        <h2 class="h4 mb-0">Registrar nuevo autor</h2>
+                     </div>
+                     <div class="card-body">
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                        <form th:action="@{/autores}" method="post" th:object="${autor}" class="row g-3">
+                           <div class="col-md-6">
+                              <label class="form-label">Nombre</label>
+                              <input type="text" class="form-control" th:field="*{nombre}" placeholder="Nombre" required>
+                           </div>
+                           <div class="col-md-6">
+                              <label class="form-label">Apellido</label>
+                              <input type="text" class="form-control" th:field="*{apellido}" placeholder="Apellido" required>
+                           </div>
+                           <div class="col-12">
+                              <label class="form-label">Biografía</label>
+                              <textarea class="form-control" rows="5" th:field="*{biografia}" placeholder="Resumen o notas del autor"></textarea>
+                           </div>
+                           <div class="col-12 d-flex justify-content-end gap-2">
+                              <a class="btn btn-outline-secondary" th:href="@{/autores}">Cancelar</a>
+                              <button type="submit" class="btn btn-primary">Crear autor</button>
+                           </div>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+   </body>
+</html>

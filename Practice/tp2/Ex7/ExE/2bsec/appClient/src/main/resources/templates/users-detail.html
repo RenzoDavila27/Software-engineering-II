@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title th:text="${pageTitle}">Detalle de Usuario</title>
+      <link rel="stylesheet" href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+      <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+      <link rel="stylesheet" href="css/responsive.css" th:href="@{/css/responsive.css}">
+      <link rel="icon" href="images/fevicon.png" th:href="@{/images/fevicon.png}" type="image/gif" />
+   </head>
+   <body class="main-layout about_page">
+      <header>
+         <div class="header">
+            <div class="container">
+               <div class="row">
+                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                     <div class="full">
+                        <div class="center-desk">
+                           <div class="logo"> <a href="index.html" th:href="@{/}"><img src="images/logo.png" th:src="@{/images/logo.png}" alt="#"></a> </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                     <div class="menu-area">
+                        <div th:replace="fragments/navbar :: navbar('users')"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </header>
+      <main>
+         <div class="container py-5">
+            <div class="row justify-content-center">
+               <div class="col-lg-8">
+                  <div class="card shadow-sm border-0">
+                     <div class="card-header bg-white border-0">
+                        <h2 class="h4 mb-1" th:text="${pageTitle}">Detalle</h2>
+                        <p class="text-muted mb-0"><small>ID usuario: <span th:text="${persona.id}">0</span></small></p>
+                     </div>
+                     <div class="card-body">
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+                        <div th:switch="${mode}">
+                           <div th:case="'consultar'">
+                              <dl class="row mb-0">
+                                 <dt class="col-sm-4">Nombre</dt>
+                                 <dd class="col-sm-8" th:text="${persona.nombre}">Nombre</dd>
+                                 <dt class="col-sm-4">Apellido</dt>
+                                 <dd class="col-sm-8" th:text="${persona.apellido}">Apellido</dd>
+                                 <dt class="col-sm-4">DNI</dt>
+                                 <dd class="col-sm-8" th:text="${persona.dni}">00000000</dd>
+                                 <dt class="col-sm-4">Calle</dt>
+                                 <dd class="col-sm-8" th:text="${domicilio != null ? domicilio.calle : 'Sin asignar'}">Calle</dd>
+                                 <dt class="col-sm-4">Numero</dt>
+                                 <dd class="col-sm-8" th:text="${domicilio != null ? domicilio.numero : '-'}">0</dd>
+                                 <dt class="col-sm-4">Localidad</dt>
+                                 <dd class="col-sm-8" th:text="${localidad != null ? localidad.denominacion : 'Sin asignar'}">Localidad</dd>
+                                 <dt class="col-sm-4">Libros asignados</dt>
+                                 <dd class="col-sm-8">
+                                    <ul class="list-unstyled mb-0" th:if="${librosAsignados != null and !librosAsignados.isEmpty()}">
+                                       <li th:each="libro : ${librosAsignados}" th:text="${libro.titulo}">Libro</li>
+                                    </ul>
+                                    <span th:if="${librosAsignados == null or librosAsignados.isEmpty()}">Sin asignar</span>
+                                 </dd>
+                              </dl>
+                           </div>
+                           <form th:case="'modificar'" th:action="@{|/usuarios/${persona.id}/modificar|}" method="post" th:object="${personaForm}" class="row g-3">
+                              <input type="hidden" th:field="*{id}">
+                              <input type="hidden" th:field="*{domicilioId}">
+                              <div class="col-md-6">
+                                 <label class="form-label">Nombre</label>
+                                 <input type="text" class="form-control" th:field="*{nombre}" placeholder="Nombre del socio" required>
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">Apellido</label>
+                                 <input type="text" class="form-control" th:field="*{apellido}" placeholder="Apellido del socio" required>
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">DNI</label>
+                                 <input type="number" min="0" class="form-control" th:field="*{dni}" placeholder="Documento">
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">ID Domicilio</label>
+                                 <input type="number" min="0" class="form-control" th:field="*{domicilioId}" placeholder="ID domicilio" readonly>
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">Calle</label>
+                                 <input type="text" class="form-control" th:field="*{calle}" placeholder="Calle" required>
+                              </div>
+                              <div class="col-md-3">
+                                 <label class="form-label">Numero</label>
+                                 <input type="number" min="0" class="form-control" th:field="*{numero}" placeholder="Numero">
+                              </div>
+                              <div class="col-md-3">
+                                 <label class="form-label">Localidad</label>
+                                 <select class="form-select" th:field="*{localidadId}">
+                                    <option value="" th:text="${localidad != null ? 'Seleccionar otra localidad' : 'Seleccionar localidad'}"></option>
+                                    <option th:each="loc : ${localidades}" th:value="${loc.id}"
+                                            th:text="${loc.denominacion}"></option>
+                                 </select>
+                              </div>
+                              <div class="col-12 d-flex justify-content-end gap-2">
+                                 <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                 <a class="btn btn-outline-secondary" th:href="@{|/usuarios/${persona.id}?mode=consultar|}">Cancelar</a>
+                              </div>
+                           </form>
+                           <div th:case="'eliminar'">
+                              <div class="alert alert-warning">
+                                 Esta accion eliminara el usuario, borrará su domicilio asociado y los libros asignados quedarán sin socio. Confirme si desea continuar.
+                              </div>
+                              <dl class="row">
+                                 <dt class="col-sm-4">Nombre completo</dt>
+                                 <dd class="col-sm-8" th:text="|${persona.nombre} ${persona.apellido}|">Nombre Apellido</dd>
+                                 <dt class="col-sm-4">DNI</dt>
+                                 <dd class="col-sm-8" th:text="${persona.dni}">00000000</dd>
+                                 <dt class="col-sm-4">Calle</dt>
+                                 <dd class="col-sm-8" th:text="${domicilio != null ? domicilio.calle : 'Sin asignar'}">Calle</dd>
+                                 <dt class="col-sm-4">Numero</dt>
+                                 <dd class="col-sm-8" th:text="${domicilio != null ? domicilio.numero : '-'}">0</dd>
+                                 <dt class="col-sm-4">Localidad</dt>
+                                 <dd class="col-sm-8" th:text="${localidad != null ? localidad.denominacion : 'Sin asignar'}">Localidad</dd>
+                              </dl>
+                              <div th:if="${librosAsignados != null and !librosAsignados.isEmpty()}" class="mb-3">
+                                 <h6>Libros que quedarán sin socio asignado:</h6>
+                                 <ul class="list-group">
+                                    <li class="list-group-item" th:each="libro : ${librosAsignados}" th:text="${libro.titulo}">Libro</li>
+                                 </ul>
+                              </div>
+                              <form th:action="@{|/usuarios/${persona.id}/eliminar|}" method="post" class="d-flex gap-2 justify-content-end">
+                                 <button type="submit" class="btn btn-danger">Confirmar eliminacion</button>
+                                 <a class="btn btn-outline-secondary" th:href="@{|/usuarios/${persona.id}?mode=consultar|}">Cancelar</a>
+                              </form>
+                           </div>
+                           <div th:case="*">
+                              <p class="text-muted">Modo desconocido.</p>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="card-footer bg-white border-0 d-flex flex-wrap gap-2 justify-content-between">
+                        <a class="btn btn-light" th:href="@{/usuarios}">Volver al listado</a>
+                        <div class="d-flex gap-2" th:if="${mode == 'consultar'}">
+                           <a class="btn btn-outline-secondary" th:href="@{|/usuarios/${persona.id}?mode=modificar|}">Modificar</a>
+                           <a class="btn btn-outline-danger" th:href="@{|/usuarios/${persona.id}?mode=eliminar|}">Eliminar</a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <script src="js/bootstrap.bundle.min.js" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+   </body>
+</html>

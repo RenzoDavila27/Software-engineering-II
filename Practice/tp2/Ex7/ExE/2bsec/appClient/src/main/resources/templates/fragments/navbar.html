@@ -1,0 +1,36 @@
+<div class="limit-box" xmlns:th="http://www.thymeleaf.org" th:fragment="navbar(activePage)">
+   <nav class="main-menu">
+      <ul class="menu-area-main">
+         <li th:classappend="${activePage == 'home'} ? ' active' : ''">
+            <a th:href="@{/}">Inicio</a>
+         </li>
+         <li th:if="${isAuthenticated}"
+             th:classappend="${activePage == 'books'} ? ' active' : ''">
+            <a th:href="@{/libros}">Libros</a>
+         </li>
+         <li th:if="${isAdmin}"
+             th:classappend="${activePage == 'users'} ? ' active' : ''">
+            <a th:href="@{/usuarios}">Usuarios</a>
+         </li>
+         <li th:if="${isAdmin}"
+             th:classappend="${activePage == 'authors'} ? ' active' : ''">
+            <a th:href="@{/autores}">Autores</a>
+         </li>
+         <li th:if="${!isAuthenticated}">
+            <a th:href="@{/auth/login}">Iniciar sesión</a>
+         </li>
+         <li th:if="${!isAuthenticated}">
+            <a th:href="@{/auth/register}">Registrarse</a>
+         </li>
+         <li th:if="${isAuthenticated and currentUser != null}" class="user-label">
+            <span th:text="|Hola, ${currentUser}!|">Hola, Usuario!</span>
+         </li>
+         <li th:if="${isAuthenticated}" class="logout-item">
+            <form th:action="@{/auth/logout}" method="post">
+               <button type="submit" class="logout-button">Cerrar sesión</button>
+            </form>
+         </li>
+      </ul>
+   </nav>
+</div>
+
