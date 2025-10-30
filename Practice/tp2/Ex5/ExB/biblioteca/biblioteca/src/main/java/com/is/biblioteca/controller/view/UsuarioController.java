@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.is.biblioteca.business.domain.entity.Usuario;
+import com.is.biblioteca.business.domain.enumeration.Rol;
 import com.is.biblioteca.business.logic.error.ErrorServiceException;
 import com.is.biblioteca.business.logic.service.UsuarioService;
 
@@ -40,7 +41,7 @@ public class UsuarioController {
 		return "login.html";
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@PostMapping("/inicio")
 	public String inicio(@RequestParam(value = "email") String email, @RequestParam(value = "password") String clave,
 			HttpSession session, ModelMap modelo) {
@@ -117,6 +118,7 @@ public class UsuarioController {
 	//////////////////////////////////////////
 	//////////////////////////////////////////
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@GetMapping("/perfil")
 	public String irEditModificar(ModelMap modelo, HttpSession session) {
 
@@ -126,6 +128,7 @@ public class UsuarioController {
 		return "usuario_modificar.html";
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/perfil/{id}")
 	public String irEditModificar(ModelMap modelo, @PathVariable String id) {
 
@@ -145,24 +148,39 @@ public class UsuarioController {
       }	
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@PostMapping("/perfil/{id}")
 	public String irEditModificar(MultipartFile archivo, @PathVariable String id, @RequestParam String nombre,
 			@RequestParam String email, @RequestParam String password, @RequestParam String password2,
-			ModelMap modelo) {
+			ModelMap modelo, HttpSession session) {
 
 		try {
+            Usuario usuarioSesion = (Usuario) session.getAttribute("usuariosession");
+            boolean esAdmin = usuarioSesion != null && usuarioSesion.getRol() == Rol.ADMIN;
+            boolean puedeModificar = esAdmin || (usuarioSesion != null && usuarioSesion.getId().equals(id));
+
+            if (!puedeModificar) {
+                modelo.put("error", "No posee permisos para modificar este usuario");
+                modelo.put("usuario", usuarioSesion);
+                return "usuario_modificar.html";
+            }
 
 			usuarioService.modificarUsuario(id, nombre, email, password, password2, archivo);
 
 			modelo.put("exito", "Usuario actualizado correctamente!");
 
-			return "redirect:/admin/usuarios";
+			return esAdmin ? "redirect:/admin/usuarios" : "redirect:/regresoPage";
 
 		} catch (ErrorServiceException ex) {
 
 			modelo.put("error", ex.getMessage());
 			modelo.put("nombre", nombre);
 			modelo.put("email", email);
+            try {
+                modelo.put("usuario", usuarioService.buscarUsuario(id));
+            } catch (Exception ignored) {
+                modelo.put("usuario", null);
+            }
 
 			return "usuario_modificar.html";
 		}

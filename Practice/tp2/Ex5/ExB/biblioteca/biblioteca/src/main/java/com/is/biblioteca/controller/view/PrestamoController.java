@@ -32,7 +32,7 @@ public class PrestamoController {
     @Autowired
     private LibroService libroService;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/lista")
     public String listarPrestamos(ModelMap modelo) {
         try {
@@ -47,7 +47,7 @@ public class PrestamoController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/mis")
     public String listarPrestamosUsuario(ModelMap modelo, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuariosession");
@@ -67,7 +67,7 @@ public class PrestamoController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/solicitar/{idLibro}")
     public String verFormularioPrestamo(@PathVariable String idLibro,
                                         ModelMap modelo,
@@ -100,7 +100,7 @@ public class PrestamoController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping("/solicitar")
     public String solicitarPrestamo(@RequestParam String idLibro,
                                     HttpSession session,
@@ -121,7 +121,7 @@ public class PrestamoController {
         return "redirect:/prestamo/mis";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping("/devolver/{idPrestamo}")
     public String devolverPrestamo(@PathVariable String idPrestamo,
                                    HttpSession session,

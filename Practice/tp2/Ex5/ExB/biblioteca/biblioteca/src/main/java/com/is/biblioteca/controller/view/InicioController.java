@@ -67,7 +67,7 @@ public class InicioController {
 	   return "login.html";
 	}
 
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/inicio")
     public String inicio(HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuariosession");

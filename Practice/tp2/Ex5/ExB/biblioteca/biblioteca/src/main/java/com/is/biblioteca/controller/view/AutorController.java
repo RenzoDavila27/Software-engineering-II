@@ -3,6 +3,7 @@ package com.is.biblioteca.controller.view;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,11 +31,13 @@ public class AutorController {
     //////////////////////////////////////////
     //////////////////////////////////////////
     
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/registrar")
     public String irEditAlta() {
         return "autor_form";
     }
     
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/registro")
     public String aceptarEditAlta(ModelMap modelo,  @RequestParam String nombre )  {
 
@@ -61,6 +64,7 @@ public class AutorController {
     //////////////////////////////////////////
     //////////////////////////////////////////
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/lista")
     public String listar(ModelMap modelo) {
 
@@ -84,6 +88,7 @@ public class AutorController {
     //////////////////////////////////////////
     //////////////////////////////////////////
     
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/modificar/{id}")
     public String irEditModificar(ModelMap modelo, @PathVariable String id) throws ErrorServiceException{
         
@@ -104,6 +109,7 @@ public class AutorController {
      
     }
     
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/modificar/{id}")
     public String aceptarEditModificar(ModelMap modelo, @PathVariable String id, @RequestParam String nombre) {
         
@@ -132,6 +138,7 @@ public class AutorController {
     //////////////////////////////////////////
     //////////////////////////////////////////
     
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/baja/{id}")
     public String eliminarAutor(ModelMap modelo, @PathVariable String id) {
 
