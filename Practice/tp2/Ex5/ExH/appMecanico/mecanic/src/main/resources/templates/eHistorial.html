@@ -35,15 +35,26 @@
 
         <form th:action="@{/historial/actualizar}" th:object="${item}" method="post">
             <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{vehiculo.id}" />
+            <input type="hidden" th:if="${mecanico != null and !mecanicoEditable}" th:field="*{mecanico.id}" />
 
             <div class="mb-3">
                 <label>Vehículo (patente)</label>
-                <input type="text" class="form-control" th:value="${vehiculo}" disabled />
+                <input type="text" class="form-control" th:value="${vehiculoDescripcion}" disabled />
             </div>
 
             <div class="mb-3">
                 <label>Mecánico</label>
-                <input type="text" class="form-control" th:value="${mecanico}" disabled />
+                <div th:if="${mecanicoEditable}">
+                    <select class="form-select" th:field="*{mecanico.id}" th:disabled="${isDisabled}">
+                        <option value="" disabled th:selected="${item.mecanico == null}">Seleccione un mecánico</option>
+                        <option th:each="m : ${mecanicos}" th:value="${m.id}"
+                                th:text="${m.nombre + ' ' + m.apellido}"></option>
+                    </select>
+                </div>
+                <div th:unless="${mecanicoEditable}">
+                    <input type="text" class="form-control" th:value="${mecanicoDescripcion}" disabled />
+                </div>
             </div>
 
             <div class="mb-3">
@@ -53,21 +64,21 @@
 
             <div class="mb-3">
                 <label>Detalle de Arreglo</label>
-                <textarea class="form-control" th:field="*{detalleArreglo}" th:disabled="${isDisabled}"></textarea>
+                <textarea class="form-control" rows="4" th:field="*{detalleArreglo}" th:disabled="${isDisabled}"></textarea>
             </div>
 
             <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary" th:if="!${isDisabled}">Guardar</button>
-                 <a th:if="${item.vehiculo != null}"
-                th:href="@{/historial/list/{id}(id=${item.vehiculo.id})}"
-                class="btn btn-secondary">
-                Cancelar
+                <button type="submit" class="btn btn-primary" th:if="${!isDisabled}">Guardar</button>
+                <a th:if="${item.vehiculo != null}"
+                   th:href="@{/historial/list/{id}(id=${item.vehiculo.id})}"
+                   class="btn btn-secondary">
+                    Cancelar
                 </a>
 
                 <a th:if="${item.vehiculo == null}"
-                th:href="@{/vehiculo/list}" 
-                class="btn btn-secondary">
-                Cancelar
+                   th:href="@{/vehiculo/list}" 
+                   class="btn btn-secondary">
+                    Cancelar
                 </a>
             </div>
         </form>

@@ -28,11 +28,20 @@
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Listado de Arreglos</h1>
-        <a class="btn btn-primary" th:href="@{/historial/alta}"><i class="fas fa-plus"></i> Listar Arreglo</a>
+        <div>
+            <h1 class="mb-0">Historial de Arreglos</h1>
+            <p class="text-secondary mb-0" th:text="${vehiculoDescripcion}">Vehículo</p>
+        </div>
+        <div>
+            <a class="btn btn-secondary me-2" th:href="@{/vehiculo/list}"><i class="fas fa-arrow-left"></i> Volver</a>
+            <a class="btn btn-primary" th:href="@{/historial/alta(idVehiculo=${idVehiculo})}"><i class="fas fa-plus"></i> Nuevo Arreglo</a>
+        </div>
     </div>
 
-    <table class="table table-hover">
+    <div th:if="${msgError}" class="alert alert-danger" th:text="${msgError}"></div>
+    <div th:if="${msgExito}" class="alert alert-success" th:text="${msgExito}"></div>
+
+    <table class="table table-hover" th:if="${items != null and !items.isEmpty()}">
         <thead>
             <tr>
                 <th>Auto</th>
@@ -49,12 +58,16 @@
                 <td th:text="${h.fechaArreglo}"></td>
                 <td th:text="${h.detalleArreglo}"></td>
                 <td>
+                    <a class="btn btn-sm btn-info text-white" th:href="@{/historial/consultar/{id}(id=${h.id})}"><i class="fas fa-eye"></i> Ver</a>
                     <a class="btn btn-sm btn-warning" th:href="@{/historial/modificar/{id}(id=${h.id})}"><i class="fas fa-edit"></i> Editar</a>
                     <a class="btn btn-sm btn-danger" th:href="@{/historial/baja/{id}(id=${h.id})}"><i class="fas fa-trash-alt"></i> Eliminar</a>
                 </td>
             </tr>
         </tbody>
     </table>
+    <div th:if="${items == null || items.isEmpty()}" class="alert alert-info">
+        No hay arreglos registrados para este vehículo todavía.
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
