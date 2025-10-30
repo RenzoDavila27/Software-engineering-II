@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+  <title>Tinder de Mascota - Inicio</title>
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/one-page-wonder.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+    </nav>
+
+  <header class="masthead text-center text-white">
+    <div class="masthead-content">
+      <div class="container">
+        <h1 class="masthead-heading mb-0">Usuario Logueado</h1>
+         
+         <h2 class="masthead-subheading mb-0" 
+             th:text="${#authentication.principal.nombre + ' ' + #authentication.principal.apellido}"></h2> 
+        
+         <a th:href="@{/perfil(id=${#authentication.principal.id})}" class="btn btn-primary btn-xl rounded-pill mt-5">¡Configura tu Perfil!</a>
+        
+        <a th:href="@{/mascota/mis-mascotas}" class="btn btn-primary btn-xl rounded-pill mt-5">¡Mis Mascotas!</a>
+      </div>
+    </div>
+    </header>
+
+
+  <footer class="py-5 bg-black">
+    </footer>
+
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
