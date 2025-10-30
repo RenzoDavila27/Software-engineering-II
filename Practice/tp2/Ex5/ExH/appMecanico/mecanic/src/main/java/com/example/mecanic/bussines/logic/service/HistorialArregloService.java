@@ -31,7 +31,7 @@ public class HistorialArregloService {
     	  
     	historial.setEliminado(false);
     	validar(BaseUseCaseService.ALTA, historial);
-        Mecanico mecanico = mecanicoService.obtenerMecanicoPorUser(idUsuario);
+        Mecanico mecanico = resolverMecanico(idUsuario, historial);
         historial.setMecanico(mecanico);
         
         HistorialArreglo guardado = repository.save(historial);
@@ -49,7 +49,7 @@ public class HistorialArregloService {
         try {		
     	HistorialArreglo newHistorial = repository.findById(idHistorial).orElseThrow(() -> new ErrorServiceException("Historial no encontrado"));
     	validar(BaseUseCaseService.MODIFICACION, historial);
-        Mecanico mecanico = mecanicoService.obtenerMecanicoPorUser(idUsuario);
+        Mecanico mecanico = resolverMecanico(idUsuario, historial);
         newHistorial.setDetalleArreglo(historial.getDetalleArreglo());
         newHistorial.setFechaArreglo(historial.getFechaArreglo());
         newHistorial.setMecanico(mecanico);
@@ -102,6 +102,17 @@ public class HistorialArregloService {
         }catch(Exception e) {
             throw new ErrorServiceException("Error de Sistemas");  
         } 
+    }
+
+    private Mecanico resolverMecanico(Long idUsuario, HistorialArreglo historial) throws ErrorServiceException {
+        try {
+            return mecanicoService.obtenerMecanicoPorUser(idUsuario);
+        } catch (ErrorServiceException e) {
+            if (historial.getMecanico() == null || historial.getMecanico().getId() == null) {
+                throw new ErrorServiceException("Debe seleccionar un mecánico válido.");
+            }
+            return mecanicoService.obtenerMecanico(historial.getMecanico().getId());
+        }
     }
 
 
