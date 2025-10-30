@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head th:replace="~{fragments/head :: head('Biblioteca - Préstamos', 'https://use.fontawesome.com/releases/v5.6.3/css/all.css')}"></head>
+
+    <body>
+        <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+        <div class="container m-5">
+            <h2 class="mb-4" th:text="${titulo != null ? titulo : 'Préstamos'}"></h2>
+
+            <div th:if="${exito}!=null" class="card text-white bg-success mb-3 mensajeExito">
+                <div class="card-body">
+                    <h5 class="card-title">Éxito</h5>
+                    <p class="card-text" th:text="${exito}"></p>
+                </div>
+            </div>
+
+            <div th:if="${error}!=null" class="card text-white bg-danger mb-3 mensajeError">
+                <div class="card-body">
+                    <h5 class="card-title">Error</h5>
+                    <p class="card-text" th:text="${error}"></p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">Libro</th>
+                            <th scope="col" th:if="${vistaAdmin}">Usuario</th>
+                            <th scope="col">Fecha préstamo</th>
+                            <th scope="col">Fecha devolución</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${prestamos == null or #lists.isEmpty(prestamos)}">
+                            <td th:attr="colspan=${vistaAdmin} ? 6 : 5">No hay préstamos registrados.</td>
+                        </tr>
+                        <tr th:each="prestamo : ${prestamos}">
+                            <td>
+                                <span th:text="${prestamo.libro != null ? prestamo.libro.titulo : 'Sin libro'}"></span>
+                                <div class="small text-muted" th:if="${prestamo.libro != null}">
+                                    ISBN: <span th:text="${prestamo.libro.isbn}"></span>
+                                </div>
+                            </td>
+                            <td th:if="${vistaAdmin}">
+                                <span th:text="${prestamo.usuario != null ? prestamo.usuario.nombre : '-'}"></span>
+                                <div class="small text-muted" th:if="${prestamo.usuario != null}">
+                                    <span th:text="${prestamo.usuario.email}"></span>
+                                </div>
+                            </td>
+                            <td th:text="${prestamo.fechaPrestamo != null ? prestamo.fechaPrestamo : '-'}"></td>
+                            <td th:text="${prestamo.fechaDevolucion != null ? prestamo.fechaDevolucion : '-'}"></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${prestamo.alta} ? ' bg-warning text-dark' : ' bg-success'"
+                                      th:text="${prestamo.alta} ? 'En curso' : 'Devuelto'"></span>
+                            </td>
+                            <td>
+                                <form th:if="${prestamo.alta
+                                              and session.usuariosession != null
+                                              and (vistaAdmin or (prestamo.usuario != null and prestamo.usuario.id == session.usuariosession.id))}"
+                                      th:action="@{/prestamo/devolver/__${prestamo.id}__}"
+                                      method="post"
+                                      class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success">Marcar como devuelto</button>
+                                </form>
+                                <span th:if="${!prestamo.alta}">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <section class="py-5 text-center container">
+                <div class="row py-lg-3">
+                    <div class="col-lg-6 col-md-8 mx-auto">
+                        <a th:href="@{/regresoPage}" class="btn btn-primary my-2">Volver</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="text-muted py-5">
+            <div class="containerFooter">
+                <p class="mb-1">Album example is &copy; Bootstrap,<br>but please download and customize it for yourself!</p>
+                <p class="mb-0">New to Bootstrap? <a href="/"><br>Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
+                <p class="float-end mb-1">
+                    <a href="#" style="text-decoration:none"><span>⬆️</span> Back to top</a>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+                crossorigin="anonymous"></script>
+    </body>
+</html>
