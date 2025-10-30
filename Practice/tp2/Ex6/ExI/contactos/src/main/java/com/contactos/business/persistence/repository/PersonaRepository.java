@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Query;
 
 import com.contactos.business.domain.Persona;
 
@@ -12,6 +13,6 @@ public interface PersonaRepository extends BaseRepository<Persona, Long> {
     @EntityGraph(attributePaths = {"empresas", "contactos", "usuarios"})
     Optional<Persona> findWithRelationshipsById(Long id);
 
-    @EntityGraph(attributePaths = {"empresas", "contactos", "usuarios"})
-    List<Persona> findAllByEliminadoFalse();
+    @Query("select p from Persona p where p.eliminado = false or p.eliminado is null")
+    List<Persona> findAllActivas();
 }

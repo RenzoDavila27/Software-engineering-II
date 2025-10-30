@@ -2,6 +2,7 @@ package com.contactos.business.logic.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +47,11 @@ public class PersonaService extends BaseService<Persona, Long> {
     @Transactional(readOnly = true)
     public List<Persona> listarActivasConRelaciones() throws ErrorServiceException {
         try {
-            return personaRepository.findAllByEliminadoFalse();
+            return personaRepository.findAllActivas().stream()
+                    .filter(persona -> !Boolean.TRUE.equals(persona.isEliminado()))
+                    .map(persona -> personaRepository.findWithRelationshipsById(persona.getId())
+                            .orElse(persona))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new ErrorServiceException("No fue posible listar las personas", e);
         }
