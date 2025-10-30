@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${esEdicion} ? 'Editar persona' : 'Nueva persona'">Persona</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 text-primary mb-0" th:text="${esEdicion} ? 'Editar persona' : 'Nueva persona'">Persona</h1>
+        <a class="btn btn-outline-primary btn-sm" th:href="@{/personas}">Volver</a>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+    <form th:object="${personaForm}"
+          th:action="${esEdicion} ? @{|/personas/${personaForm.id}/actualizar|} : @{/personas}"
+          method="post" class="card border-0 shadow-sm">
+        <div class="card-body">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{usuarioId}">
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" id="nombre" class="form-control" th:field="*{nombre}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="apellido" class="form-label">Apellido</label>
+                    <input type="text" id="apellido" class="form-control" th:field="*{apellido}" required>
+                </div>
+            </div>
+
+            <div class="form-section-title">Datos de acceso</div>
+            <p class="text-muted small mb-3">
+                El usuario se creará junto con la persona. En edición, la contraseña es opcional: complete solo si desea cambiarla.
+            </p>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="cuenta" class="form-label">Usuario</label>
+                    <input type="text" id="cuenta" class="form-control" th:field="*{cuenta}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="clave" class="form-label">Contraseña</label>
+                    <input type="password" id="clave" class="form-control" th:field="*{clave}"
+                           th:attr="required=${!esEdicion}">
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2">
+            <a class="btn btn-outline-secondary" th:href="@{/personas}">Cancelar</a>
+            <button type="submit" class="btn btn-primary">
+                <span th:text="${esEdicion} ? 'Actualizar' : 'Crear'">Guardar</span>
+            </button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

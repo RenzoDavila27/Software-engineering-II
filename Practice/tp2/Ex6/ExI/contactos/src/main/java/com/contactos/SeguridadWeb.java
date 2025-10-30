@@ -1,14 +1,12 @@
-package com.fioritech.gimnasio;
+package com.contactos;
 
-import com.fioritech.gimnasio.business.logic.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -16,28 +14,24 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SeguridadWeb {
 
-    @Autowired
-    private UsuarioService usuarioService;
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(usuarioService).passwordEncoder(new BCryptPasswordEncoder());
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
+        http
+            .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/css/**",
                     "/js/**",
                     "/images/**",
-                    "/bootstrap/**",
-                    "/tinymce/**",
-                    "/mercadopago/**",
-                    "/webhook/**"
+                    "/fonts/**",
+                    "/webjars/**"
                 ).permitAll()
                 .requestMatchers("/", "/login", "/logincheck", "/usuario/login").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -45,16 +39,18 @@ public class SeguridadWeb {
                 .loginProcessingUrl("/logincheck")
                 .usernameParameter("cuenta")
                 .passwordParameter("clave")
-                .defaultSuccessUrl("/inicio")
+                .defaultSuccessUrl("/inicio", true)
+                .failureUrl("/login?error=true")
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/login?logout=true")
                 .permitAll()
             )
             .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
+
 }
