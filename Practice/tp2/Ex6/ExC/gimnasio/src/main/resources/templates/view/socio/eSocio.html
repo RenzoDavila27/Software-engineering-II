@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Lista Socio</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">     
+      <hr>
+      <div class="container"> 
+
+        <div class="card">
+          <h4 class="card-header"><strong>SOCIO</strong></h4>              
+          <div class="card-body">
+			
+            <form th:action="@{/socio/aceptarEditSocio}" method="post" th:object="${socio}">
+			
+			  <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>    
+			  <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div> 
+			  
+              <div class="row">
+                <div class="col-md-6"> 
+                  <div class="form-group">
+
+					<input type="hidden" name="id" th:field="*{id}">
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" th:field="*{nombre}" placeholder="Escriba el nombre" required="required" th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" th:field="*{apellido}" placeholder="Escriba el apellido" required="required" th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" th:field="*{fechaNacimiento}" placeholder="Escriba la fecha" required="required" th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tipoDocumento" class="form-label d-block">Tipo de Documento</label>
+                        <select class="form-select"
+                                th:field="*{tipoDocumento}"
+                                th:disabled="${isDisabled}">
+                            <option value="" disabled
+                                    th:selected="*{tipoDocumento} == null">Seleccione</option>
+                            <option th:each="tipo : ${tiposDocumento}"
+                                    th:value="${tipo}"
+                                    th:text="${#strings.capitalize(tipo.name().toLowerCase())}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="numeroDocumento" class="form-label">Numero de Documento</label>
+                        <input type="text" class="form-control" th:field="*{numeroDocumento}" placeholder="Escriba el documento" required="required" th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Telefono</label>
+                        <input type="text" class="form-control" th:field="*{telefono}" placeholder="Escriba el telefono" required="required" th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="correoElectronico" class="form-label">Correo Electronico</label>
+                        <input type="text" class="form-control" th:field="*{correoElectronico}" placeholder="Escriba el correo" required="required" th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="numeroSocio" class="form-label">Numero de Socio</label>
+                        <input type="number" class="form-control" th:field="*{numeroSocio}" placeholder="Escriba el numero de socio" required="required" th:disabled="${isDisabled}">
+                    </div>
+
+				  </div>
+                </div>                
+              </div> 
+              
+              <hr>
+			  <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary" th:disabled="${isDisabled}">ACEPTAR</button>   
+			   <a class="btn btn-primary" th:href="@{/socio/cancelarEditSocio}" role="button">CANCELAR</a>
+			  </div>
+			   
+			</form>
+			 
+          </div>
+        </div>
+      </div> 
+	  
+    </main>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script> 
+	    
+  </body>
+</html>

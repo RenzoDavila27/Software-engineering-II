@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>FACTURA</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">
+      <hr>
+      <div class="container">
+
+        <div class="card">
+          <h4 class="card-header"><strong>EDIT FACTURA</strong></h4>
+          <div class="card-body">
+
+            <form th:action="@{/factura/aceptarEditFactura}" method="post" th:object="${factura}">
+
+              <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
+              <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+
+                    <input type="hidden" name="id" th:field="*{id}">
+
+                    <div class="mb-3">
+                      <label for="numeroFactura" class="form-label">Número de Factura</label>
+                      <input type="number" class="form-control" th:field="*{numeroFactura}" min="1" step="1" placeholder="Ingrese el número" required th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="fechaFactura" class="form-label">Fecha</label>
+                      <input type="date" class="form-control" th:field="*{fechaFactura}" required th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="totalPagado" class="form-label">Total</label>
+                      <input type="number" class="form-control" th:field="*{totalPagado}" min="0" step="0.01" placeholder="Ingrese el total" required th:disabled="${isDisabled}">
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Socio</label>
+                      <input type="text" class="form-control"
+                             th:value="${socioResumen != null ? socioResumen : 'Seleccione cuotas para determinar el socio'}"
+                             readonly>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="formaDePago" class="form-label d-block">Forma de Pago</label>
+                      <select class="form-select" th:field="*{formaDePago.id}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{formaDePago} == null">Seleccione</option>
+                        <option th:each="fp : ${formasPago}"
+                                th:value="${fp.id}"
+                                th:text="${#strings.capitalize(fp.tipoPago.name().toLowerCase())}"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="estado" class="form-label d-block">Estado</label>
+                      <select class="form-select" th:field="*{estado}" th:disabled="${isDisabled}" required>
+                        <option value="" disabled th:selected="*{estado} == null">Seleccione</option>
+                        <option th:each="estadoEnum : ${estadosFactura}"
+                                th:value="${estadoEnum}"
+                                th:text="${#strings.capitalize(estadoEnum.name().toLowerCase())}"></option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="cuotasSeleccionadas" class="form-label d-block">Cuotas Mensuales</label>
+                      <select class="form-select" name="cuotasSeleccionadas" id="cuotasSeleccionadas" multiple size="6" th:disabled="${isDisabled}">
+                        <option th:each="cuota : ${cuotasDisponibles}"
+                                th:value="${cuota.id}"
+                                th:selected="${cuotasSeleccionadas != null ? #lists.contains(cuotasSeleccionadas, cuota.id) : false}"
+                                th:text="|${#strings.capitalize(cuota.mes.name().toLowerCase())} ${cuota.anio} - ${#numbers.formatDecimal(cuota.valorCuota.valorCuota, 1, 'COMMA', 2, 'POINT')}|">
+                        </option>
+                      </select>
+                      <small class="form-text text-muted">Mantenga presionadas las teclas Ctrl (Cmd en Mac) para seleccionar varias cuotas.</small>
+                    </div>
+
+                    <div class="mt-4" th:if="${factura != null and factura.detalles != null and !factura.detalles.isEmpty()}">
+                      <h5>Detalles de la Factura</h5>
+                      <table class="table table-sm">
+                        <thead>
+                          <tr>
+                            <th>Mes</th>
+                            <th>Año</th>
+                            <th>Monto</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr th:each="detalle : ${factura.detalles}">
+                            <td th:text="${#strings.capitalize(detalle.cuotaMensual.mes.name().toLowerCase())}"></td>
+                            <td th:text="${detalle.cuotaMensual.anio}"></td>
+                            <td th:text="${#numbers.formatDecimal(detalle.monto, 1, 'COMMA', 2, 'POINT')}"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <hr>
+              <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary" th:disabled="${isDisabled}">ACEPTAR</button>
+               <a class="btn btn-primary" th:href="@{/factura/cancelarEditFactura}" role="button">CANCELAR</a>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
+  </body>
+</html>

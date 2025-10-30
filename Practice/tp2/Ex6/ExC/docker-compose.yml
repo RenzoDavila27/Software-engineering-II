@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  gimnasio:
+    build: gimnasio
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://gimnasio_prueba:3306/gimnasio
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    restart: always
+    depends_on:
+      gimnasio_prueba:
+        condition: service_healthy
+  gimnasio_prueba:
+    image: mysql:8.0.43
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: gimnasio
+    restart: always
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost"]
+      timeout: 10s
+      retries: 10
+      
+    
+    

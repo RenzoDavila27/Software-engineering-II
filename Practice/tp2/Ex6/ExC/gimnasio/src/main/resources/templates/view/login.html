@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Ingreso</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <main role="main">     
+      <hr>
+      <div class="container"> 
+
+        <div class="card">
+          <h4 class="card-header"><strong>Login</strong></h4>              
+          <div class="card-body">
+			
+            <form th:action="@{/logincheck}" method="post">
+		
+		  <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
+		  <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div>
+	  
+              <div class="row">
+                <div class="col-md-6"> 
+                  <div class="form-group">
+
+                    <label for="cuenta">Cuenta</label>
+                    <input type="text" class="form-control"  name="cuenta" placeholder="Escriba la cuenta" required="required">
+                  
+				<label for="clave">Clave</label>
+				<input type="password" class="form-control"  name="clave" placeholder="Escriba la clave" required="required">
+								
+			  </div>
+                </div>                
+              </div> 
+              
+              <hr>
+			  <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary">INGRESAR</button>   
+			  </div>
+			   
+			</form>
+			 
+          </div>
+        </div>
+      </div> 
+	  
+    </main>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script> 
+	    
+  </body>
+</html>

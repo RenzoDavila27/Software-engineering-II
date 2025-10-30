@@ -1,0 +1,61 @@
+<div th:fragment="menu-principal">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/}">Gimnasio</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" 
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+
+                
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/}">Inicio</a>
+                    </li>
+                        <li class="nav-item" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}" >
+                            <a class="nav-link" th:href="@{/empleado/listaEmpleado}">Socios</a>
+                        </li>
+                        <li class="nav-item" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}">
+                            <a class="nav-link" th:href="@{/pais/listaPais}">Direcciones</a>
+                        </li>
+                        <li class="nav-item" th:if="${session.rol == 'ADMINISTRADOR'}">
+                            <a class="nav-link" th:href="@{/sucursal/listaSucursal}">Sucursales</a>
+                        </li>
+                        <li class="nav-item" th:if="${session.rol == 'ADMINISTRADOR'}">
+                            <a class="nav-link" th:href="@{/empresa/listaEmpresa}">Empresas</a>
+                        </li>
+                        <li class="nav-item" th:if="${session.rol == 'ADMINISTRADOR'}" >
+                            <a class="nav-link" th:href="@{/valorCuota/listaValorCuota}">Cuotas</a>
+                        </li>
+                          <li class="nav-item" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}" >
+                            <a class="nav-link" th:href="@{/promocion/listaPromocion}">Promociones</a>
+                        </li>
+
+                        <li class="nav-item" th:if="${session.rol == 'ADMINISTRADOR'}" >
+                            <a class="nav-link" th:href="@{/formaDePago/listaFormaDePago}">Formas de Pago</a>
+                        </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/cuotaMensual/listaCuotaMensual}">CuotaMensual</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/factura/listaFactura}">Facturas</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/rutina/listaRutina}">Rutina</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/usuario/logout}">Logout</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
