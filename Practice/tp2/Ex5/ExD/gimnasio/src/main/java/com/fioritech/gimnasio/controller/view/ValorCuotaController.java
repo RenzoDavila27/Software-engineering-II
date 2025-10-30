@@ -7,6 +7,7 @@ import com.fioritech.gimnasio.business.logic.service.ValorCuotaService;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@PreAuthorize("hasRole('ADMINISTRADOR')")
 public class ValorCuotaController {
 
     @Autowired
@@ -111,4 +113,3 @@ public class ValorCuotaController {
         return "redirect:/valorCuota/listaValorCuota";
     }
 }
-

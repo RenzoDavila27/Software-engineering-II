@@ -11,6 +11,7 @@ import com.fioritech.gimnasio.business.logic.service.ValorCuotaService;
 import jakarta.servlet.http.HttpSession;
 import java.util.Collection;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
 public class CuotaMensualController {
 
     private final CuotaMensualService cuotaMensualService;
@@ -34,6 +36,7 @@ public class CuotaMensualController {
         this.valorCuotaService = valorCuotaService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
     @GetMapping("/cuotaMensual/listaCuotaMensual")
     public String listaCuotas(Model model,HttpSession session) {
         String rol = (String) session.getAttribute("rol");
@@ -55,6 +58,7 @@ public class CuotaMensualController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/cuotaMensual/altaCuotaMensual")
     public String alta(CuotaMensual cuotaMensual, Model model) {
         model.addAttribute("isDisabled", false);
@@ -64,10 +68,25 @@ public class CuotaMensualController {
         return "view/cuotaMensual/eCuotaMensual";
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
     @GetMapping("/cuotaMensual/consultar/{id}")
-    public String consultar(@PathVariable("id") String idCuotaMensual, Model model, RedirectAttributes attributes) {
+    public String consultar(@PathVariable("id") String idCuotaMensual, Model model, RedirectAttributes attributes, HttpSession session) {
         try {
             CuotaMensual cuotaMensual = cuotaMensualService.buscarCuotaMensual(idCuotaMensual);
+            if (session != null) {
+                Object rolSesion = session.getAttribute("rol");
+                if ("SOCIO".equals(rolSesion)) {
+                    Usuario usuario = (Usuario) session.getAttribute("usuarioSession");
+                    boolean autorizado = usuario != null
+                        && cuotaMensual.getSocio() != null
+                        && cuotaMensual.getSocio().getUsuario() != null
+                        && usuario.getId().equals(cuotaMensual.getSocio().getUsuario().getId());
+                    if (!autorizado) {
+                        attributes.addFlashAttribute("msgError", "No está autorizado a consultar la cuota indicada.");
+                        return "redirect:/cuotaMensual/listaCuotaMensual";
+                    }
+                }
+            }
             model.addAttribute("cuotaMensual", cuotaMensual);
             model.addAttribute("isDisabled", true);
             model.addAttribute("Mes", Mes.values());
@@ -79,6 +98,7 @@ public class CuotaMensualController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/cuotaMensual/modificar/{id}")
     public String modificar(@PathVariable("id") String idCuotaMensual, Model model, RedirectAttributes attributes) {
         try {
@@ -94,6 +114,7 @@ public class CuotaMensualController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/cuotaMensual/baja/{id}")
     public String baja(@PathVariable("id") String idCuotaMensual, RedirectAttributes attributes) {
         try {
@@ -107,6 +128,7 @@ public class CuotaMensualController {
     }
 
              
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @PostMapping("/cuotaMensual/aceptarEditCuotaMensual")
     public String aceptarEdit(CuotaMensual cuotaMensual, BindingResult result, RedirectAttributes attributes,
         Model model) {
@@ -135,11 +157,13 @@ public class CuotaMensualController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/cuotaMensual/cancelarEditCuotaMensual")
     public String cancelarEdit() {
         return "redirect:/cuotaMensual/listaCuotaMensual";
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/cuotaMensual/buscarCuotasDeSocio")
     public String buscarCuotaDeSocio(@RequestParam("dni") String dni, Model model, HttpSession session){
         String rol = (String) session.getAttribute("rol");
@@ -153,6 +177,7 @@ public class CuotaMensualController {
         return "view/cuotaMensual/lCuotaMensual";
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
     @GetMapping("/cuotaMensual/volver")
     public String volver(){
         return "redirect:/cuotaMensual/listaCuotaMensual";

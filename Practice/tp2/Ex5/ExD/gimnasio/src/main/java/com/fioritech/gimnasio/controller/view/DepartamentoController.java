@@ -3,6 +3,7 @@ package com.fioritech.gimnasio.controller.view;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +20,7 @@ import com.fioritech.gimnasio.business.logic.service.PaisService;
 import com.fioritech.gimnasio.business.logic.service.ProvinciaService;
 
 @Controller
+@PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
 public class DepartamentoController {
     private String viewEdit = "view/Direcciones/departamento/eDepartamento";
     private String viewList = "view/Direcciones/departamento/lDepartamento";

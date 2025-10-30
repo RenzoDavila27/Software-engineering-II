@@ -3,6 +3,7 @@ package com.fioritech.gimnasio.controller.view;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import com.fioritech.gimnasio.business.logic.error.BusinessException;
 import com.fioritech.gimnasio.business.logic.service.EmpresaService;
 
 @Controller
+@PreAuthorize("hasRole('ADMINISTRADOR')")
 public class EmpresaController {
 
     private String viewEdit = "view/Empresa/eEmpresa";

@@ -2,6 +2,7 @@ package com.fioritech.gimnasio.controller.view;
 
 import com.fioritech.gimnasio.business.logic.service.CuotaMensualService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ public class InicioController {
         return "view/login";
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
     @GetMapping("/inicio")
     public String inicio(HttpSession session) {
         if (session.getAttribute("usuarioSession") == null) {

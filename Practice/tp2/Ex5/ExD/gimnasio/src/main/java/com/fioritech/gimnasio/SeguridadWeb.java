@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SeguridadWeb {
 
     @Autowired
@@ -27,7 +27,6 @@ public class SeguridadWeb {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
                 .requestMatchers(
                     "/css/**",
                     "/js/**",
@@ -35,11 +34,10 @@ public class SeguridadWeb {
                     "/bootstrap/**",
                     "/tinymce/**",
                     "/mercadopago/**",
-                    "/webhook/**",
-                    "/",
-                    "/login",
-                    "/logincheck"
+                    "/webhook/**"
                 ).permitAll()
+                .requestMatchers("/", "/login", "/logincheck", "/usuario/login").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

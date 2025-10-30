@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
 public class RutinaController {
 
     private final RutinaService rutinaService;
@@ -73,6 +75,7 @@ public class RutinaController {
         return rutina.getDetalles();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
     @GetMapping("/rutina/listaRutina")
     public String listaRutina(Model model, HttpSession session) {
         try {
@@ -92,6 +95,7 @@ public class RutinaController {
         return "view/rutina/lRutina";
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/rutina/altaRutina")
     public String alta(Rutina rutina, Model model) {
         model.addAttribute("isDisabled", false);
@@ -100,6 +104,7 @@ public class RutinaController {
         return "view/rutina/eRutina";
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
     @GetMapping("/rutina/consultar/{id}")
     public String consultar(@PathVariable("id") String idRutina, Model model, RedirectAttributes attributes,
         HttpSession session) {
@@ -123,6 +128,7 @@ public class RutinaController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/rutina/modificar/{id}")
     public String modificar(@PathVariable("id") String idRutina, Model model, RedirectAttributes attributes) {
         try {
@@ -138,6 +144,7 @@ public class RutinaController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/rutina/baja/{id}")
     public String baja(@PathVariable("id") String idRutina, RedirectAttributes attributes) {
         try {
@@ -149,6 +156,7 @@ public class RutinaController {
         return "redirect:/rutina/listaRutina";
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @PostMapping("/rutina/aceptarEditRutina")
     public String aceptarEdit(Rutina rutina, BindingResult result, RedirectAttributes attributes, Model model) {
         try {
@@ -220,6 +228,7 @@ public class RutinaController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/rutina/cancelarEditRutina")
     public String cancelarEdit() {
         return "redirect:/rutina/listaRutina";
