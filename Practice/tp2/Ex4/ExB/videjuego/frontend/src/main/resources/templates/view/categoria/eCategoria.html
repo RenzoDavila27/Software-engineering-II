@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titleForm}">Categoría</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">Videojuegos</a>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <div class="mb-3">
+        <a th:href="@{/categorias}" class="btn btn-link">&larr; Volver al listado</a>
+    </div>
+
+    <h1 class="h3" th:text="${titleForm}">Categoría</h1>
+
+    <div th:if="${msgError}" class="alert alert-danger" th:text="${msgError}"></div>
+
+    <form th:action="@{/categorias/guardar}" th:object="${form}" method="post" class="row g-3">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="col-12">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" th:field="*{nombre}" th:disabled="${isDisabled}">
+            <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+        </div>
+
+        <div class="col-12" th:if="${!isDisabled}">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

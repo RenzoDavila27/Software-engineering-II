@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla de Inicio</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">FioriGames</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" th:href="@{/videojuego/listaVideojuego}">Videojuegos</a>
+        </li>
+        <!-- Podés agregar más enlaces aquí -->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Contenido principal -->
+<div class="container adminmt-5">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Bienvenido a la Tienda de Videojuegos</h1>
+        <p class="lead">Usa la barra de navegación para ver los videojuegos disponibles.</p>
+        <hr class="my-4">
+        <a class="btn btn-primary btn-lg" role="button" th:href="@{/videojuego/listaVideojuego}">Ir a Videojuegos</a>
+        <a class="btn btn-primary btn-lg" role="button" th:href="@{/categoria/listaCategoria}">Ir a Categorias</a>
+        <a class="btn btn-primary btn-lg" role="button" th:href="@{/estudio/listaEstudio}">Ir a Estudios</a>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
