@@ -11,13 +11,10 @@ import com.fioritech.gimnasio.business.logic.service.CuotaMensualService;
 import com.fioritech.gimnasio.business.logic.service.FacturaService;
 import com.fioritech.gimnasio.business.logic.service.FormaDePagoService;
 import jakarta.servlet.http.HttpSession;
-
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
 public class FacturaController {
 
     private final FacturaService facturaService;
@@ -64,7 +60,6 @@ public class FacturaController {
         model.addAttribute("socioResumen", obtenerNombreSocioDesdeDetalles(factura));
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
     @GetMapping("/factura/listaFactura")
     public String listaFactura(Model model, HttpSession session) {
         String rol = (String) session.getAttribute("rol");
@@ -80,7 +75,6 @@ public class FacturaController {
         return "view/factura/lFactura";
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/factura/altaFactura")
     public String alta(Factura factura, Model model) {
         model.addAttribute("isDisabled", false);
@@ -90,25 +84,10 @@ public class FacturaController {
         return "view/factura/eFactura";
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO','SOCIO')")
     @GetMapping("/factura/consultar/{id}")
-    public String consultar(@PathVariable("id") String idFactura, Model model, RedirectAttributes attributes, HttpSession session) {
+    public String consultar(@PathVariable("id") String idFactura, Model model, RedirectAttributes attributes) {
         try {
             Factura factura = facturaService.buscarFactura(idFactura);
-            if (session != null) {
-                Object rolSesion = session.getAttribute("rol");
-                if ("SOCIO".equals(rolSesion)) {
-                    Usuario usuario = (Usuario) session.getAttribute("usuarioSession");
-                    boolean autorizado = usuario != null
-                        && factura.getSocio() != null
-                        && factura.getSocio().getUsuario() != null
-                        && usuario.getId().equals(factura.getSocio().getUsuario().getId());
-                    if (!autorizado) {
-                        attributes.addFlashAttribute("msgError", "No está autorizado a consultar la factura indicada.");
-                        return "redirect:/factura/listaFactura";
-                    }
-                }
-            }
             model.addAttribute("factura", factura);
             model.addAttribute("isDisabled", true);
             prepararSeleccionCuotas(model, factura);
@@ -120,7 +99,6 @@ public class FacturaController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/factura/modificar/{id}")
     public String modificar(@PathVariable("id") String idFactura, Model model, RedirectAttributes attributes) {
         try {
@@ -136,7 +114,6 @@ public class FacturaController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/factura/baja/{id}")
     public String baja(@PathVariable("id") String idFactura, RedirectAttributes attributes) {
         try {
@@ -148,7 +125,6 @@ public class FacturaController {
         return "redirect:/factura/listaFactura";
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @PostMapping("/factura/aceptarEditFactura")
     public String aceptarEdit(Factura factura, BindingResult result,
         @RequestParam(value = "cuotasSeleccionadas", required = false) List<String> cuotasSeleccionadas,
@@ -208,7 +184,6 @@ public class FacturaController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','EMPLEADO')")
     @GetMapping("/factura/cancelarEditFactura")
     public String cancelarEdit() {
         return "redirect:/factura/listaFactura";
@@ -227,6 +202,18 @@ public class FacturaController {
             }
         }
         return socioId;
+    }
+
+    @GetMapping("/factura/descargar/{id}")
+    public void descargarFactura(@PathVariable Long id, HttpServletResponse response) throws IOException {
+        Factura factura = facturaService.buscarPorId(id);
+    
+        // Configurar respuesta HTTP
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=factura_" + id + ".pdf");
+    
+        // Generar PDF
+        facturaService.generarFacturaPDF(factura, response.getOutputStream());
     }
 
     private String obtenerNombreSocioDesdeCuotas(List<String> cuotasSeleccionadas) {
@@ -248,4 +235,7 @@ public class FacturaController {
         CuotaMensual cuota = factura.getDetalles().get(0).getCuotaMensual();
         return cuota.getSocio().getNombre() + " " + cuota.getSocio().getApellido();
     }
+
+
 }
+
