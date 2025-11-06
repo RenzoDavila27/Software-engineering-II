@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.format.DateTimeFormatter;
 
+
 import com.fioritech.gimnasio.business.domain.CuotaMensual;
 import com.fioritech.gimnasio.business.domain.DetalleFactura;
 import com.fioritech.gimnasio.business.domain.Factura;
@@ -32,6 +33,9 @@ import java.util.List;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 @Transactional
