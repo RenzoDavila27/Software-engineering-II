@@ -28,9 +28,14 @@ public abstract class Contacto extends BaseEntity<Long> {
     private String observacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "persona_id", nullable = false)
+    @JoinColumn(name = "persona_id")
     @JsonBackReference("persona-contactos")
     private Persona persona;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empresa_id")
+    @JsonBackReference("empresa-contactos")
+    private Empresa empresa;
 
     @Override
     public Long getId() {
@@ -64,6 +69,14 @@ public abstract class Contacto extends BaseEntity<Long> {
 
     public void setPersona(Persona persona) {
         this.persona = persona;
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
     }
 
     @Override

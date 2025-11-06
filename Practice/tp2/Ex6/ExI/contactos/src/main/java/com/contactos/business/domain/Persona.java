@@ -1,7 +1,7 @@
 package com.contactos.business.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,15 +26,15 @@ public class Persona extends BaseEntity<Long> {
 
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = false)
     @JsonManagedReference("persona-empresas")
-    private List<Empresa> empresas = new ArrayList<>();
+    private Set<Empresa> empresas = new HashSet<>();
 
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = false)
     @JsonManagedReference("persona-usuarios")
-    private List<Usuario> usuarios = new ArrayList<>();
+    private Set<Usuario> usuarios = new HashSet<>();
 
     @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = false)
     @JsonManagedReference("persona-contactos")
-    private List<Contacto> contactos = new ArrayList<>();
+    private Set<Contacto> contactos = new HashSet<>();
 
     @Override
     public Long getId() {
@@ -62,27 +62,27 @@ public class Persona extends BaseEntity<Long> {
         this.apellido = apellido;
     }
 
-    public List<Empresa> getEmpresas() {
+    public Set<Empresa> getEmpresas() {
         return empresas;
     }
 
-    public void setEmpresas(List<Empresa> empresas) {
+    public void setEmpresas(Set<Empresa> empresas) {
         this.empresas = empresas;
     }
 
-    public List<Usuario> getUsuarios() {
+    public Set<Usuario> getUsuarios() {
         return usuarios;
     }
 
-    public void setUsuarios(List<Usuario> usuarios) {
+    public void setUsuarios(Set<Usuario> usuarios) {
         this.usuarios = usuarios;
     }
 
-    public List<Contacto> getContactos() {
+    public Set<Contacto> getContactos() {
         return contactos;
     }
 
-    public void setContactos(List<Contacto> contactos) {
+    public void setContactos(Set<Contacto> contactos) {
         this.contactos = contactos;
     }
 

@@ -56,4 +56,17 @@ public class PersonaService extends BaseService<Persona, Long> {
             throw new ErrorServiceException("No fue posible listar las personas", e);
         }
     }
+
+    @Transactional
+    public Persona guardarCambios(Persona persona) throws ErrorServiceException {
+        try {
+            validar(BaseUseCaseService.MODIFICACION, persona);
+            preModificacion(persona);
+            return personaRepository.save(persona);
+        } catch (ErrorServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ErrorServiceException("No fue posible actualizar la persona", e);
+        }
+    }
 }

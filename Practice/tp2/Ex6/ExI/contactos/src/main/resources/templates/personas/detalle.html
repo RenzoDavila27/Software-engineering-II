@@ -49,19 +49,21 @@
             </div>
             <div th:if="${!#lists.isEmpty(contactosActivos)}" class="list-group list-group-flush">
                 <div class="list-group-item" th:each="contacto : ${contactosActivos}">
-                    <div th:if="${contacto instanceof T(com.contactos.business.domain.ContactoCorreoElectronico)}">
+                    <div th:if="${contacto instanceof T(com.contactos.business.domain.ContactoCorreoElectronico)}"
+                         th:object="${contacto}">
                         <span class="badge bg-primary badge-contacto me-2">Correo</span>
-                        <span th:text="${#casts.cast(contacto, T(com.contactos.business.domain.ContactoCorreoElectronico)).email}">
+                        <span th:text="*{email}">
                             correo@example.com
                         </span>
                     </div>
-                    <div th:if="${contacto instanceof T(com.contactos.business.domain.ContactoTelefonico)}">
+                    <div th:if="${contacto instanceof T(com.contactos.business.domain.ContactoTelefonico)}"
+                         th:object="${contacto}">
                         <span class="badge bg-success badge-contacto me-2">Teléfono</span>
-                        <span th:text="${#casts.cast(contacto, T(com.contactos.business.domain.ContactoTelefonico)).telefono}">
+                        <span th:text="*{telefono}">
                             000
                         </span>
                         <small class="text-muted ms-2"
-                               th:text="${#casts.cast(contacto, T(com.contactos.business.domain.ContactoTelefonico)).tipoTelefono}">
+                               th:text="*{tipoTelefono}">
                             CELULAR
                         </small>
                     </div>

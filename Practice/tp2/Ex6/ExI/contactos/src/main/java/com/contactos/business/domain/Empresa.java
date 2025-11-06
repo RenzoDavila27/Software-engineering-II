@@ -2,14 +2,18 @@ package com.contactos.business.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "empresas")
@@ -20,13 +24,13 @@ public class Empresa extends BaseEntity<Long> {
     private String nombre;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "persona_id", nullable = false)
+    @JoinColumn(name = "persona_id")
     @JsonBackReference("persona-empresas")
     private Persona persona;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "contacto_id")
-    private Contacto contacto;
+    @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = false)
+    @JsonManagedReference("empresa-contactos")
+    private Set<Contacto> contactos = new HashSet<>();
 
     @Override
     public Long getId() {
@@ -54,12 +58,12 @@ public class Empresa extends BaseEntity<Long> {
         this.persona = persona;
     }
 
-    public Contacto getContacto() {
-        return contacto;
+    public Set<Contacto> getContactos() {
+        return contactos;
     }
 
-    public void setContacto(Contacto contacto) {
-        this.contacto = contacto;
+    public void setContactos(Set<Contacto> contactos) {
+        this.contactos = contactos;
     }
 
     @Override

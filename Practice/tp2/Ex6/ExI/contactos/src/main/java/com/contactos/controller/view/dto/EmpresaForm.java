@@ -1,18 +1,15 @@
 package com.contactos.controller.view.dto;
 
-import com.contactos.business.domain.enumeration.TipoTelefono;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EmpresaForm {
 
     private Long id;
     private String nombre;
-    private Long personaId;
-    private Long contactoId;
-    private TipoContactoEmpresaForm tipoContacto = TipoContactoEmpresaForm.CORREO;
-    private String correo;
-    private String telefono;
-    private TipoTelefono tipoTelefono;
-    private String observacion;
+    private List<ContactoCorreoForm> correos = new ArrayList<>();
+    private List<ContactoTelefonoForm> telefonos = new ArrayList<>();
+    private List<Long> contactosEliminar = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -30,59 +27,27 @@ public class EmpresaForm {
         this.nombre = nombre;
     }
 
-    public Long getPersonaId() {
-        return personaId;
+    public List<ContactoCorreoForm> getCorreos() {
+        return correos;
     }
 
-    public void setPersonaId(Long personaId) {
-        this.personaId = personaId;
+    public void setCorreos(List<ContactoCorreoForm> correos) {
+        this.correos = correos;
     }
 
-    public Long getContactoId() {
-        return contactoId;
+    public List<ContactoTelefonoForm> getTelefonos() {
+        return telefonos;
     }
 
-    public void setContactoId(Long contactoId) {
-        this.contactoId = contactoId;
+    public void setTelefonos(List<ContactoTelefonoForm> telefonos) {
+        this.telefonos = telefonos;
     }
 
-    public TipoContactoEmpresaForm getTipoContacto() {
-        return tipoContacto;
+    public List<Long> getContactosEliminar() {
+        return contactosEliminar;
     }
 
-    public void setTipoContacto(TipoContactoEmpresaForm tipoContacto) {
-        this.tipoContacto = tipoContacto;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public TipoTelefono getTipoTelefono() {
-        return tipoTelefono;
-    }
-
-    public void setTipoTelefono(TipoTelefono tipoTelefono) {
-        this.tipoTelefono = tipoTelefono;
-    }
-
-    public String getObservacion() {
-        return observacion;
-    }
-
-    public void setObservacion(String observacion) {
-        this.observacion = observacion;
+    public void setContactosEliminar(List<Long> contactosEliminar) {
+        this.contactosEliminar = contactosEliminar;
     }
 }

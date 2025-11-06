@@ -8,6 +8,7 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
           crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
 </head>
 <body>
 <div th:replace="fragments/navbar :: navbar"></div>
@@ -25,62 +26,124 @@
           method="post" class="card border-0 shadow-sm">
         <div class="card-body">
             <input type="hidden" th:field="*{id}">
-            <input type="hidden" th:field="*{contactoId}">
 
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" id="nombre" class="form-control" th:field="*{nombre}" required>
             </div>
 
-            <div class="mb-3">
-                <label for="personaId" class="form-label">Persona asociada</label>
-                <select id="personaId" class="form-select" th:field="*{personaId}" required>
-                    <option value="" hidden>Seleccione una persona</option>
-                    <option th:each="persona : ${personas}"
-                            th:value="${persona.id}"
-                            th:text="${persona.nombre + ' ' + persona.apellido}">
-                    </option>
-                </select>
-            </div>
+            <div class="form-section-title">Contactos de la empresa</div>
 
             <div class="mb-3">
-                <span class="form-label d-block">Tipo de contacto</span>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="tipoCorreo" value="CORREO"
-                           th:field="*{tipoContacto}">
-                    <label class="form-check-label" for="tipoCorreo">Correo electrónico</label>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label mb-0">Correos electrónicos</label>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="agregarCorreoBtn">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="tipoTelefono" value="TELEFONO"
-                           th:field="*{tipoContacto}">
-                    <label class="form-check-label" for="tipoTelefono">Teléfono</label>
-                </div>
-            </div>
-
-            <div id="correoGroup" class="mb-3">
-                <label for="correo" class="form-label">Correo laboral</label>
-                <input type="email" id="correo" class="form-control" th:field="*{correo}">
-            </div>
-
-            <div id="telefonoGroup" class="row g-3">
-                <div class="col-md-8">
-                    <label for="telefono" class="form-label">Teléfono</label>
-                    <input type="text" id="telefono" class="form-control" th:field="*{telefono}">
-                </div>
-                <div class="col-md-4">
-                    <label for="tipoTelefono" class="form-label">Tipo</label>
-                    <select id="tipoTelefono" class="form-select" th:field="*{tipoTelefono}">
-                        <option value="" hidden>Seleccione</option>
-                        <option th:each="tipo : ${tiposTelefono}"
-                                th:value="${tipo}" th:text="${tipo}"></option>
-                    </select>
+                <p class="text-muted small mb-2">Agregá todos los correos corporativos necesarios.</p>
+                <div id="correosContainer" class="contact-collection"
+                     th:data-next-index="${#lists.size(empresaForm.correos)}">
+                    <p id="sinCorreosMensaje" class="text-muted small mb-0">No agregaste correos.</p>
+                    <div th:each="correo, iterStat : *{correos}"
+                         class="row g-2 align-items-center mb-2 contact-item" data-contact-type="correo">
+                        <input type="hidden" th:field="*{correos[__${iterStat.index}__].id}">
+                        <div class="col">
+                            <input type="email" class="form-control"
+                                   th:field="*{correos[__${iterStat.index}__].email}"
+                                   placeholder="correo@empresa.com">
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-outline-danger btn-sm contact-remove"
+                                    title="Eliminar correo">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="mb-3">
-                <label for="observacion" class="form-label">Observaciones</label>
-                <textarea id="observacion" class="form-control" rows="3" th:field="*{observacion}"></textarea>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label mb-0">Teléfonos</label>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="agregarTelefonoBtn">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </div>
+                <p class="text-muted small mb-2">Podés registrar múltiples teléfonos de contacto.</p>
+                <div id="telefonosContainer" class="contact-collection"
+                     th:data-next-index="${#lists.size(empresaForm.telefonos)}">
+                    <p id="sinTelefonosMensaje" class="text-muted small mb-0">No agregaste teléfonos.</p>
+                    <div th:each="telefono, iterStat : *{telefonos}"
+                         class="row g-2 align-items-center mb-2 contact-item" data-contact-type="telefono">
+                        <input type="hidden" th:field="*{telefonos[__${iterStat.index}__].id}">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control"
+                                   th:field="*{telefonos[__${iterStat.index}__].numero}"
+                                   placeholder="Número de teléfono">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" th:field="*{telefonos[__${iterStat.index}__].tipo}">
+                                <option value="">Seleccionar tipo</option>
+                                <option th:each="tipo : ${tiposTelefono}"
+                                        th:value="${tipo}"
+                                        th:text="${tipo}"></option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-outline-danger btn-sm contact-remove"
+                                    title="Eliminar teléfono">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <div id="contactosEliminarContainer" class="d-none">
+                <input type="hidden" th:each="contactoId, iterStat : *{contactosEliminar}"
+                       th:field="*{contactosEliminar[__${iterStat.index}__]}">
+            </div>
+
+            <template id="correoTemplate">
+                <div class="row g-2 align-items-center mb-2 contact-item" data-contact-type="correo">
+                    <input type="hidden" name="correos[__index__].id">
+                    <div class="col">
+                        <input type="email" class="form-control" name="correos[__index__].email"
+                               placeholder="correo@empresa.com">
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-danger btn-sm contact-remove"
+                                title="Eliminar correo">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <template id="telefonoTemplate">
+                <div class="row g-2 align-items-center mb-2 contact-item" data-contact-type="telefono">
+                    <input type="hidden" name="telefonos[__index__].id">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="telefonos[__index__].numero"
+                               placeholder="Número de teléfono">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="telefonos[__index__].tipo">
+                            <option value="">Seleccionar tipo</option>
+                            <option th:each="tipo : ${tiposTelefono}"
+                                    th:value="${tipo}"
+                                    th:text="${tipo}"></option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-danger btn-sm contact-remove"
+                                title="Eliminar teléfono">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </template>
         </div>
         <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2">
             <a class="btn btn-outline-secondary" th:href="@{/empresas}">Cancelar</a>
@@ -92,25 +155,100 @@
 </main>
 
 <script>
-    (() => {
-        const correoGroup = document.getElementById('correoGroup');
-        const telefonoGroup = document.getElementById('telefonoGroup');
-        const radios = document.querySelectorAll('input[name="tipoContacto"]');
+    document.addEventListener('DOMContentLoaded', function () {
+        function setupContactSection(config) {
+            const container = document.querySelector(config.containerSelector);
+            const template = document.querySelector(config.templateSelector);
+            const addButton = document.querySelector(config.addButtonSelector);
+            const removalContainer = document.getElementById('contactosEliminarContainer');
+            const emptyMessage = config.emptyMessageSelector ? document.querySelector(config.emptyMessageSelector) : null;
+            const itemSelector = '.contact-item';
 
-        const toggleGroups = () => {
-            const seleccionado = document.querySelector('input[name="tipoContacto"]:checked');
-            if (!seleccionado || seleccionado.value === 'CORREO') {
-                correoGroup.classList.remove('d-none');
-                telefonoGroup.classList.add('d-none');
-            } else {
-                correoGroup.classList.add('d-none');
-                telefonoGroup.classList.remove('d-none');
+            if (!container || !template || !addButton) {
+                return;
             }
-        };
 
-        radios.forEach(radio => radio.addEventListener('change', toggleGroups));
-        toggleGroups();
-    })();
+            let nextIndex = Number(container.dataset.nextIndex || container.querySelectorAll(itemSelector).length || 0);
+
+            function updateEmptyMessage() {
+                if (!emptyMessage) {
+                    return;
+                }
+                const hasItems = container.querySelectorAll(itemSelector).length > 0;
+                emptyMessage.classList.toggle('d-none', hasItems);
+            }
+
+            function attachRemoveButton(element) {
+                const removeButton = element.querySelector('.contact-remove');
+                if (!removeButton) {
+                    return;
+                }
+                removeButton.addEventListener('click', function () {
+                    const idInput = element.querySelector(config.idSelector);
+                    if (idInput && idInput.value && removalContainer
+                        && !removalContainer.querySelector(`input[value="${idInput.value}"]`)) {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'contactosEliminar';
+                        hidden.value = idInput.value;
+                        removalContainer.appendChild(hidden);
+                    }
+                    element.remove();
+                    updateEmptyMessage();
+                });
+            }
+
+            function createItem() {
+                const fragment = template.content.cloneNode(true);
+                const element = fragment.querySelector(itemSelector);
+                if (!element) {
+                    return null;
+                }
+                element.querySelectorAll('[name]').forEach(input => {
+                    input.name = input.name.replace(/__index__/g, nextIndex);
+                });
+                nextIndex += 1;
+                return element;
+            }
+
+            function addItem() {
+                const element = createItem();
+                if (!element) {
+                    return;
+                }
+                container.appendChild(element);
+                attachRemoveButton(element);
+                updateEmptyMessage();
+            }
+
+            addButton.addEventListener('click', addItem);
+
+            container.querySelectorAll(itemSelector).forEach(attachRemoveButton);
+            updateEmptyMessage();
+
+            if (container.querySelectorAll(itemSelector).length === 0 && config.ensureAtLeastOne) {
+                addItem();
+            }
+        }
+
+        setupContactSection({
+            containerSelector: '#correosContainer',
+            templateSelector: '#correoTemplate',
+            addButtonSelector: '#agregarCorreoBtn',
+            idSelector: 'input[name$=".id"]',
+            emptyMessageSelector: '#sinCorreosMensaje',
+            ensureAtLeastOne: true
+        });
+
+        setupContactSection({
+            containerSelector: '#telefonosContainer',
+            templateSelector: '#telefonoTemplate',
+            addButtonSelector: '#agregarTelefonoBtn',
+            idSelector: 'input[name$=".id"]',
+            emptyMessageSelector: '#sinTelefonosMensaje',
+            ensureAtLeastOne: true
+        });
+    });
 </script>
 </body>
 </html>

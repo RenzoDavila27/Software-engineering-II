@@ -34,38 +34,27 @@
 
     <section class="card border-0 mb-4">
         <div class="card-body">
-            <h2 class="h5 text-primary">Contacto laboral</h2>
-            <div th:if="${empresa.contacto == null}" class="alert alert-warning mb-0">
-                La empresa todavía no tiene un contacto asociado.
+            <h2 class="h5 text-primary">Contactos laborales</h2>
+            <div th:if="${#lists.isEmpty(contactosActivos)}" class="alert alert-warning mb-0">
+                La empresa todavía no tiene contactos asociados.
             </div>
-            <div th:if="${empresa.contacto != null}">
-                <p th:if="${empresa.contacto instanceof T(com.contactos.business.domain.ContactoCorreoElectronico)}"
-                   class="mb-2">
-                    Correo electrónico:
-                    <span class="fw-semibold"
-                          th:text="${#casts.cast(empresa.contacto, T(com.contactos.business.domain.ContactoCorreoElectronico)).email}">
-                        contacto@empresa.com
-                    </span>
-                </p>
-                <div th:if="${empresa.contacto instanceof T(com.contactos.business.domain.ContactoTelefonico)}" class="mb-2">
-                    <p class="mb-0">
-                        Teléfono:
-                        <span class="fw-semibold"
-                              th:text="${#casts.cast(empresa.contacto, T(com.contactos.business.domain.ContactoTelefonico)).telefono}">
-                            000
-                        </span>
-                    </p>
-                    <p class="text-muted">
-                        Tipo:
-                        <span th:text="${#casts.cast(empresa.contacto, T(com.contactos.business.domain.ContactoTelefonico)).tipoTelefono}">
-                            CELULAR
-                        </span>
-                    </p>
+            <div th:if="${!#lists.isEmpty(contactosActivos)}" class="list-group list-group-flush">
+                <div class="list-group-item"
+                     th:each="contacto : ${contactosActivos}">
+                    <div th:if="${contacto instanceof T(com.contactos.business.domain.ContactoCorreoElectronico)}"
+                         th:object="${contacto}">
+                        <span class="badge bg-primary me-2">Correo</span>
+                        <span th:text="*{email}">contacto@empresa.com</span>
+                    </div>
+                    <div th:if="${contacto instanceof T(com.contactos.business.domain.ContactoTelefonico)}"
+                         th:object="${contacto}">
+                        <span class="badge bg-success me-2">Teléfono</span>
+                        <span th:text="*{telefono}">000</span>
+                        <small class="text-muted ms-2" th:text="*{tipoTelefono}">CELULAR</small>
+                    </div>
+                    <p class="text-muted mb-0 mt-2" th:if="${contacto.observacion != null}"
+                       th:text="${contacto.observacion}">Observación</p>
                 </div>
-                <p th:if="${empresa.contacto.observacion != null}" class="text-muted mb-0">
-                    Observaciones:
-                    <span th:text="${empresa.contacto.observacion}">Observación</span>
-                </p>
             </div>
         </div>
     </section>

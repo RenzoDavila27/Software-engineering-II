@@ -10,7 +10,7 @@ import com.contactos.business.domain.Persona;
 
 public interface PersonaRepository extends BaseRepository<Persona, Long> {
 
-    @EntityGraph(attributePaths = {"empresas", "contactos", "usuarios"})
+    @EntityGraph(attributePaths = {"empresas", "empresas.contactos", "contactos", "usuarios"})
     Optional<Persona> findWithRelationshipsById(Long id);
 
     @Query("select p from Persona p where p.eliminado = false or p.eliminado is null")
