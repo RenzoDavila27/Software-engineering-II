@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<main class="container py-4">
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+    <div th:if="${exito}" class="alert alert-success" role="alert" th:text="${exito}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h4 text-primary mb-1">Bienvenido</h1>
+            <p class="text-muted mb-0">
+                <span th:if="${usuarioActual != null}" th:text="${usuarioActual.persona != null ? usuarioActual.persona.nombre : usuarioActual.cuenta}">Usuario</span>
+                <span th:if="${usuarioActual != null}">
+                    (<span th:text="${usuarioActual.rol}">ROL</span>)
+                </span>
+            </p>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
+        </form>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 h-100">
+                <div class="card-body">
+                    <h2 class="h5 text-primary">Empresas</h2>
+                    <p class="text-muted">Acceda al listado de empresas activas y gestione su información.</p>
+                    <a class="btn btn-primary" th:href="@{/empresas}">Ver empresas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 h-100">
+                <div class="card-body">
+                    <h2 class="h5 text-primary">Personas</h2>
+                    <p class="text-muted">Consulte a las personas registradas y sus datos de contacto.</p>
+                    <a class="btn btn-primary" th:href="@{/personas}">Ver personas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info mt-4" role="alert" th:if="${esAdmin}">
+        Accede con perfil de administrador. Podrás crear, modificar y eliminar registros.
+    </div>
+</main>
+</body>
+</html>

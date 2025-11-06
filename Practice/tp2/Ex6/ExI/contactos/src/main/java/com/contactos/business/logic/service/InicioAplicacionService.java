@@ -18,12 +18,12 @@ public class InicioAplicacionService {
 
     @Transactional
     public void iniciarAplicacion() throws ErrorServiceException {
-        if (usuarioService.buscarPorCuenta("admin").isEmpty()) {
-            Usuario admin = new Usuario();
-            admin.setCuenta("admin");
-            admin.setClave("admin123");
-            admin.setRol(Rol.ADMIN);
-            usuarioService.alta(admin);
+        if (usuarioService.buscarPorCuenta("administrador").isEmpty()) {
+            Usuario administrador = new Usuario();
+            administrador.setCuenta("administrador");
+            administrador.setClave("123456");
+            administrador.setRol(Rol.ADMIN);
+            usuarioService.alta(administrador);
         }
     }
 }

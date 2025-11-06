@@ -1,0 +1,93 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>FACTURAS</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet">
+    <style>
+    body {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+  </style>
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">
+      <hr>
+      <div class="container">
+
+        <div class="card">
+          <h4 class="card-header"><strong>Lista Facturas</strong></h4>
+          <div class="card-body">
+
+            <a class="btn btn-primary" th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}"
+              th:href="@{/factura/altaFactura}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+
+            <hr>
+            <div th:if="${msgExito != null}" class='alert alert-success' th:text="${msgExito}" role='alert'></div>
+            <div th:if="${msgError != null}" class='alert alert-danger' th:text="${msgError}" role='alert'></div>
+
+            <table class="table table-hover w-100">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Acciones</th>
+                  <th scope="col">Número</th>
+                  <th scope="col">Socio</th>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Forma de Pago</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="factura : ${listaFactura}">
+                  <td>
+                    <a th:href="@{/factura/consultar/{id} (id=${factura.id}) }" class="btn btn-success btn-sm" role="button" title="Consultar"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                    <a th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}"
+                      th:href="@{/factura/modificar/{id} (id=${factura.id}) }" class="btn btn-success btn-sm" role="button" title="Modificar"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+                    <a th:if="${session.rol == 'ADMINISTRADOR' or session.rol == 'EMPLEADO'}"
+                      th:href="@{/factura/baja/{id} (id=${factura.id}) }" class="btn btn-success btn-sm confirmar" role="button" title="Baja"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                  </td>
+                  <td th:text="${factura.numeroFactura}"></td>
+                  <td th:text="|${factura.socio.nombre} ${factura.socio.apellido}|"></td>
+                  <td th:text="${#temporals.format(factura.fechaFactura, 'dd/MM/yyyy')}"></td>
+                  <td th:text="${#strings.capitalize(factura.estado.name().toLowerCase())}"></td>
+                  <td th:text="${#strings.capitalize(factura.formaDePago.tipoPago.name().toLowerCase())}"></td>
+                  <td th:text="${#numbers.formatDecimal(factura.totalPagado, 1, 'COMMA', 2, 'POINT')}"></td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
+    <script>
+      const dialogoConfirm = function (e) {
+        if (!confirm('¿Está seguro de eliminar la información?')) {
+          e.preventDefault();
+        }
+      };
+      document.querySelectorAll('.confirmar').forEach(function(elemento) {
+        elemento.addEventListener('click', dialogoConfirm, false);
+      });
+    </script>
+
+  </body>
+</html>

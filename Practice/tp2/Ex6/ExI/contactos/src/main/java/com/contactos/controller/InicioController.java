@@ -1,20 +1,16 @@
 package com.contactos.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.contactos.business.domain.Usuario;
 import com.contactos.business.logic.error.ErrorServiceException;
 import com.contactos.business.logic.service.InicioAplicacionService;
-
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
-@RequestMapping("/")
+@Controller
 public class InicioController {
 
     private final InicioAplicacionService inicioAplicacionService;
@@ -23,35 +19,39 @@ public class InicioController {
         this.inicioAplicacionService = inicioAplicacionService;
     }
 
-    @GetMapping
-    public ResponseEntity<String> index() throws ErrorServiceException {
+    @GetMapping("/")
+    public String index() throws ErrorServiceException {
         inicioAplicacionService.iniciarAplicacion();
-        return ResponseEntity.ok("Bienvenido al sistema de contactos");
+        return "redirect:/login";
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam(required = false) String error) {
+    public String login(@RequestParam(value = "error", required = false) String error,
+                        @RequestParam(value = "logout", required = false) String logout,
+                        Model model) throws ErrorServiceException {
+        inicioAplicacionService.iniciarAplicacion();
         if (error != null) {
-            return ResponseEntity.badRequest().body("Credenciales inválidas");
+            model.addAttribute("error", "Credenciales inválidas. Intente nuevamente.");
         }
-        return ResponseEntity.ok("Ingrese sus credenciales para acceder");
+        if (logout != null) {
+            model.addAttribute("logout", true);
+        }
+        return "login";
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/inicio")
-    public ResponseEntity<String> inicio(HttpSession session) {
+    public String inicio(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuariosession");
         if (usuario == null) {
-            return ResponseEntity.ok("Sesión no disponible");
+            return "redirect:/login";
         }
-        if (usuario.getRol() != null && usuario.getRol().name().equalsIgnoreCase("ADMIN")) {
-            return ResponseEntity.ok("Bienvenido al panel administrativo");
-        }
-        return ResponseEntity.ok("Bienvenido al portal de usuarios");
+        model.addAttribute("usuarioActual", usuario);
+        return "inicio";
     }
 
     @GetMapping("/regresoPage")
-    public ResponseEntity<String> regreso() {
-        return ResponseEntity.ok("Redirija a /inicio para continuar");
+    public String regreso() {
+        return "redirect:/inicio";
     }
 }

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>EDIT MENSAJE</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header th:insert="~{fragments/menubody :: menu-principal}"></header>
+
+    <main role="main">     
+      <hr>
+      <div class="container"> 
+
+        <div class="card">
+          <h4 class="card-header"><strong>EDIT MENSAJE</strong></h4>              
+          <div class="card-body">
+			
+            <form th:action="@{/mensaje/aceptarEditMensaje}" method="post" th:object="${mensaje}">
+			
+			  <div th:if="${msgExito2 != null}" class='alert alert-success' th:text="${msgExito2}" role='alert'></div>    
+			  <div th:if="${msgError2 != null}" class='alert alert-danger' th:text="${msgError2}" role='alert'></div> 
+			  
+              <div class="row">
+                <div class="col-md-6"> 
+                  <div class="form-group">
+					
+					<input type="hidden" name="id" th:field="*{id}" >
+                
+                    <label for="nombre">Titulo</label>
+                    <input type="text" class="form-control" th:field="*{titulo}" placeholder="Escriba el titulo de la promocion" required="required" th:disabled="${isDisabled}">
+                    
+                    <label for="nombre">Texto</label>
+                    <input type="text" class="form-control" th:field="*{texto}" placeholder="Escriba el contenido de la promocion" required="required" th:disabled="${isDisabled}">
+ 
+                    <label for="tipoMensaje">Tipo de Promocion</label>
+                            <select id="tipoMensaje" th:field="*{tipoMensaje}" class="form-control" th:disabled="${isDisabled}">
+                                    <option th:each="tipoMensaje : ${tipoMensaje}" 
+                                    th:value="${tipoMensaje}" 
+                                    th:text="${tipoMensaje}">Tipo</option>
+                            </select>
+
+                    <label for="usuario">Usuario</label>
+                            <select id="idUsario" name="idUsuario" class="form-control" th:disabled="${isDisabled}">
+                                    <option th:each="usuario : ${listaUsuario}" 
+                                    th:value="${usuario.id}" 
+                                    th:text="${usuario.nombreUsuario}">
+                                </option>
+                            </select>
+
+				  </div>
+                </div>                
+              </div> 
+              
+              <hr>
+			  <div class="d-grid gap-2 float-right justify-content-md-end">
+               <button type="submit" title="Guardar el registro." class="btn btn-primary" th:disabled="${isDisabled}">ACEPTAR</button>   
+			   <a class="btn btn-primary" th:href="@{/mensaje/cancelarEditMensaje}" role="button">CANCELAR</a>
+			  </div>
+			   
+			</form>
+			 
+          </div>
+        </div>
+      </div> 
+	  
+    </main>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script> 
+	    
+  </body>
+</html>

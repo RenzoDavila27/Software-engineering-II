@@ -52,6 +52,9 @@ public class UsuarioService extends BaseService<Usuario, Long> implements UserDe
             (entidad.getClave() == null || entidad.getClave().isBlank())) {
             throw new ErrorServiceException("La clave es obligatoria para crear un usuario");
         }
+        if (useCase == BaseUseCaseService.ALTA && existeCuenta(entidad.getCuenta())) {
+            throw new ErrorServiceException("La cuenta indicada ya se encuentra registrada");
+        }
         if (entidad.getPersona() != null && entidad.getPersona().getId() == null) {
             throw new ErrorServiceException("La persona asociada al usuario debe ser válida");
         }
@@ -92,6 +95,14 @@ public class UsuarioService extends BaseService<Usuario, Long> implements UserDe
             entidad.setPersona(null);
         }
         entidad.setEliminado(Boolean.FALSE);
+    }
+
+    private boolean existeCuenta(String cuenta) throws ErrorServiceException {
+        try {
+            return usuarioRepository.findByCuentaAndEliminadoFalse(cuenta).isPresent();
+        } catch (Exception e) {
+            throw new ErrorServiceException("No fue posible verificar la existencia de la cuenta", e);
+        }
     }
 
     @Transactional(readOnly = true)

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empresas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<main class="container py-4">
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+    <div th:if="${exito}" class="alert alert-success" role="alert" th:text="${exito}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 text-primary mb-0">Empresas activas</h1>
+        <a class="btn btn-success btn-sm" th:if="${esAdmin}" th:href="@{/empresas/nueva}">Nueva empresa</a>
+    </div>
+
+    <p class="text-muted">Seleccione una empresa para ver su información.</p>
+
+    <div th:if="${#lists.isEmpty(empresas)}" class="alert alert-warning" role="alert">
+        No se encontraron empresas activas.
+    </div>
+
+    <div th:if="${!#lists.isEmpty(empresas)}" class="list-group shadow-sm">
+        <div th:each="empresa : ${empresas}"
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center flex-wrap">
+            <a class="fw-semibold text-decoration-none text-primary" th:href="@{|/empresas/${empresa.id}|}"
+               th:text="${empresa.nombre}">Empresa</a>
+
+            <div class="d-flex gap-2 mt-2 mt-sm-0" th:if="${esAdmin}">
+                <a class="btn btn-outline-primary btn-sm" th:href="@{|/empresas/${empresa.id}|}">Ver</a>
+                <a class="btn btn-outline-secondary btn-sm" th:href="@{|/empresas/${empresa.id}/editar|}">Editar</a>
+                <form th:action="@{|/empresas/${empresa.id}/eliminar|}" method="post"
+                      onsubmit="return confirm('¿Confirmás eliminar la empresa?');">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
