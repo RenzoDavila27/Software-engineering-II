@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Médico - Consultorio Médico</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" th:href="@{/assets/css/main.css}" />
+		<noscript><link rel="stylesheet" th:href="@{/assets/css/noscript.css}" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper-->
+			<div id="wrapper">
+
+				<!-- Nav -->
+					<nav id="nav">
+						<a href="#" class="icon solid fa-home"><span>Inicio</span></a>
+						<a href="#detalles" class="icon solid fa-file-medical"><span>Detalles Historia Clínica</span></a>
+						<a href="#perfil" class="icon solid fa-user"><span>Mi Perfil</span></a>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Home -->
+							<article id="home" class="panel intro">
+								<header>
+									<h1 th:text="'Bienvenido Dr. ' + ${usuario.nombreUsuario}">Bienvenido Doctor</h1>
+									<p>Sistema de Gestión de Historias Clínicas</p>
+								</header>
+								<div th:if="${exito}" class="alert alert-success" style="color: green; margin-bottom: 1em;">
+									<p th:text="${exito}"></p>
+								</div>
+								<div th:if="${error}" class="alert alert-danger" style="color: red; margin-bottom: 1em;">
+									<p th:text="${error}"></p>
+								</div>
+							</article>
+
+						<!-- Detalles Historia Clínica -->
+							<article id="detalles" class="panel">
+								<header>
+									<h2>Detalles de Historia Clínica</h2>
+								</header>
+								<form th:action="@{/medico/detalle/guardar}" method="post">
+									<div>
+										<div class="row">
+											<div class="col-12">
+												<label for="paciente">Paciente:</label>
+												<select name="pacienteId" id="paciente" required>
+													<option value="">Seleccione un paciente</option>
+													<option th:each="paciente : ${pacientes}"
+													        th:value="${paciente.id}"
+													        th:text="${paciente.nombre + ' ' + paciente.apellido + ' - DNI: ' + paciente.documento}">
+													</option>
+												</select>
+											</div>
+											<div class="col-12">
+												<label for="fecha">Fecha:</label>
+												<input type="date" name="fecha" id="fecha" required />
+											</div>
+											<div class="col-12">
+												<label for="detalle">Detalle de la Consulta:</label>
+												<textarea name="detalle" id="detalle" placeholder="Ingrese los detalles de la consulta médica..." rows="8" required></textarea>
+											</div>
+											<div class="col-12">
+												<input type="submit" value="Guardar Detalle" />
+											</div>
+										</div>
+									</div>
+								</form>
+								<hr />
+								<h3>Historial de Detalles Registrados</h3>
+								<section>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Fecha</th>
+													<th>Médico</th>
+													<th>Detalle</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="detalle : ${detalles}">
+													<td th:text="${detalle.fechaHistoria}">15/01/2025</td>
+													<td th:text="${detalle.medico != null ? detalle.medico.nombre + ' ' + detalle.medico.apellido : 'N/A'}">Dr. Juan Pérez</td>
+													<td th:text="${detalle.detalleHistoria}">Control general</td>
+												</tr>
+												<tr th:if="${#lists.isEmpty(detalles)}">
+													<td colspan="3" style="text-align: center;">No hay detalles registrados</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</section>
+							</article>
+
+						<!-- Mi Perfil -->
+							<article id="perfil" class="panel">
+								<header>
+									<h2>Mi Perfil</h2>
+								</header>
+								<form th:action="@{/medico/perfil/actualizar}" method="post">
+									<div>
+										<div class="row">
+											<div class="col-6 col-12-medium">
+												<input type="text" name="nombre" placeholder="Nombre" value="" />
+											</div>
+											<div class="col-6 col-12-medium">
+												<input type="text" name="apellido" placeholder="Apellido" value="" />
+											</div>
+											<div class="col-12">
+												<input type="text" name="documento" placeholder="Documento" value="" />
+											</div>
+											<div class="col-12">
+												<input type="text" name="usuario" placeholder="Usuario" th:value="${usuario.nombreUsuario}" readonly />
+											</div>
+											<div class="col-12">
+												<input type="password" name="password" placeholder="Nueva Contraseña (dejar en blanco para no cambiar)" />
+											</div>
+											<div class="col-12">
+												<input type="password" name="confirmPassword" placeholder="Confirmar Contraseña" />
+											</div>
+											<div class="col-12">
+												<input type="submit" value="Guardar Cambios" />
+											</div>
+										</div>
+									</div>
+								</form>
+								<div style="margin-top: 1em;">
+									<a th:href="@{/logout}" class="button">Cerrar Sesión</a>
+								</div>
+							</article>
+
+					</div>
+
+				<!-- Footer -->
+					<div id="footer">
+						<ul class="copyright">
+							<li>&copy; Consultorio Médico 2025.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script th:src="@{/assets/js/jquery.min.js}"></script>
+			<script th:src="@{/assets/js/browser.min.js}"></script>
+			<script th:src="@{/assets/js/breakpoints.min.js}"></script>
+			<script th:src="@{/assets/js/util.js}"></script>
+			<script th:src="@{/assets/js/main.js}"></script>
+
+	</body>
+</html>

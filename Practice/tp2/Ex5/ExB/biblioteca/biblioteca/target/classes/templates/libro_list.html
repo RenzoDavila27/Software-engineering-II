@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head th:replace="~{fragments/head :: head('Biblioteca - Libros', 'https://use.fontawesome.com/releases/v5.6.3/css/all.css')}"></head>
+
+    <body>
+      <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+        <div class="container m-5" >
+
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Titulo</th>
+                        <th scope="col">Portada</th>
+                        <th scope="col">Ejemplares Totales</th>
+                        <th scope="col">Prestados</th>
+                        <th scope="col">Disponibles</th>
+                        <th scope="col">Autor</th>
+                        <th scope="col">Editorial</th>
+                        <th scope="col">Acciones</th>
+                        
+                    </tr>
+                </thead>
+                <tbody th:each="libro : ${libros}"> 
+                    <tr>
+                        <th scope="row" th:text="${libro.isbn}"></th>
+                        <td th:text="${libro.titulo}"></td>
+						<td>
+						  <img th:if="${libro.imagen != null}" th:src="@{/imagen/libro/__${libro.id}__}" alt="Portada del libro" style="max-height: 60px; border-radius: 8px;">
+                        </td>
+                        <td th:text="${libro.ejemplares}"></td>
+                        <td th:text="${libro.ejemplaresPrestados != null ? libro.ejemplaresPrestados : 0}"></td>
+                        <td th:text="${libro.ejemplaresRestantes != null ? libro.ejemplaresRestantes : 0}"></td>
+                        <td th:text="${libro.autor.nombre}"></td>
+                        <td th:text="${libro.editorial.nombre}"></td>
+                         <td class="d-flex flex-column flex-md-row gap-2">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               sec:authorize="hasRole('ADMIN')"
+                               th:href= "@{/libro/modificar/__${libro.id}__}">
+                                <i class="fas fa-feather-alt"></i> Modificar
+                            </a>
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:if="${session.usuariosession != null and (libro.ejemplaresRestantes != null ? libro.ejemplaresRestantes : 0) > 0}"
+                               th:href="@{/prestamo/solicitar/__${libro.id}__}">
+                                <i class="fas fa-book"></i> Pedir préstamo
+                            </a>
+                            <span class="badge bg-secondary align-self-center"
+                                  th:if="${session.usuariosession != null and (libro.ejemplaresRestantes != null ? libro.ejemplaresRestantes : 0) == 0}">
+                                Sin ejemplares disponibles
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+            
+              <div th:if="${exito}!=null" class="card text-white bg-success mb-3 mt-3 mensajeExito" >
+                <div class="card-body">
+                    <h5 class="card-title">Exito</h5>
+                    <p class="card-text" th:text="${exito}"></p>
+                </div>
+            </div>
+            <div th:if="${error}!=null" class="card text-white bg-danger mb-3 mensajeError" >
+                <div class="card-body">
+                    <h5 class="card-title">Error</h5>
+                    <p class="card-text" th:text="${error}"></p>
+                </div>
+            </div>
+
+            <section class="py-5 text-center container">
+                <div class="row py-lg-5">
+                    <div class="col-lg-6 col-md-8 mx-auto">
+                        <a th:href="@{/regresoPage}" class="btn btn-primary my-2">Volver</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="text-muted py-5">
+            <div class="containerFooter">
+                <p class="mb-1">Album example is &copy; Bootstrap,<br>but please download and customize it for yourself!</p>
+                <p class="mb-0">New to Bootstrap? <a href="/"><br>Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
+                <p class="float-end mb-1">
+                    <a href="#" style="text-decoration:none"><span>⬆️</span> Back to top</a>
+                </p>
+            </div>
+        </footer>
+
+
+
+        <!-- JavaScript Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    </body>
+
+</html>

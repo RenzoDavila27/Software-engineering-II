@@ -1,0 +1,204 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Administrador - Consultorio Médico</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" th:href="@{/assets/css/main.css}" />
+		<noscript><link rel="stylesheet" th:href="@{/assets/css/noscript.css}" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper-->
+			<div id="wrapper">
+
+				<!-- Nav -->
+					<nav id="nav">
+						<a href="#" class="icon solid fa-home"><span>Inicio</span></a>
+						<a href="#pacientes" class="icon solid fa-user-injured"><span>Pacientes</span></a>
+						<a href="#medicos" class="icon solid fa-user-md"><span>Médicos</span></a>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Home -->
+							<article id="home" class="panel intro">
+								<header>
+									<h1 th:text="'Bienvenido Administrador ' + ${usuario.nombreUsuario}">Bienvenido Administrador</h1>
+									<p>Panel de Administración - Sistema de Gestión de Historias Clínicas</p>
+								</header>
+								<div th:if="${exito}" class="alert alert-success" style="color: green; margin-bottom: 1em;">
+									<p th:text="${exito}"></p>
+								</div>
+								<div th:if="${error}" class="alert alert-danger" style="color: red; margin-bottom: 1em;">
+									<p th:text="${error}"></p>
+								</div>
+								<div style="margin-top: 2em;">
+									<a th:href="@{/logout}" class="button">Cerrar Sesión</a>
+								</div>
+							</article>
+
+						<!-- Pacientes -->
+							<article id="pacientes" class="panel">
+								<header>
+									<h2>Gestión de Pacientes</h2>
+								</header>
+								
+								<h3>Crear Nuevo Paciente</h3>
+								<form th:action="@{/admin/paciente/crear}" method="post" enctype="multipart/form-data">
+									<div>
+										<div class="row">
+											<div class="col-6 col-12-medium">
+												<input type="text" name="nombre" placeholder="Nombre" required />
+											</div>
+											<div class="col-6 col-12-medium">
+												<input type="text" name="apellido" placeholder="Apellido" required />
+											</div>
+											<div class="col-12">
+												<input type="text" name="documento" placeholder="Documento" required />
+											</div>
+                                            <div class="col-12">
+                                                <input type="file" name="foto" placeholder="Foto" required />
+                                            </div>
+											<div class="col-6 col-12-medium">
+												<input type="text" name="nombreUsuario" placeholder="Usuario" required />
+											</div>
+											<div class="col-6 col-12-medium">
+												<input type="password" name="clave" placeholder="Contraseña" required />
+											</div>
+											<div class="col-12">
+												<input type="submit" value="Crear Paciente" />
+											</div>
+										</div>
+									</div>
+								</form>
+								
+								<hr />
+								<h3>Lista de Pacientes</h3>
+								<section>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Nombre</th>
+													<th>Apellido</th>
+													<th>Documento</th>
+													<th>Usuario</th>
+													<th>Estado</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="paciente : ${pacientes}">
+													<td th:text="${paciente.nombre}">Juan</td>
+													<td th:text="${paciente.apellido}">Pérez</td>
+													<td th:text="${paciente.documento}">12345678</td>
+													<td th:text="${paciente.usuario != null ? paciente.usuario.nombreUsuario : 'N/A'}">jperez</td>
+													<td th:text="${paciente.eliminado ? 'Inactivo' : 'Activo'}">Activo</td>
+													<td>
+														<a th:href="@{/admin/paciente/eliminar/{id}(id=${paciente.id})}" 
+														   th:if="${!paciente.eliminado}"
+														   onclick="return confirm('¿Está seguro de desactivar este paciente?')">Desactivar</a>
+														<span th:if="${paciente.eliminado}">-</span>
+													</td>
+												</tr>
+												<tr th:if="${#lists.isEmpty(pacientes)}">
+													<td colspan="6" style="text-align: center;">No hay pacientes registrados</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</section>
+							</article>
+
+						<!-- Médicos -->
+							<article id="medicos" class="panel">
+								<header>
+									<h2>Gestión de Médicos</h2>
+								</header>
+								
+								<h3>Crear Nuevo Médico</h3>
+								<form th:action="@{/admin/medico/crear}" method="post">
+									<div>
+										<div class="row">
+											<div class="col-6 col-12-medium">
+												<input type="text" name="nombre" placeholder="Nombre" required />
+											</div>
+											<div class="col-6 col-12-medium">
+												<input type="text" name="apellido" placeholder="Apellido" required />
+											</div>
+											<div class="col-12">
+												<input type="text" name="documento" placeholder="Documento" required />
+											</div>
+											<div class="col-6 col-12-medium">
+												<input type="text" name="nombreUsuario" placeholder="Usuario" required />
+											</div>
+											<div class="col-6 col-12-medium">
+												<input type="password" name="clave" placeholder="Contraseña" required />
+											</div>
+											<div class="col-12">
+												<input type="submit" value="Crear Médico" />
+											</div>
+										</div>
+									</div>
+								</form>
+								
+								<hr />
+								<h3>Lista de Médicos</h3>
+								<section>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Nombre</th>
+													<th>Apellido</th>
+													<th>Documento</th>
+													<th>Usuario</th>
+													<th>Estado</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="medico : ${medicos}">
+													<td th:text="${medico.nombre}">María</td>
+													<td th:text="${medico.apellido}">González</td>
+													<td th:text="${medico.documento}">87654321</td>
+													<td th:text="${medico.usuario != null ? medico.usuario.nombreUsuario : 'N/A'}">mgonzalez</td>
+													<td th:text="${medico.eliminado ? 'Inactivo' : 'Activo'}">Activo</td>
+													<td>
+														<a th:href="@{/admin/medico/eliminar/{id}(id=${medico.id})}" 
+														   th:if="${!medico.eliminado}"
+														   onclick="return confirm('¿Está seguro de desactivar este médico?')">Desactivar</a>
+														<span th:if="${medico.eliminado}">-</span>
+													</td>
+												</tr>
+												<tr th:if="${#lists.isEmpty(medicos)}">
+													<td colspan="6" style="text-align: center;">No hay médicos registrados</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</section>
+							</article>
+
+					</div>
+
+				<!-- Footer -->
+					<div id="footer">
+						<ul class="copyright">
+							<li>&copy; Consultorio Médico 2025.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script th:src="@{/assets/js/jquery.min.js}"></script>
+			<script th:src="@{/assets/js/browser.min.js}"></script>
+			<script th:src="@{/assets/js/breakpoints.min.js}"></script>
+			<script th:src="@{/assets/js/util.js}"></script>
+			<script th:src="@{/assets/js/main.js}"></script>
+
+	</body>
+</html>
