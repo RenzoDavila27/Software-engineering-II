@@ -26,6 +26,15 @@
         </processorPath>
         <module name="gimnasio (2)" />
       </profile>
+      <profile name="Annotation profile for mycar" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="mycar" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="biblioteca" target="17" />
@@ -39,6 +48,7 @@
       <module name="gimnasio" options="-parameters" />
       <module name="gimnasio (1)" options="-parameters" />
       <module name="gimnasio (2)" options="-parameters" />
+      <module name="mycar" options="-parameters" />
     </option>
   </component>
 </project>
