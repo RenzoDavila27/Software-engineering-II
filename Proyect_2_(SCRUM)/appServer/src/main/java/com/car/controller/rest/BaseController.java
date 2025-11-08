@@ -1,59 +1,44 @@
 package com.car.controller.rest;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.car.business.domain.BaseEntity;
+import com.car.business.dto.BaseDto;
 import com.car.business.logic.error.BusinessException;
 import com.car.business.logic.service.BaseService;
-
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+public abstract class BaseController<T extends BaseEntity<ID>, D extends BaseDto<ID>, ID> {
 
+    protected final BaseService<T, D, ID> service;
 
-public abstract class BaseController<T extends BaseEntity<ID>, DTO, ID> {
-
-    protected final BaseService<T, ID> service;
-    private final Class<DTO> dtoClass;
-
-    protected BaseController(BaseService<T, ID> service, Class<DTO> dtoClass) {
+    protected BaseController(BaseService<T, D, ID> service) {
         this.service = service;
-        this.dtoClass = dtoClass;
     }
-
 
     @GetMapping
-    public ResponseEntity<List<DTO>> listarActivos() {
-        List<DTO> lista = service.listarActivos()
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lista);
+    public ResponseEntity<List<D>> listarActivos() throws BusinessException {
+        return ResponseEntity.ok(service.listarActivosDto());
     }
 
-    // -------------------------------------
-    // 🔹 Buscar por ID
-    // -------------------------------------
     @GetMapping("/{id}")
-    public ResponseEntity<DTO> obtenerPorId(@PathVariable ID id) {
-        return service.obtener(id)
-                .map(this::toDto)
+    public ResponseEntity<D> obtenerPorId(@PathVariable ID id) throws BusinessException {
+        return service.obtenerDto(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // -------------------------------------
-    // 🔹 Crear
-    // -------------------------------------
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody DTO dto) {
+    public ResponseEntity<?> crear(@RequestBody D dto) {
         try {
-            T entidad = toEntity(dto);
-            T creada = service.alta(entidad);
-            return ResponseEntity.status(HttpStatus.CREATED).body(toDto(creada));
+            D creado = service.crear(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
         } catch (BusinessException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -61,15 +46,10 @@ public abstract class BaseController<T extends BaseEntity<ID>, DTO, ID> {
         }
     }
 
-    // -------------------------------------
-    // 🔹 Modificar
-    // -------------------------------------
     @PutMapping("/{id}")
-    public ResponseEntity<?> modificar(@PathVariable ID id, @RequestBody DTO dto) {
+    public ResponseEntity<?> modificar(@PathVariable ID id, @RequestBody D dto) {
         try {
-            T entidadNueva = toEntity(dto);
-            return service.modificar(id, entidadNueva)
-                    .map(this::toDto)
+            return service.actualizar(id, dto)
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (BusinessException e) {
@@ -79,9 +59,6 @@ public abstract class BaseController<T extends BaseEntity<ID>, DTO, ID> {
         }
     }
 
-    // -------------------------------------
-    // 🔹 Baja lógica
-    // -------------------------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable ID id) {
         try {
@@ -94,32 +71,6 @@ public abstract class BaseController<T extends BaseEntity<ID>, DTO, ID> {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    // -------------------------------------
-    // 🔹 Métodos auxiliares: conversión DTO ↔ Entity
-    // -------------------------------------
-
-    private DTO toDto(T entity) {
-        try {
-            Method fromEntity = dtoClass.getMethod("fromEntity", entity.getClass());
-            @SuppressWarnings("unchecked")
-            DTO dto = (DTO) fromEntity.invoke(null, entity);
-            return dto;
-        } catch (Exception e) {
-            throw new RuntimeException("Error convirtiendo entidad a DTO: " + e.getMessage(), e);
-        }
-    }
-
-    private T toEntity(DTO dto) {
-        try {
-            Method toEntity = dtoClass.getMethod("toEntity");
-            @SuppressWarnings("unchecked")
-            T entity = (T) toEntity.invoke(dto);
-            return entity;
-        } catch (Exception e) {
-            throw new RuntimeException("Error convirtiendo DTO a entidad: " + e.getMessage(), e);
         }
     }
 }

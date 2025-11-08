@@ -1,13 +1,15 @@
 package com.car.business.logic.service;
 
 import com.car.business.domain.Persona;
+import com.car.business.dto.PersonaDto;
+import com.car.business.mappers.PersonaMapper;
 import com.car.business.percistence.repository.PersonaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PersonaService extends BaseService<Persona, String> {
+public class PersonaService extends BaseService<Persona, PersonaDto, String> {
 
-    public PersonaService(PersonaRepository repository) {
-        super(repository);
+    public PersonaService(PersonaRepository repository, PersonaMapper mapper) {
+        super(repository, mapper);
     }
 }
