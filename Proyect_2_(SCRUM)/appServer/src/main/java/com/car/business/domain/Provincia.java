@@ -1,4 +1,4 @@
-package com.fioritech.gimnasio.business.domain;
+package com.car.business.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

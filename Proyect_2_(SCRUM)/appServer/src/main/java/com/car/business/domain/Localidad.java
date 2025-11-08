@@ -1,4 +1,4 @@
-package com.fioritech.gimnasio.business.domain;
+package com.car.business.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -9,13 +9,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
+import lombok.*;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Entity
 @Table(name = "localidades")
 public class Localidad extends BaseEntity {
