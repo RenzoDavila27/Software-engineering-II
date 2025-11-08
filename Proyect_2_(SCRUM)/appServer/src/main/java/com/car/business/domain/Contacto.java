@@ -20,11 +20,13 @@ import lombok.Setter;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Getter
+@Setter
 @Entity
 @Table(name = "contactos")
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public abstract class Contacto extends BaseEntity{
+public abstract class Contacto extends BaseEntity<String> {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_contacto", nullable = false)
@@ -33,4 +35,15 @@ public abstract class Contacto extends BaseEntity{
     @Column(length = 1024)
     private String observacion;
 
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public void setId(String id) { this.id = id; }
+
+    @Override
+    public Boolean getEliminado() { return eliminado; }
+
+    @Override
+    public void setEliminado(Boolean eliminado) { this.eliminado = eliminado; }
 }

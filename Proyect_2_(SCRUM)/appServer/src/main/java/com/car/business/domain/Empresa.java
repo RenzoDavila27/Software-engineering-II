@@ -13,16 +13,20 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Getter
+@Setter
 @Entity
 @Table(name = "empresas")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Empresa extends BaseEntity {
+public class Empresa extends BaseEntity<String> {
 
     @Column(nullable = false)
     private String nombre;
@@ -37,4 +41,15 @@ public class Empresa extends BaseEntity {
     @JsonManagedReference("empresa-contactos")
     private Contacto contacto;
 
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public void setId(String id) { this.id = id; }
+
+    @Override
+    public Boolean getEliminado() { return eliminado; }
+
+    @Override
+    public void setEliminado(Boolean eliminado) { this.eliminado = eliminado; }
 }

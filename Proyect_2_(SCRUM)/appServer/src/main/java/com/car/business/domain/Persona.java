@@ -1,24 +1,23 @@
 package com.car.business.domain;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.car.business.domain.enums.TipoDocumento;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
-import com.car.business.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Getter
+@Setter
 @Entity
 @Table(name = "personas")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Persona extends BaseEntity {
+public class Persona extends BaseEntity<String> {
 
     @Column(nullable = false)
     private String nombre;
@@ -44,4 +43,15 @@ public class Persona extends BaseEntity {
     @ManyToOne(optional = false)
     private Imagen imagen;
 
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public void setId(String id) { this.id = id; }
+
+    @Override
+    public Boolean getEliminado() { return eliminado; }
+
+    @Override
+    public void setEliminado(Boolean eliminado) { this.eliminado = eliminado; }
 }

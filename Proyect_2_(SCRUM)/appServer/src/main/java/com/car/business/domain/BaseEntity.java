@@ -10,13 +10,18 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @MappedSuperclass
-public abstract class BaseEntity {
+public abstract class BaseEntity<ID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36, updatable = false, nullable = false)
-    private String id;
+    protected String id;
 
     @Column(nullable = false)
-    private boolean eliminado = false;
+    protected boolean eliminado = false;
+
+    public abstract ID getId();
+    public abstract void setId(ID id);
+    public abstract Boolean getEliminado();
+    public abstract void setEliminado(Boolean eliminado);
 }

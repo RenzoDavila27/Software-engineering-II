@@ -14,9 +14,11 @@ import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Getter
+@Setter
 @Entity
 @Table(name = "localidades")
-public class Localidad extends BaseEntity {
+public class Localidad extends BaseEntity<String> {
 
     @Column(nullable = false)
     private String nombre;
@@ -30,4 +32,16 @@ public class Localidad extends BaseEntity {
 
     @OneToMany(mappedBy = "localidad", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Direccion> direcciones = new ArrayList<>();
+
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public void setId(String id) { this.id = id; }
+
+    @Override
+    public Boolean getEliminado() { return eliminado; }
+
+    @Override
+    public void setEliminado(Boolean eliminado) { this.eliminado = eliminado; }
 }

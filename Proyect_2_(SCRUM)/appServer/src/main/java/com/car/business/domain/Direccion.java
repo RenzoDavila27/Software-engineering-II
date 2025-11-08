@@ -9,9 +9,11 @@ import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Getter
+@Setter
 @Entity
 @Table(name = "direcciones")
-public class Direccion extends BaseEntity {
+public class Direccion extends BaseEntity<String> {
 
     @Column(nullable = false)
     private String calle;
@@ -34,4 +36,16 @@ public class Direccion extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "localidad_id", nullable = false)
     private Localidad localidad;
+
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public void setId(String id) { this.id = id; }
+
+    @Override
+    public Boolean getEliminado() { return eliminado; }
+
+    @Override
+    public void setEliminado(Boolean eliminado) { this.eliminado = eliminado; }
 }

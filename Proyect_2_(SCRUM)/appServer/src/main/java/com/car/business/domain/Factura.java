@@ -4,14 +4,18 @@ import com.car.business.domain.enums.EstadoFactura;
 import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Collection;
 
 @Data
+@Getter
+@Setter
 @Entity
 @EqualsAndHashCode(callSuper = true)
-public class Factura extends BaseEntity{
+public class Factura extends BaseEntity<String> {
 
     private Long numeroFactura;
     private LocalDate fechaFactura;
@@ -26,4 +30,15 @@ public class Factura extends BaseEntity{
         }
     }
 
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public void setId(String id) { this.id = id; }
+
+    @Override
+    public Boolean getEliminado() { return eliminado; }
+
+    @Override
+    public void setEliminado(Boolean eliminado) { this.eliminado = eliminado; }
 }
