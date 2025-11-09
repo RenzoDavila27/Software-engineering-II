@@ -2,6 +2,7 @@ package com.car.business.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +16,7 @@ public class Cliente extends Persona{
     private String direccionEstadia;
 
     @ManyToOne(optional = false)
-    @Column(name = "nacionalidad_id", nullable = false)
+    @JoinColumn(name = "nacionalidad_id", nullable = false)
     private Nacionalidad nacionalidad;
 
 }

@@ -1,4 +1,4 @@
-package com.car.mycar;
+package com.car;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

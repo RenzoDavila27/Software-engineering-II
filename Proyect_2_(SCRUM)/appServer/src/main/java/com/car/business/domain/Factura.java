@@ -1,7 +1,10 @@
 package com.car.business.domain;
 
 import com.car.business.domain.enums.EstadoFactura;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,8 +23,10 @@ public class Factura extends BaseEntity<String> {
     private Long numeroFactura;
     private LocalDate fechaFactura;
     private Double totalPagado;
+
     private EstadoFactura estado;
 
+    @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<DetalleFactura> detalles;
 
     public void calcular_total(){

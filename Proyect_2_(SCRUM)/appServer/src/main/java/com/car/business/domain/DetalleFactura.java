@@ -1,6 +1,7 @@
 package com.car.business.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,6 +17,10 @@ public class DetalleFactura extends BaseEntity<String> {
 
     private int cantidad;
     private double subtotal;
+
+    @ManyToOne
+    @JoinColumn(name = "factura_id")
+    private Factura factura;
 
     @ManyToOne(optional = false)
     private Alquiler alquiler;
