@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <title>Cental - Iniciar Sesión</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link th:href="@{/lib/animate/animate.min.css}" rel="stylesheet">
+    <link th:href="@{/lib/owlcarousel/assets/owl.carousel.min.css}" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body>
+
+<div th:replace="~{topbar :: body}"></div>
+
+<!-- Header Start -->
+<div class="container-fluid bg-breadcrumb mb-5">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Iniciar Sesión</h4>
+        <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="#">Páginas</a></li>
+            <li class="breadcrumb-item active text-primary">Iniciar Sesión</li>
+        </ol>
+    </div>
+</div>
+<!-- Header End -->
+
+<!-- Login Start -->
+<div class="container-fluid contact py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="bg-secondary p-5 rounded">
+                    <h3 class="text-white text-center mb-4">Iniciar Sesión</h3>
+                    <form>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="username" placeholder="Nombre de Usuario">
+                                    <label for="username">Nombre de Usuario</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" id="password" placeholder="Contraseña">
+                                    <label for="password">Contraseña</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-light w-100 py-3" type="submit">Iniciar Sesión</button>
+                            </div>
+                            <div class="col-12 text-center">
+                                <p class="text-white">O inicia sesión con:</p>
+                                <div class="d-flex justify-content-center">
+                                    <a href="#" class="btn btn-light btn-sm-square rounded-circle me-3"><i class="fab fa-google"></i></a>
+                                    <a href="#" class="btn btn-light btn-sm-square rounded-circle me-3"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="#" class="btn btn-light btn-sm-square rounded-circle"><i class="fab fa-twitter"></i></a>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center mt-3">
+                                <p class="text-white">¿No tienes una cuenta? <a th:href="@{/register}" class="text-primary">Regístrate aquí</a></p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Login End -->
+
+<div th:replace="~{bottombar :: body}"></div>
+
+<!-- JavaScript Libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/lib/wow/wow.min.js}"></script>
+<script th:src="@{/lib/easing/easing.min.js}"></script>
+<script th:src="@{/lib/waypoints/waypoints.min.js}"></script>
+<script th:src="@{/lib/owlcarousel/owl.carousel.min.js}"></script>
+
+<!-- Template Javascript -->
+<script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>

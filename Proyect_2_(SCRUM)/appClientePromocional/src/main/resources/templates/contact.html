@@ -1,218 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-  <head>
+    <head>
+        <meta charset="utf-8">
+        <title>Cental - Car Rent Website Template</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="" name="keywords">
+        <meta content="" name="description">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet">
+        <!-- Google Web Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
 
-    <title>PHPJabbers.com | Free Car Rental Website Template</title>
+        <!-- Icon Font Stylesheet -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+        <!-- Libraries Stylesheet -->
+        <link th:href="@{/lib/animate/animate.min.css}" rel="stylesheet">
+        <link th:href="@{/lib/owlcarousel/assets/owl.carousel.min.css}" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css">
 
-    <link rel="stylesheet" href="assets/css/style.css">
+        <!-- Customized Bootstrap Stylesheet -->
+        <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 
+        <!-- Template Stylesheet -->
+        <link th:href="@{/css/style.css}" rel="stylesheet">
     </head>
-    
+
     <body>
-    
-    <!-- ***** Preloader Start ***** -->
-    <div id="js-preloader" class="js-preloader">
-      <div class="preloader-inner">
-        <span class="dot"></span>
-        <div class="dots">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-    </div>
-    <!-- ***** Preloader End ***** -->
-    
-    
-    <!-- ***** Header Area Start ***** -->
-    <header class="header-area header-sticky">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav class="main-nav">
-                        <!-- ***** Logo Start ***** -->
-                        <a href="index.html" class="logo">Car Rental<em> Website</em></a>
-                        <!-- ***** Logo End ***** -->
-                        <!-- ***** Menu Start ***** -->
-                        <ul class="nav">
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="fleet.html">Fleet</a></li>
-                            <li><a href="offers.html">Offers</a></li>
-                            <li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">About</a>
-                              
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="about.html">About Us</a>
-                                    <a class="dropdown-item" href="blog.html">Blog</a>
-                                    <a class="dropdown-item" href="team.html">Team</a>
-                                    <a class="dropdown-item" href="testimonials.html">Testimonials</a>
-                                    <a class="dropdown-item" href="faq.html">FAQ</a>
-                                    <a class="dropdown-item" href="terms.html">Terms</a>
-                                </div>
-                            </li>
-                            <li><a href="contact.html" class="active">Contact</a></li> 
-                        </ul>        
-                        <a class='menu-trigger'>
-                            <span>Menu</span>
-                        </a>
-                        <!-- ***** Menu End ***** -->
-                    </nav>
+
+            <div th:replace="~{topbar :: body}"></div>
+        
+            <!-- Header Start -->
+            <div class="container-fluid bg-breadcrumb mb-5">
+                <div class="container text-center py-5" style="max-width: 900px;">
+                    <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Contact Us</h4>
+                    <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                        <li class="breadcrumb-item active text-primary">Contact</li>
+                    </ol>    
                 </div>
             </div>
-        </div>
-    </header>
-    <!-- ***** Header Area End ***** -->
-
-    <section class="section section-bg" id="call-to-action" style="background-image: url(assets/images/banner-image-1-1920x500.jpg)">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 offset-lg-1">
-                    <div class="cta-content">
-                        <br>
-                        <br>
-                        <h2>Feel free to <em>Contact Us</em></h2>
-                        <p>Ut consectetur, metus sit amet aliquet placerat, enim est ultricies ligula</p>
+            <!-- Header End -->
+        
+            <!-- Contact Start -->
+            <div class="container-fluid contact py-5">
+                <div class="container">
+                    <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
+                        <h1 class="display-5 text-capitalize text-primary mb-3">Contact Us</h1>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut amet nemo expedita asperiores commodi accusantium at cum harum, excepturi, quia tempora cupiditate! Adipisci facilis modi quisquam quia distinctio,</p>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ***** Features Item Start ***** -->
-    <section class="section" id="features">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-lg-6 offset-lg-3">
-                    <div class="section-heading">
-                        <h2>contact <em> info</em></h2>
-                        <img src="assets/images/line-dec.png" alt="waves">
-                        
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="icon">
-                        <i class="fa fa-phone"></i>
-                    </div>
-
-                    <h5><a href="#">+1 333 4040 5566</a></h5>
-
-                    <br>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="icon">
-                        <i class="fa fa-envelope"></i>
-                    </div>
-
-                    <h5><a href="#">contact@company.com</a></h5>
-
-                    <br>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="icon">
-                        <i class="fa fa-map-marker"></i>
-                    </div>
-
-                    <h5>212 Barrington Court New York</h5>
-
-                    <br>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- ***** Features Item End ***** -->
-   
-    <!-- ***** Contact Us Area Starts ***** -->
-    <section class="section" id="contact-us" style="margin-top: 0">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-6 col-md-6 col-xs-12">
-                    <div id="map">
-                      <iframe src="https://maps.google.com/maps?q=Av.+L%C3%BAcio+Costa,+Rio+de+Janeiro+-+RJ,+Brazil&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="600px" frameborder="0" style="border:0" allowfullscreen></iframe>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-xs-12">
-                    <div class="contact-form section-bg" style="background-image: url(assets/images/contact-1-720x480.jpg)">
-                        <form id="contact" action="" method="post">
-                          <div class="row">
-                            <div class="col-md-6 col-sm-12">
-                              <fieldset>
-                                <input name="name" type="text" id="name" placeholder="Your Name*" required="">
-                              </fieldset>
+                    <div class="row g-5">
+                        <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="bg-secondary p-5 rounded">
+                                <h5 class="text-white lh-base mb-4">Receive messages instantly with our PHP and Ajax contact form - available in the <a href="https://htmlcodex.com/downloading/?item=3387">Pro Version</a> only.</h5>
+                                <form>
+                                    <div class="row g-4">
+                                        <div class="col-lg-12 col-xl-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="name" placeholder="Your Name">
+                                                <label for="name">Your Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-xl-6">
+                                            <div class="form-floating">
+                                                <input type="email" class="form-control" id="email" placeholder="Your Email">
+                                                <label for="email">Your Email</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="subject" placeholder="Subject">
+                                                <label for="subject">Subject</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <textarea class="form-control" placeholder="Leave a message here" id="message" style="height: 160px"></textarea>
+                                                <label for="message">Message</label>
+                                            </div>
+        
+                                        </div>
+                                        <div class="col-12">
+                                            <button class="btn btn-light w-100 py-3">Send Message</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="col-md-6 col-sm-12">
-                              <fieldset>
-                                <input name="email" type="text" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your Email*" required="">
-                              </fieldset>
+                        </div>
+                        <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="rounded">
+                                <iframe class="rounded w-100" 
+                                style="height: 580px;" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387191.33750346623!2d-73.97968099999999!3d40.6974881!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbd!4v1694259649153!5m2!1sen!2sbd" 
+                                loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                             </div>
-                            <div class="col-md-12 col-sm-12">
-                              <fieldset>
-                                <input name="subject" type="text" id="subject" placeholder="Subject">
-                              </fieldset>
-                            </div>
-                            <div class="col-lg-12">
-                              <fieldset>
-                                <textarea name="message" rows="6" id="message" placeholder="Message" required=""></textarea>
-                              </fieldset>
-                            </div>
-                            <div class="col-lg-12">
-                              <fieldset>
-                                <button type="submit" id="form-submit" class="main-button">Send Message</button>
-                              </fieldset>
-                            </div>
-                          </div>
-                        </form>
+                        </div>
+        
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <!-- ***** Contact Us Area Ends ***** -->
-    
-    <!-- ***** Footer Start ***** -->
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <p>
-                        Copyright © 2020 Company Name
-                        - Template by: <a href="https://www.phpjabbers.com/">PHPJabbers.com</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- jQuery -->
-    <script src="assets/js/jquery-2.1.0.min.js"></script>
-
-    <!-- Bootstrap -->
-    <script src="assets/js/popper.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-
-    <!-- Plugins -->
-    <script src="assets/js/scrollreveal.min.js"></script>
-    <script src="assets/js/waypoints.min.js"></script>
-    <script src="assets/js/jquery.counterup.min.js"></script>
-    <script src="assets/js/imgfix.min.js"></script> 
-    <script src="assets/js/mixitup.js"></script> 
-    <script src="assets/js/accordions.js"></script>
-    
-    <!-- Global Init -->
-    <script src="assets/js/custom.js"></script>
-
-  </body>
-</html>
+            <!-- Contact End -->
+        
+            <div th:replace="~{bottombar :: body}"></div>
+        
+            <!-- JavaScript Libraries -->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script th:src="@{/lib/wow/wow.min.js}"></script>
+            <script th:src="@{/lib/easing/easing.min.js}"></script>
+            <script th:src="@{/lib/waypoints/waypoints.min.js}"></script>
+            <script th:src="@{/lib/owlcarousel/owl.carousel.min.js}"></script>
+            
+        
+            <!-- Template Javascript -->
+            <script th:src="@{/js/main.js}"></script>
+            </body>
+        
+        </html>

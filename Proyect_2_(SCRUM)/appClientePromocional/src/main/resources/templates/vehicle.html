@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Cental - Car Rent Website Template</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="" name="keywords">
+        <meta content="" name="description">
+
+        <!-- Google Web Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+
+        <!-- Icon Font Stylesheet -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        <!-- Libraries Stylesheet -->
+        <link href="lib/animate/animate.min.css" rel="stylesheet">
+        <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Template Stylesheet -->
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+
+    <body>
+
+            <div th:replace="~{topbar :: body}"></div>
+        
+            <!-- Header Start -->
+            <div class="container-fluid bg-breadcrumb mb-5">
+                <div class="container text-center py-5" style="max-width: 900px;">
+                    <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Our Vehicles</h4>
+                    <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                        <li class="breadcrumb-item active text-primary">Vehicles</li>
+                    </ol>    
+                </div>
+            </div>
+            <!-- Header End -->
+        
+            <!-- Car categories Start -->
+            <div class="container-fluid categories py-5">
+                <div class="container">
+                    <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
+                        <h1 class="display-5 text-capitalize mb-3">Our <span class="text-primary">Vehicles</span></h1>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut amet nemo expedita asperiores commodi accusantium at cum harum, excepturi, quia tempora cupiditate! Adipisci facilis modi quisquam quia distinctio,
+                        </p>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6 wow fadeInUp" data-wow-delay="0.1s" th:each="vehiculo : ${vehiculos}">
+                            <div class="categories-item p-3">
+                                <div class="categories-item-inner">
+                                    <div class="categories-img rounded-top">
+                                        <img th:if="${vehiculo.imagenBase64 != null}" th:src="'data:image/png;base64,' + ${vehiculo.imagenBase64}" class="img-fluid w-100 rounded-top" alt="">
+                                        <img th:if="${vehiculo.imagenBase64 == null}" th:src="@{/img/car-1.png}" class="img-fluid w-100 rounded-top" alt="">
+                                    </div>
+                                    <div class="categories-content rounded-bottom p-3">
+                                        <h4 th:text="${vehiculo.marca + ' ' + vehiculo.modelo}"></h4>
+                                        <div class="categories-review mb-3">
+                                            <div class="me-3">4.5 Review</div>
+                                            <div class="d-flex justify-content-center text-secondary">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star text-body"></i>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <h4 class="bg-white text-primary rounded-pill py-2 px-3 mb-0" th:text="${'$' + vehiculo.costo + '/Day'}"></h4>
+                                        </div>
+                                        <div class="row gy-2 gx-0 text-center mb-3">
+                                            <div class="col-6 border-end border-white">
+                                                <i class="fa fa-users text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.cantidadAsientos + ' Seat'}"></span>
+                                            </div>
+                                            <div class="col-6">
+                                                <i class="fa fa-car text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.cantidadPuertas + ' Doors'}"></span>
+                                            </div>
+                                            <div class="col-12">
+                                                <i class="fa fa-car text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.anio}"></span>
+                                            </div>
+                                        </div>
+                                        <a th:href="@{/book(vehiculoId=${vehiculo.id})}" class="btn btn-primary rounded-pill d-flex justify-content-center py-2">Reservar Ahora</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Car categories End -->
+        
+            <div th:replace="~{bottombar :: body}"></div>
+        
+            <!-- JavaScript Libraries -->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script th:src="@{/lib/wow/wow.min.js}"></script>
+            <script th:src="@{/lib/easing/easing.min.js}"></script>
+            <script th:src="@{/lib/waypoints/waypoints.min.js}"></script>
+            <script th:src="@{/lib/owlcarousel/owl.carousel.min.js}"></script>
+            
+        
+            <!-- Template Javascript -->
+            <script th:src="@{/js/main.js}"></script>
+            </body>
+        
+        </html>
