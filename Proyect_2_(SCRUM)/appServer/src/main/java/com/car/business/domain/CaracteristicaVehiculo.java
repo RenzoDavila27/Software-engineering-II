@@ -1,7 +1,10 @@
 package com.car.business.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,8 +25,11 @@ public class CaracteristicaVehiculo extends BaseEntity<String> {
     private int cantidadTotalVehiculos;
     private int cantidadTotalVehiculosAlquilados;
 
-    @ManyToOne(optional = false)
-    private CostoVehiculo costoVehiculo;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "imagen_id", referencedColumnName = "id")
+    private Imagen imagen;
+
+    
 
 
     public String getId() { return id; }

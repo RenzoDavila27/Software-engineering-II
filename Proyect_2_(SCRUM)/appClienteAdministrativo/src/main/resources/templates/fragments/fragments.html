@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+
+  <!-- Sidebar -->
+    <aside th:fragment="sidebar" class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-left">
+          <div class="logo">
+            <!-- icono running -->
+            <i class="bi bi-car-front"></i>
+          </div>
+          <div class="brand-text">
+            <h1>FioriRentCar</h1>
+            <small>Rent & Mecanic</small>
+          </div>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <ul>
+          <li class="menu-item">
+            <a th:href="@{/}" href="/">
+              <i class="fa-solid fa-house"></i>
+              <span>Inicio</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a th:href="@{/dashboard}" href="/dashboard">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a th:href="@{/clientes}" href="/clientes">
+              <i class="fa-solid fa-user-group"></i>
+              <span>Cliente</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a th:href="@{/empresas}" href="/empresas">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Empresa</span>
+            </a>
+          </li>
+
+          <!-- Dirección - submenu -->
+          <li class="menu-item has-sub">
+            <a href="#!" class="submenu-toggle">
+              <i class="fa-solid fa-map-location"></i>
+              <span>Dirección</span>
+              <i class="fa-solid fa-chevron-down caret"></i>
+            </a>
+            <ul class="submenu">
+              <li><a th:href="@{/localidades}">Localidad</a></li>
+              <li><a th:href="@{/departamentos}">Departamento</a></li>
+              <li><a th:href="@{/provincias}">Provincia</a></li>
+              <li><a th:href="@{/paises}">País</a></li>
+            </ul>
+          </li>
+
+          <li class="menu-item has-sub">
+            <a href="#!" class="submenu-toggle">
+              <i class="bi bi-ev-front"></i>
+              <span>Flota</span>
+              <i class="bi bi-ev-front"></i>
+            </a>
+            <ul class="submenu">
+              <li><a th:href="@{/caracteristicas-vehiculo}">Vehiculos</a></li>
+              <li><a th:href="@{/alquileres}">Alquileres</a></li>
+            </ul>
+          </li>
+
+          <li class="menu-item">
+            <a th:href="@{/usuarios}" href="/usuarios">
+              <i class="fa-solid fa-users"></i>
+              <span>Usuarios</span>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="upgrade">
+          <a th:href="@{/}">FioriRentCar ©</a>
+        </div>
+      </div>
+    </aside>
+
+
+  <!-- Topnav -->
+     <header th:fragment="topnav" class="topnav">
+        <div class="topnav-left">
+          <button id="mobileMenuBtn" class="btn-ghost"><i class="fa-solid fa-bars"></i></button>
+          <h2>¡Bienvenido!</h2>
+        </div>
+
+        <div class="topnav-right">
+          <div class="user-info">
+            <div class="user-data">
+              <!-- Nombre y rol vienen del controlador Thymeleaf -->
+              <span class="user-name">Juan Pérez</span>
+              <small class="user-role">Administrador</small>
+            </div>
+            <!-- dropdown simple -->
+            <div class="user-actions">
+              <!-- Logout (si usas Spring Security) -->
+              <form th:action="@{/logout}" action="/logout" method="post" style="display:inline">
+                <button type="submit" class="btn-ghost" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket"></i>Cerrar Sesion</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </header>
+
+
+</body>
+</html>

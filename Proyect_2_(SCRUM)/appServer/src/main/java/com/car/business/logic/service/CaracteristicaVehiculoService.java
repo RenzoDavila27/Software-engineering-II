@@ -44,8 +44,8 @@ public class CaracteristicaVehiculoService extends BaseService<CaracteristicaVeh
         if (entidad.getCantidadTotalVehiculosAlquilados() > entidad.getCantidadTotalVehiculos()) {
             throw new BusinessException("Los vehículos alquilados no pueden superar los existentes.");
         }
-        if (entidad.getCostoVehiculo() == null) {
-            throw new BusinessException("El costo asociado es obligatorio.");
+        if (entidad.getImagen() == null) {
+            throw new BusinessException("La imagen es obligatorio.");
         }
     }
 }

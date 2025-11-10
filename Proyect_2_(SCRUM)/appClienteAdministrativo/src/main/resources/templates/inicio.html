@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titleList}">INICIO</title>
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS General -->
+  <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside th:replace="fragments/fragments :: sidebar"></aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOP NAV -->
+    <header th:replace="fragments/fragments :: topnav"></header>
+
+    <!-- CONTENIDO -->
+    <main class="content">
+      <p>CONTENIDO</p>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Fiorent
+    </footer>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

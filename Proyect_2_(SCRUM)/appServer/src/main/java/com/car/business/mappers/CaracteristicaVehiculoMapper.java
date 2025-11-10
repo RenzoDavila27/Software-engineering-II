@@ -2,6 +2,7 @@ package com.car.business.mappers;
 
 import com.car.business.domain.CaracteristicaVehiculo;
 import com.car.business.domain.CostoVehiculo;
+import com.car.business.domain.Imagen;
 import com.car.business.dto.CaracteristicaVehiculoDto;
 import org.springframework.stereotype.Component;
 
@@ -9,9 +10,12 @@ import org.springframework.stereotype.Component;
 public class CaracteristicaVehiculoMapper implements BaseMapper<CaracteristicaVehiculo, CaracteristicaVehiculoDto, String> {
 
     private final EntityReferenceResolver resolver;
+    private final ImagenMapper imagenMapper;
 
-    public CaracteristicaVehiculoMapper(EntityReferenceResolver resolver) {
+
+    public CaracteristicaVehiculoMapper(EntityReferenceResolver resolver, ImagenMapper imagenMapper) {
         this.resolver = resolver;
+        this.imagenMapper = imagenMapper;
     }
 
     @Override
@@ -29,7 +33,7 @@ public class CaracteristicaVehiculoMapper implements BaseMapper<CaracteristicaVe
         dto.setCantidadPuertas(entity.getCantidadPuertas());
         dto.setCantidadTotalVehiculos(entity.getCantidadTotalVehiculos());
         dto.setCantidadTotalVehiculosAlquilados(entity.getCantidadTotalVehiculosAlquilados());
-        dto.setCostoVehiculoId(entity.getCostoVehiculo() != null ? entity.getCostoVehiculo().getId() : null);
+        dto.setImagenDto(imagenMapper.toDto(entity.getImagen()));
         return dto;
     }
 
@@ -57,6 +61,7 @@ public class CaracteristicaVehiculoMapper implements BaseMapper<CaracteristicaVe
         entity.setCantidadTotalVehiculos(dto.getCantidadTotalVehiculos());
         entity.setCantidadTotalVehiculosAlquilados(dto.getCantidadTotalVehiculosAlquilados());
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
-        entity.setCostoVehiculo(resolver.getReference(CostoVehiculo.class, dto.getCostoVehiculoId()));
+        Imagen imagen = imagenMapper.toEntity(dto.getImagenDto());
+        entity.setImagen(imagen);
     }
 }

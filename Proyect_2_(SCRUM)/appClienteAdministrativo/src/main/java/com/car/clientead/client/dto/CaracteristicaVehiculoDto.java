@@ -1,4 +1,4 @@
-package com.car.business.dto;
+package com.car.clientead.client.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titleList}">Listado de Características</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+
+  <style>
+    .table-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .styled-table th, .styled-table td {
+      padding: 12px 15px;
+      text-align: center;
+    }
+    .styled-table th {
+      background-color: #343a40;
+      color: #fff;
+      font-weight: 600;
+    }
+    .styled-table tbody tr:nth-of-type(even) {
+      background-color: #f8f9fa;
+    }
+    .styled-table tbody tr:hover {
+      background-color: #e9ecef;
+    }
+    .actions-column { text-align: center; }
+    .btn-action {
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin: 0 2px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-view { background-color: #198754; color: #fff; }
+    .btn-edit { background-color: #ffc107; color: #000; }
+    .btn-delete { background-color: #dc3545; color: #fff; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside th:replace="fragments/fragments :: sidebar"></aside>
+  <div class="main">
+    <header th:replace="fragments/fragments :: topnav"></header>
+
+    <main class="content">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 th:text="${titleList}">Listado de Características</h1>
+        <a th:href="@{/caracteristicas-vehiculo/alta}" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> Agregar
+        </a>
+      </div>
+
+      <div class="table-card">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Año</th>
+              <th>Puertas</th>
+              <th>Asientos</th>
+              <th>Total</th>
+              <th>Alquilados</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="item : ${items}">
+              <td th:text="${item.marca}"></td>
+              <td th:text="${item.modelo}"></td>
+              <td th:text="${item.anio}"></td>
+              <td th:text="${item.cantidadPuertas}"></td>
+              <td th:text="${item.cantidadAsientos}"></td>
+              <td th:text="${item.cantidadTotalVehiculos}"></td>
+              <td th:text="${item.cantidadTotalVehiculosAlquilados}"></td>
+              <td class="actions-column">
+                <a th:href="@{|/caracteristicas-vehiculo/consultar/${item.id}|}" class="btn-action btn-view">
+                  <i class="fa-solid fa-eye"></i>
+                </a>
+                <a th:href="@{|/caracteristicas-vehiculo/modificar/${item.id}|}" class="btn-action btn-edit">
+                  <i class="fa-solid fa-pen"></i>
+                </a>
+                <a th:href="@{|/caracteristicas-vehiculo/baja/${item.id}|}" class="btn-action btn-delete"
+                   onclick="return confirm('¿Seguro que desea eliminar este registro?');">
+                  <i class="fa-solid fa-trash"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="footer">
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> FioriRentCar
+    </footer>
+  </div>
+</div>
+</body>
+</html>
