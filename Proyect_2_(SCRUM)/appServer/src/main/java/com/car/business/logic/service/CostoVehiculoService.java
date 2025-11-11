@@ -1,15 +1,23 @@
 package com.car.business.logic.service;
 
 import com.car.business.domain.CostoVehiculo;
+import com.car.business.domain.Vehiculo;
 import com.car.business.dto.CostoVehiculoDto;
 import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.CostoVehiculoMapper;
 import com.car.business.percistence.repository.CostoVehiculoRepository;
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CostoVehiculoService extends BaseService<CostoVehiculo, CostoVehiculoDto, String> {
+
+    @Autowired
+    private CostoVehiculoRepository costoVehiculoRepository;
 
     public CostoVehiculoService(CostoVehiculoRepository repository, CostoVehiculoMapper mapper) {
         super(repository, mapper);
@@ -35,4 +43,21 @@ public class CostoVehiculoService extends BaseService<CostoVehiculo, CostoVehicu
             throw new BusinessException("El costo debe ser mayor a cero.");
         }
     }
+
+    @Override    
+    protected void preAlta(CostoVehiculo costoVehiculo) throws BusinessException{
+        CostoVehiculo oldCostoVehiculo = costoVehiculoRepository.buscarCostoVehiculoActual(costoVehiculo.getCaracteristicaVehiculo().getId(),LocalDate.of(9999,1,1));
+        if (oldCostoVehiculo!=null){
+            oldCostoVehiculo.setFechaHasta(LocalDate.now());
+            repository.save(oldCostoVehiculo);
+        }
+
+    }
+
+    public List<CostoVehiculo> listarCostosPorVehiculo(String id) throws BusinessException{
+        return costoVehiculoRepository.listarCostosPorVehiculo(id);
+
+    }
+
+
 }

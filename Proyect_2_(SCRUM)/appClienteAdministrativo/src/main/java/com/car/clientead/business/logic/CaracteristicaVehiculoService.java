@@ -1,6 +1,7 @@
 package com.car.clientead.business.logic;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.car.clientead.client.dto.CaracteristicaVehiculoDto;
+import com.car.clientead.client.dto.CostoVehiculoDto;
 import com.car.clientead.client.dto.ImagenDto;
 import com.car.clientead.client.dto.enums.TipoImagen;
 import com.car.clientead.client.exception.ApiClientException;
@@ -37,7 +39,8 @@ public class CaracteristicaVehiculoService {
 
     // 🔹 Crear nueva característica (con imagen opcional)
     public CaracteristicaVehiculoDto crear(CaracteristicaVehiculoDto dto, MultipartFile imagenFile) {
-        validar(dto);
+        validarDatosGenerales(dto);
+        prepararCostoParaAlta(dto);
         try {
             if (imagenFile != null && !imagenFile.isEmpty()) {
                 dto.setImagenDto(convertirImagen(imagenFile));
@@ -50,7 +53,7 @@ public class CaracteristicaVehiculoService {
 
     // 🔹 Modificar existente
     public CaracteristicaVehiculoDto modificar(String id, CaracteristicaVehiculoDto dto, MultipartFile imagenFile) {
-        validar(dto);
+        validarDatosGenerales(dto);
         try {
             if (imagenFile != null && !imagenFile.isEmpty()) {
                 dto.setImagenDto(convertirImagen(imagenFile));
@@ -68,7 +71,7 @@ public class CaracteristicaVehiculoService {
 
     // ======= Métodos auxiliares =======
 
-    private void validar(CaracteristicaVehiculoDto dto) {
+    private void validarDatosGenerales(CaracteristicaVehiculoDto dto) {
         if (dto == null) {
             throw new IllegalArgumentException("Los datos de la característica del vehículo no pueden ser nulos.");
         }
@@ -99,6 +102,23 @@ public class CaracteristicaVehiculoService {
             dto.setImagenDataUri(null);
         }
         return dto;
+    }
+
+    private void prepararCostoParaAlta(CaracteristicaVehiculoDto dto) {
+        if (dto == null) {
+            return;
+        }
+        CostoVehiculoDto costoDto = dto.getCostoVehiculoDto();
+        if (costoDto == null) {
+            throw new IllegalArgumentException("Debe registrar el costo inicial del vehículo.");
+        }
+        if (costoDto.getFechaDesde() == null) {
+            costoDto.setFechaDesde(LocalDate.now());
+        }
+        costoDto.setFechaHasta(costoDto.getFechaDesde());
+        if (costoDto.getCosto() == null || costoDto.getCosto() <= 0) {
+            throw new IllegalArgumentException("El costo inicial debe ser mayor a cero.");
+        }
     }
 
     // Convierte el archivo en ImagenDto

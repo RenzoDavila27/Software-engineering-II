@@ -27,14 +27,29 @@
       </div>
 
       <div class="workflow-tabs">
-        <a th:href="@{/caracteristicas-vehiculo}" class="step completed">
+        <a th:href="${item.caracteristicaVehiculoId != null} ? @{|/caracteristicas-vehiculo/consultar/${item.caracteristicaVehiculoId}|} : @{/caracteristicas-vehiculo}"
+           class="step completed">
           <i class="fa-solid fa-circle-check"></i> 1. Características
         </a>
-        <a th:href="@{/vehiculos}" class="step active">
+        <a th:href="${item.caracteristicaVehiculoId != null} ? @{|/vehiculos?caracteristicaId=${item.caracteristicaVehiculoId}|} : @{/vehiculos}"
+           class="step active">
           <i class="fa-solid fa-car"></i> 2. Vehículos
         </a>
-        <a th:href="@{/costos-vehiculo}" class="step">
+        <a th:href="${item.caracteristicaVehiculoId != null} ? @{|/costos-vehiculo?caracteristicaId=${item.caracteristicaVehiculoId}|} : @{/costos-vehiculo}"
+           class="step">
           <i class="fa-solid fa-dollar-sign"></i> 3. Costos
+        </a>
+      </div>
+
+      <div class="alert alert-info d-flex justify-content-between align-items-center"
+           th:if="${caracteristicaSeleccionada != null}">
+        <span>
+          <strong>Característica seleccionada:</strong>
+          <span th:text="${caracteristicaSeleccionada.marca + ' ' + caracteristicaSeleccionada.modelo + ' (' + caracteristicaSeleccionada.anio + ')'}"></span>
+        </span>
+        <a th:href="@{|/caracteristicas-vehiculo/consultar/${caracteristicaSeleccionada.id}|}"
+           class="btn btn-light btn-sm">
+          <i class="fa-solid fa-eye"></i> Ver detalle
         </a>
       </div>
 

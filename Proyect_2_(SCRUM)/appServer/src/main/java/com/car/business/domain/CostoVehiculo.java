@@ -18,9 +18,12 @@ import java.time.LocalDate;
 public class CostoVehiculo extends BaseEntity<String> {
 
     private LocalDate fechaDesde;
-    private LocalDate fechaHasta;
+    private LocalDate fechaHasta = LocalDate.of(9999, 1, 1);
     private Double costo;
 
+    @ManyToOne
+    private CaracteristicaVehiculo caracteristicaVehiculo;
+    
     @Override
     public String getId() { return id; }
 

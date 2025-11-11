@@ -39,7 +39,7 @@ public abstract class BaseService<T extends BaseEntity<ID>, D extends BaseDto<ID
                 .toList();
     }
 
-    public T alta(T entidad) throws BusinessException {
+    public T alta(T entidad)throws BusinessException {
         try {
             validar(entidad);
             preAlta(entidad);

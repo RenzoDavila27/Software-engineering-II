@@ -12,7 +12,6 @@ public class CaracteristicaVehiculoMapper implements BaseMapper<CaracteristicaVe
     private final EntityReferenceResolver resolver;
     private final ImagenMapper imagenMapper;
 
-
     public CaracteristicaVehiculoMapper(EntityReferenceResolver resolver, ImagenMapper imagenMapper) {
         this.resolver = resolver;
         this.imagenMapper = imagenMapper;

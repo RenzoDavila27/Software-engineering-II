@@ -11,66 +11,66 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.car.clientead.client.dto.AlquilerDto;
+import com.car.clientead.client.dto.DocumentacionDto;
 import com.car.clientead.client.exception.ApiClientException;
 
 @Repository
-public class AlquilerRepository {
+public class DocumentacionRepository {
 
     private final RestTemplate restTemplate;
-    private final String baseUrl = "http://localhost:8080/api/alquileres";
+    private final String baseUrl = "http://localhost:8080/api/documentaciones";
 
-    public AlquilerRepository(RestTemplate restTemplate) {
+    public DocumentacionRepository(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public List<AlquilerDto> findAll() {
+    public List<DocumentacionDto> findAll() {
         try {
-            ResponseEntity<List<AlquilerDto>> response = restTemplate.exchange(
+            ResponseEntity<List<DocumentacionDto>> response = restTemplate.exchange(
                     baseUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<List<AlquilerDto>>() {});
+                    new ParameterizedTypeReference<List<DocumentacionDto>>() {});
             return response.getBody() != null ? response.getBody() : Collections.emptyList();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo obtener el listado de alquileres.", ex);
+            throw new ApiClientException("No se pudo obtener la documentación registrada.", ex);
         }
     }
 
-    public AlquilerDto findById(String id) {
+    public DocumentacionDto findById(String id) {
         try {
-            ResponseEntity<AlquilerDto> response = restTemplate.getForEntity(
+            ResponseEntity<DocumentacionDto> response = restTemplate.getForEntity(
                     baseUrl + "/" + id,
-                    AlquilerDto.class);
+                    DocumentacionDto.class);
             return response.getBody();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo obtener el alquiler con ID: " + id, ex);
+            throw new ApiClientException("No se pudo obtener la documentación con ID: " + id, ex);
         }
     }
 
-    public AlquilerDto create(AlquilerDto dto) {
+    public DocumentacionDto create(DocumentacionDto dto) {
         try {
-            ResponseEntity<AlquilerDto> response = restTemplate.postForEntity(
+            ResponseEntity<DocumentacionDto> response = restTemplate.postForEntity(
                     baseUrl,
                     dto,
-                    AlquilerDto.class);
+                    DocumentacionDto.class);
             return response.getBody();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo registrar el alquiler.", ex);
+            throw new ApiClientException("No se pudo registrar la documentación.", ex);
         }
     }
 
-    public AlquilerDto update(String id, AlquilerDto dto) {
+    public DocumentacionDto update(String id, DocumentacionDto dto) {
         try {
-            HttpEntity<AlquilerDto> request = new HttpEntity<>(dto);
-            ResponseEntity<AlquilerDto> response = restTemplate.exchange(
+            HttpEntity<DocumentacionDto> request = new HttpEntity<>(dto);
+            ResponseEntity<DocumentacionDto> response = restTemplate.exchange(
                     baseUrl + "/" + id,
                     HttpMethod.PUT,
                     request,
-                    AlquilerDto.class);
+                    DocumentacionDto.class);
             return response.getBody();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo actualizar el alquiler con ID: " + id, ex);
+            throw new ApiClientException("No se pudo actualizar la documentación con ID: " + id, ex);
         }
     }
 
@@ -78,7 +78,7 @@ public class AlquilerRepository {
         try {
             restTemplate.delete(baseUrl + "/" + id);
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo eliminar el alquiler con ID: " + id, ex);
+            throw new ApiClientException("No se pudo eliminar la documentación con ID: " + id, ex);
         }
     }
 }

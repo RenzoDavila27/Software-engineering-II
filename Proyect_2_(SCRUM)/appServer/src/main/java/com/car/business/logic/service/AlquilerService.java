@@ -6,10 +6,18 @@ import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.AlquilerMapper;
 import com.car.business.percistence.repository.AlquilerRepository;
 import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AlquilerService extends BaseService<Alquiler, AlquilerDto, String> {
+
+    @Autowired 
+    private AlquilerRepository alquilerRepository;
 
     public AlquilerService(AlquilerRepository repository, AlquilerMapper mapper) {
         super(repository, mapper);
@@ -41,4 +49,10 @@ public class AlquilerService extends BaseService<Alquiler, AlquilerDto, String> 
             throw new BusinessException("La fecha hasta no puede ser anterior a la fecha desde.");
         }
     }
+
+
+    public List<Alquiler> buscarAlquileresVecManiana(LocalDate maniana) throws BusinessException{
+        return alquilerRepository.buscarAlquilerVecManiana(maniana);
+    }
+
 }

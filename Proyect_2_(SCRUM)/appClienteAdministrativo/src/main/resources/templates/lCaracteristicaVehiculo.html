@@ -77,29 +77,6 @@
         </div>
       </div>
 
-      <div class="workflow-tabs">
-        <a th:href="@{/caracteristicas-vehiculo}" class="step active">
-          <i class="fa-solid fa-gears"></i> 1. Características
-        </a>
-        <a th:href="@{/vehiculos}" class="step">
-          <i class="fa-solid fa-car"></i> 2. Vehículos
-        </a>
-        <a th:href="@{/costos-vehiculo}" class="step">
-          <i class="fa-solid fa-dollar-sign"></i> 3. Costos
-        </a>
-      </div>
-
-      <div class="quick-actions">
-        <a th:href="@{/vehiculos}" class="card-link">
-          <strong>Gestionar Vehículos</strong>
-          <span>Consulta, altas y estados de la flota</span>
-        </a>
-        <a th:href="@{/costos-vehiculo}" class="card-link">
-          <strong>Gestionar Costos</strong>
-          <span>Registra tarifas vigentes y futuras</span>
-        </a>
-      </div>
-
       <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
       <div class="table-card">
@@ -133,16 +110,27 @@
               <td th:text="${item.cantidadTotalVehiculos}"></td>
               <td th:text="${item.cantidadTotalVehiculosAlquilados}"></td>
               <td class="actions-column">
-                <a th:href="@{|/caracteristicas-vehiculo/consultar/${item.id}|}" class="btn-action btn-view">
-                  <i class="fa-solid fa-eye"></i>
-                </a>
-                <a th:href="@{|/caracteristicas-vehiculo/modificar/${item.id}|}" class="btn-action btn-edit">
-                  <i class="fa-solid fa-pen"></i>
-                </a>
-                <a th:href="@{|/caracteristicas-vehiculo/baja/${item.id}|}" class="btn-action btn-delete"
-                   onclick="return confirm('¿Seguro que desea eliminar este registro?');">
-                  <i class="fa-solid fa-trash"></i>
-                </a>
+                <div class="d-flex justify-content-center gap-1 flex-wrap">
+                  <a th:href="@{|/caracteristicas-vehiculo/consultar/${item.id}|}" class="btn-action btn-view" title="Ver">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <a th:href="@{|/caracteristicas-vehiculo/modificar/${item.id}|}" class="btn-action btn-edit" title="Editar">
+                    <i class="fa-solid fa-pen"></i>
+                  </a>
+                  <a th:href="@{|/caracteristicas-vehiculo/baja/${item.id}|}" class="btn-action btn-delete"
+                     title="Eliminar"
+                     onclick="return confirm('¿Seguro que desea eliminar este registro?');">
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
+                </div>
+                <div class="d-flex justify-content-center gap-2 flex-wrap mt-2">
+                  <a th:href="@{|/vehiculos?caracteristicaId=${item.id}|}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa-solid fa-car-side"></i> Vehículos
+                  </a>
+                  <a th:href="@{|/costos-vehiculo?caracteristicaId=${item.id}|}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa-solid fa-dollar-sign"></i> Costos
+                  </a>
+                </div>
               </td>
             </tr>
           </tbody>

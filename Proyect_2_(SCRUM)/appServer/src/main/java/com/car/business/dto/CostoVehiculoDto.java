@@ -11,4 +11,5 @@ public class CostoVehiculoDto extends BaseDto<String> {
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
     private Double costo;
+    private CaracteristicaVehiculoDto caracteristicaVehiculoDto;
 }

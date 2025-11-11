@@ -37,6 +37,19 @@ public class CostoVehiculoRepository {
         }
     }
 
+    public List<CostoVehiculoDto> findByCaracteristica(String caracteristicaId) {
+        try {
+            ResponseEntity<List<CostoVehiculoDto>> response = restTemplate.exchange(
+                    baseUrl + "/listar/" + caracteristicaId,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<CostoVehiculoDto>>() {});
+            return response.getBody() != null ? response.getBody() : Collections.emptyList();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo obtener los costos del vehículo con característica ID: " + caracteristicaId, ex);
+        }
+    }
+
     public CostoVehiculoDto findById(String id) {
         try {
             ResponseEntity<CostoVehiculoDto> response = restTemplate.getForEntity(

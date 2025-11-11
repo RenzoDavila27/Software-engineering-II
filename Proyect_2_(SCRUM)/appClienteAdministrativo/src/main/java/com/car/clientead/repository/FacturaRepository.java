@@ -10,40 +10,40 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.car.clientead.client.dto.DetalleFacturaDto;
+import com.car.clientead.client.dto.FacturaDto;
 import com.car.clientead.client.exception.ApiClientException;
 
 @Repository
-public class DetalleFacturaRepository {
+public class FacturaRepository {
 
     private final RestTemplate restTemplate;
-    private final String baseUrl = "http://localhost:8080/api/detalles-factura";
+    private final String baseUrl = "http://localhost:8080/api/facturas";
 
-    public DetalleFacturaRepository(RestTemplate restTemplate) {
+    public FacturaRepository(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public List<DetalleFacturaDto> findAll() {
+    public List<FacturaDto> findAll() {
         try {
-            ResponseEntity<List<DetalleFacturaDto>> response = restTemplate.exchange(
+            ResponseEntity<List<FacturaDto>> response = restTemplate.exchange(
                     baseUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<List<DetalleFacturaDto>>() {});
+                    new ParameterizedTypeReference<List<FacturaDto>>() {});
             return response.getBody() != null ? response.getBody() : Collections.emptyList();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo obtener los detalles de facturas.", ex);
+            throw new ApiClientException("No se pudo obtener el listado de facturas.", ex);
         }
     }
 
-    public DetalleFacturaDto findById(String id) {
+    public FacturaDto findById(String id) {
         try {
-            ResponseEntity<DetalleFacturaDto> response = restTemplate.getForEntity(
+            ResponseEntity<FacturaDto> response = restTemplate.getForEntity(
                     baseUrl + "/" + id,
-                    DetalleFacturaDto.class);
+                    FacturaDto.class);
             return response.getBody();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo obtener el detalle de factura con ID: " + id, ex);
+            throw new ApiClientException("No se pudo obtener la factura con ID: " + id, ex);
         }
     }
 }

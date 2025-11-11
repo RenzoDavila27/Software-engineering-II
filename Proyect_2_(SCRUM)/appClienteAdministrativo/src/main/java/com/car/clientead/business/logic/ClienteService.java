@@ -96,6 +96,12 @@ public class ClienteService {
                 .collect(Collectors.toList());
     }
 
+    public List<ClienteDto> listarClientesBasicos() {
+        return clienteRepository.findAll().stream()
+                .filter(this::clienteValido)
+                .collect(Collectors.toList());
+    }
+
     public ClienteResumenView obtenerResumen(String id) {
         ClienteDto cliente = clienteRepository.findById(id);
         if (cliente == null) {

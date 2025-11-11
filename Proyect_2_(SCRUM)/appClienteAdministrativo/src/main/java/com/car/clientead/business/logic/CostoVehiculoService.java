@@ -22,6 +22,12 @@ public class CostoVehiculoService {
                 .collect(Collectors.toList());
     }
 
+    public List<CostoVehiculoDto> listarPorCaracteristica(String caracteristicaId) {
+        return repository.findByCaracteristica(caracteristicaId).stream()
+                .filter(this::costoValido)
+                .collect(Collectors.toList());
+    }
+
     public CostoVehiculoDto consultar(String id) {
         return repository.findById(id);
     }

@@ -7,6 +7,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehiculoDto, String> {
 
+    private final CaracteristicaVehiculoMapper caracteristicaVehiculoMapper;
+
+    public CostoVehiculoMapper(CaracteristicaVehiculoMapper caracteristicaVehiculoMapper){
+        this.caracteristicaVehiculoMapper = caracteristicaVehiculoMapper;
+    }
+
     @Override
     public CostoVehiculoDto toDto(CostoVehiculo entity) {
         if (entity == null) {
@@ -18,6 +24,7 @@ public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehic
         dto.setFechaDesde(entity.getFechaDesde());
         dto.setFechaHasta(entity.getFechaHasta());
         dto.setCosto(entity.getCosto());
+        dto.setCaracteristicaVehiculoDto(caracteristicaVehiculoMapper.toDto(entity.getCaracteristicaVehiculo()));
         return dto;
     }
 
@@ -41,5 +48,6 @@ public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehic
         entity.setFechaHasta(dto.getFechaHasta());
         entity.setCosto(dto.getCosto());
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
+        entity.setCaracteristicaVehiculo(caracteristicaVehiculoMapper.toEntity(dto.getCaracteristicaVehiculoDto()));
     }
 }

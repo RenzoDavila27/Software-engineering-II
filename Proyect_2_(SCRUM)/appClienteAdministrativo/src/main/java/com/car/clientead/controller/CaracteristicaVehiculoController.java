@@ -1,5 +1,6 @@
 package com.car.clientead.controller;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.car.clientead.business.logic.CaracteristicaVehiculoService;
 import com.car.clientead.client.dto.CaracteristicaVehiculoDto;
+import com.car.clientead.client.dto.CostoVehiculoDto;
 import com.car.clientead.client.exception.ApiClientException;
 
 @Controller
@@ -37,7 +39,9 @@ public class CaracteristicaVehiculoController {
     // 🔹 Formulario de alta
     @GetMapping("/alta")
     public String mostrarFormularioAlta(Model model) {
-        model.addAttribute("item", new CaracteristicaVehiculoDto());
+        CaracteristicaVehiculoDto dto = new CaracteristicaVehiculoDto();
+        inicializarCosto(dto, true);
+        model.addAttribute("item", dto);
         model.addAttribute("titleForm", "Alta de Característica de Vehículo");
         model.addAttribute("modoVer", false); // habilita campos
         return "eCaracteristicaVehiculo.html";
@@ -52,6 +56,7 @@ public class CaracteristicaVehiculoController {
             return REDIRECT_LISTA;
         } catch (Exception ex) {
             model.addAttribute("errorMessage", ex.getMessage());
+            inicializarCosto(dto, true);
             model.addAttribute("item", dto);
             return "eCaracteristicaVehiculo.html";
         }
@@ -61,7 +66,9 @@ public class CaracteristicaVehiculoController {
     @GetMapping("/consultar/{id}")
     public String consultar(@PathVariable String id, Model model) {
         try {
-            model.addAttribute("item", service.consultar(id));
+            CaracteristicaVehiculoDto dto = service.consultar(id);
+            inicializarCosto(dto, false);
+            model.addAttribute("item", dto);
             model.addAttribute("titleForm", "Detalle de Característica de Vehículo");
             model.addAttribute("modoVer", true); // <--- importante
         } catch (ApiClientException ex) {
@@ -75,7 +82,9 @@ public class CaracteristicaVehiculoController {
     @GetMapping("/modificar/{id}")
     public String editar(@PathVariable String id, Model model) {
         try {
-            model.addAttribute("item", service.consultar(id));
+            CaracteristicaVehiculoDto dto = service.consultar(id);
+            inicializarCosto(dto, false);
+            model.addAttribute("item", dto);
             model.addAttribute("titleForm", "Modificar Característica de Vehículo");
             model.addAttribute("modoVer", false); // <--- habilita los campos
         } catch (ApiClientException ex) {
@@ -92,10 +101,12 @@ public class CaracteristicaVehiculoController {
                             @RequestParam(value = "imagenFile", required = false) MultipartFile imagenFile,
                             Model model) {
         try {
+            preservarCostoExistente(id, dto);
             service.modificar(id, dto, imagenFile);
             return REDIRECT_LISTA;
         } catch (Exception ex) {
             model.addAttribute("errorMessage", ex.getMessage());
+            inicializarCosto(dto, false);
             model.addAttribute("item", dto);
             return "eCaracteristicaVehiculo.html";
         }
@@ -110,5 +121,37 @@ public class CaracteristicaVehiculoController {
             System.err.println("Error al eliminar vehículo: " + ex.getMessage());
         }
         return REDIRECT_LISTA;
+    }
+
+    private void inicializarCosto(CaracteristicaVehiculoDto dto, boolean esAlta) {
+        if (dto == null) {
+            return;
+        }
+        if (dto.getCostoVehiculoDto() == null) {
+            dto.setCostoVehiculoDto(new CostoVehiculoDto());
+        }
+        if (esAlta) {
+            if (dto.getCostoVehiculoDto().getFechaDesde() == null) {
+                dto.getCostoVehiculoDto().setFechaDesde(LocalDate.now());
+            }
+            dto.getCostoVehiculoDto().setFechaHasta(dto.getCostoVehiculoDto().getFechaDesde());
+        }
+    }
+
+    private void preservarCostoExistente(String id, CaracteristicaVehiculoDto dto) {
+        if (dto == null) {
+            return;
+        }
+        if (dto.getCostoVehiculoDto() != null && dto.getCostoVehiculoDto().getId() != null) {
+            return;
+        }
+        try {
+            CaracteristicaVehiculoDto original = service.consultar(id);
+            if (original != null) {
+                dto.setCostoVehiculoDto(original.getCostoVehiculoDto());
+            }
+        } catch (ApiClientException ignored) {
+            // Si no se puede recuperar, dejamos el valor como está y permitirá que la validación informe.
+        }
     }
 }

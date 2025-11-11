@@ -11,66 +11,66 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.car.clientead.client.dto.AlquilerDto;
+import com.car.clientead.client.dto.PromocionDto;
 import com.car.clientead.client.exception.ApiClientException;
 
 @Repository
-public class AlquilerRepository {
+public class PromocionRepository {
 
     private final RestTemplate restTemplate;
-    private final String baseUrl = "http://localhost:8080/api/alquileres";
+    private final String baseUrl = "http://localhost:8080/api/promociones";
 
-    public AlquilerRepository(RestTemplate restTemplate) {
+    public PromocionRepository(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public List<AlquilerDto> findAll() {
+    public List<PromocionDto> findAll() {
         try {
-            ResponseEntity<List<AlquilerDto>> response = restTemplate.exchange(
+            ResponseEntity<List<PromocionDto>> response = restTemplate.exchange(
                     baseUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<List<AlquilerDto>>() {});
+                    new ParameterizedTypeReference<List<PromocionDto>>() {});
             return response.getBody() != null ? response.getBody() : Collections.emptyList();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo obtener el listado de alquileres.", ex);
+            throw new ApiClientException("No se pudo obtener el listado de promociones.", ex);
         }
     }
 
-    public AlquilerDto findById(String id) {
+    public PromocionDto findById(String id) {
         try {
-            ResponseEntity<AlquilerDto> response = restTemplate.getForEntity(
+            ResponseEntity<PromocionDto> response = restTemplate.getForEntity(
                     baseUrl + "/" + id,
-                    AlquilerDto.class);
+                    PromocionDto.class);
             return response.getBody();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo obtener el alquiler con ID: " + id, ex);
+            throw new ApiClientException("No se pudo obtener la promoción con ID: " + id, ex);
         }
     }
 
-    public AlquilerDto create(AlquilerDto dto) {
+    public PromocionDto create(PromocionDto dto) {
         try {
-            ResponseEntity<AlquilerDto> response = restTemplate.postForEntity(
+            ResponseEntity<PromocionDto> response = restTemplate.postForEntity(
                     baseUrl,
                     dto,
-                    AlquilerDto.class);
+                    PromocionDto.class);
             return response.getBody();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo registrar el alquiler.", ex);
+            throw new ApiClientException("No se pudo crear la promoción.", ex);
         }
     }
 
-    public AlquilerDto update(String id, AlquilerDto dto) {
+    public PromocionDto update(String id, PromocionDto dto) {
         try {
-            HttpEntity<AlquilerDto> request = new HttpEntity<>(dto);
-            ResponseEntity<AlquilerDto> response = restTemplate.exchange(
+            HttpEntity<PromocionDto> request = new HttpEntity<>(dto);
+            ResponseEntity<PromocionDto> response = restTemplate.exchange(
                     baseUrl + "/" + id,
                     HttpMethod.PUT,
                     request,
-                    AlquilerDto.class);
+                    PromocionDto.class);
             return response.getBody();
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo actualizar el alquiler con ID: " + id, ex);
+            throw new ApiClientException("No se pudo actualizar la promoción con ID: " + id, ex);
         }
     }
 
@@ -78,7 +78,7 @@ public class AlquilerRepository {
         try {
             restTemplate.delete(baseUrl + "/" + id);
         } catch (RestClientException ex) {
-            throw new ApiClientException("No se pudo eliminar el alquiler con ID: " + id, ex);
+            throw new ApiClientException("No se pudo eliminar la promoción con ID: " + id, ex);
         }
     }
 }

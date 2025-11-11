@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titleForm}">Alquiler</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+</head>
+<body>
+<div class="app">
+  <aside th:replace="fragments/fragments :: sidebar"></aside>
+  <div class="main">
+    <header th:replace="fragments/fragments :: topnav"></header>
+
+    <main class="content container mt-4">
+      <div class="page-header">
+        <div>
+          <p class="page-subtitle">Operaciones</p>
+          <h1 th:text="${titleForm}">Alquiler</h1>
+        </div>
+        <a th:href="@{/alquileres}" class="btn btn-light">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+
+      <div class="alert alert-info" th:if="${clienteSeleccionado != null}">
+        <strong>Cliente seleccionado:</strong>
+        <span th:text="${clienteSeleccionado.nombre + ' ' + clienteSeleccionado.apellido}"></span>
+      </div>
+      <div class="alert alert-info" th:if="${vehiculoSeleccionado != null}">
+        <strong>Vehículo:</strong>
+        <span th:text="${vehiculoSeleccionado.patente}"></span>
+      </div>
+
+      <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+      <form th:action="@{${item.id} != null ? '/alquileres/modificar/' + ${item.id} : '/alquileres/alta'}"
+            th:object="${item}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{documentacionId}">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Cliente</label>
+            <select class="form-select" th:field="*{clienteId}" th:disabled="${modoVer}" required>
+              <option value="" disabled th:selected="${item.clienteId == null}">Seleccione</option>
+              <option th:each="cliente : ${clientes}"
+                      th:value="${cliente.id}"
+                      th:text="${cliente.nombre + ' ' + cliente.apellido}"></option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Vehículo</label>
+            <select class="form-select" th:field="*{vehiculoId}" th:disabled="${modoVer}" required>
+              <option value="" disabled th:selected="${item.vehiculoId == null}">Seleccione</option>
+              <option th:each="vehiculo : ${vehiculos}"
+                      th:value="${vehiculo.id}"
+                      th:text="${vehiculo.patente + ' - ' + vehiculo.estadoVehiculo}"></option>
+            </select>
+          </div>
+          <div class="col-md-2 mb-3">
+            <label class="form-label">Fecha desde</label>
+            <input type="date" class="form-control" th:field="*{fechaDesde}" th:disabled="${modoVer}" required>
+          </div>
+          <div class="col-md-2 mb-3">
+            <label class="form-label">Fecha hasta</label>
+            <input type="date" class="form-control" th:field="*{fechaHasta}" th:disabled="${modoVer}" required>
+          </div>
+
+          <div class="col-12 mt-3">
+            <hr>
+            <h5>Documentación del titular</h5>
+            <p class="text-muted mb-2">Adjunta el documento de identidad y el carnet de conducir (PDF o Word).</p>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Tipo de documentación</label>
+            <select name="tipoDocumentacion" class="form-select" th:disabled="${modoVer}" required>
+              <option th:each="tipo : ${tiposDocumentacion}"
+                      th:value="${tipo}"
+                      th:text="${tipo}" th:selected="${documentacion?.tipoDocumentacion == tipo}"></option>
+            </select>
+          </div>
+          <div class="col-md-8 mb-3">
+            <label class="form-label">Observaciones</label>
+            <input type="text" name="observacionDocumentacion" class="form-control"
+                   th:value="${documentacion?.observacion}" th:disabled="${modoVer}">
+          </div>
+
+          <div class="col-md-6 mb-3" th:if="${documentacion != null}">
+            <label class="form-label">Archivo existente</label>
+            <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center">
+              <span th:text="${documentacion.nombreArchivo}"></span>
+              <a th:href="@{|/documentaciones/archivo/${documentacion.id}|}" class="btn btn-sm btn-outline-secondary">
+                <i class="fa-solid fa-download"></i> Descargar
+              </a>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3" th:if="${!modoVer}">
+            <label class="form-label">Adjuntar archivos</label>
+            <input type="file" name="documentos" class="form-control" multiple accept=".pdf,.doc,.docx">
+            <small class="text-muted">Puedes seleccionar varios archivos a la vez.</small>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-3">
+          <a th:href="@{/alquileres}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Volver
+          </a>
+          <button type="submit" class="btn btn-primary" th:if="${!modoVer}">
+            <i class="fa-solid fa-save"></i> Guardar
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <footer class="footer mt-4">
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> FioriRentCar
+    </footer>
+  </div>
+</div>
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

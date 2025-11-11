@@ -27,14 +27,29 @@
       </div>
 
       <div class="workflow-tabs">
-        <a th:href="@{/caracteristicas-vehiculo}" class="step completed">
+        <a th:href="${item.caracteristicaVehiculoDto != null && item.caracteristicaVehiculoDto.id != null} ? @{|/caracteristicas-vehiculo/consultar/${item.caracteristicaVehiculoDto.id}|} : @{/caracteristicas-vehiculo}"
+           class="step completed">
           <i class="fa-solid fa-circle-check"></i> 1. Características
         </a>
-        <a th:href="@{/vehiculos}" class="step completed">
+        <a th:href="${item.caracteristicaVehiculoDto != null && item.caracteristicaVehiculoDto.id != null} ? @{|/vehiculos?caracteristicaId=${item.caracteristicaVehiculoDto.id}|} : @{/vehiculos}"
+           class="step completed">
           <i class="fa-solid fa-car"></i> 2. Vehículos
         </a>
-        <a th:href="@{/costos-vehiculo}" class="step active">
+        <a th:href="${item.caracteristicaVehiculoDto != null && item.caracteristicaVehiculoDto.id != null} ? @{|/costos-vehiculo?caracteristicaId=${item.caracteristicaVehiculoDto.id}|} : @{/costos-vehiculo}"
+           class="step active">
           <i class="fa-solid fa-dollar-sign"></i> 3. Costos
+        </a>
+      </div>
+
+      <div class="alert alert-info d-flex justify-content-between align-items-center"
+           th:if="${caracteristicaSeleccionada != null}">
+        <span>
+          <strong>Característica seleccionada:</strong>
+          <span th:text="${caracteristicaSeleccionada.marca + ' ' + caracteristicaSeleccionada.modelo + ' (' + caracteristicaSeleccionada.anio + ')'}"></span>
+        </span>
+        <a th:href="@{|/caracteristicas-vehiculo/consultar/${caracteristicaSeleccionada.id}|}"
+           class="btn btn-light btn-sm">
+          <i class="fa-solid fa-eye"></i> Ver detalle
         </a>
       </div>
 
@@ -44,6 +59,16 @@
             th:object="${item}" method="post">
 
         <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label">Característica</label>
+            <select class="form-select" th:field="*{caracteristicaVehiculoDto.id}" th:disabled="${modoVer}" required>
+              <option value="" disabled th:selected="${item.caracteristicaVehiculoDto == null || item.caracteristicaVehiculoDto.id == null}">Seleccione</option>
+              <option th:each="car : ${caracteristicas}"
+                      th:value="${car.id}"
+                      th:text="${car.marca + ' ' + car.modelo + ' (' + car.anio + ')'}">
+              </option>
+            </select>
+          </div>
           <div class="col-md-6 mb-3">
             <label class="form-label">Fecha Desde</label>
             <input type="date" class="form-control" th:field="*{fechaDesde}" th:disabled="${modoVer}" required>

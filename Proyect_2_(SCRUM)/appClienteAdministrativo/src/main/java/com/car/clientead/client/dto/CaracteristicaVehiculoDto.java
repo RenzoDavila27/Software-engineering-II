@@ -1,6 +1,7 @@
 package com.car.clientead.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,6 +17,8 @@ public class CaracteristicaVehiculoDto extends BaseDto<String> {
     private int cantidadTotalVehiculos;
     private int cantidadTotalVehiculosAlquilados;
     private ImagenDto imagenDto;
+    @JsonIgnoreProperties(value = "caracteristicaVehiculoDto", allowSetters = true)
+    private CostoVehiculoDto costoVehiculoDto;
 
     @JsonIgnore
     private String imagenDataUri;

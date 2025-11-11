@@ -27,13 +27,16 @@
       </div>
 
       <div class="workflow-tabs">
-        <a th:href="@{/caracteristicas-vehiculo}" class="step active">
+        <a th:href="${item.id != null} ? @{|/caracteristicas-vehiculo/consultar/${item.id}|} : @{/caracteristicas-vehiculo}"
+           class="step active">
           <i class="fa-solid fa-gears"></i> 1. Características
         </a>
-        <a th:href="@{/vehiculos}" class="step">
+        <a th:href="${item.id != null} ? @{|/vehiculos?caracteristicaId=${item.id}|} : @{/vehiculos}"
+           class="step">
           <i class="fa-solid fa-car"></i> 2. Vehículos
         </a>
-        <a th:href="@{/costos-vehiculo}" class="step">
+        <a th:href="${item.id != null} ? @{|/costos-vehiculo?caracteristicaId=${item.id}|} : @{/costos-vehiculo}"
+           class="step">
           <i class="fa-solid fa-dollar-sign"></i> 3. Costos
         </a>
       </div>
@@ -87,6 +90,47 @@
               </div>
               <div th:if="${modoVer == true}">
                 <small class="text-muted">Para actualizar la imagen cambie a modo edición.</small>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <hr class="my-4">
+              <h5 class="mb-1">Costo inicial</h5>
+              <small class="text-muted">Al crear la característica se registra el costo base con vigencia desde la fecha indicada.</small>
+            </div>
+
+            <div class="col-md-6 mb-3" th:if="${item.id == null}">
+              <label class="form-label">Fecha desde</label>
+              <input type="date" class="form-control" th:field="*{costoVehiculoDto.fechaDesde}" required>
+            </div>
+            <div class="col-md-6 mb-3" th:if="${item.id == null}">
+              <label class="form-label">Costo inicial</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" min="0" step="0.01" class="form-control"
+                       th:field="*{costoVehiculoDto.costo}" required>
+              </div>
+            </div>
+
+            <div class="col-12" th:if="${item.id != null}">
+              <input type="hidden" th:field="*{costoVehiculoDto.id}">
+              <input type="hidden" th:field="*{costoVehiculoDto.fechaDesde}">
+              <input type="hidden" th:field="*{costoVehiculoDto.fechaHasta}">
+              <input type="hidden" th:field="*{costoVehiculoDto.costo}">
+
+              <div class="p-3 bg-light border rounded">
+                <p class="mb-1 fw-semibold">
+                  <i class="fa-solid fa-circle-info text-primary me-2"></i>
+                  Vigencia registrada
+                </p>
+                <small class="text-muted d-block">
+                  Desde <span th:text="${item.costoVehiculoDto != null && item.costoVehiculoDto.fechaDesde != null ? #temporals.format(item.costoVehiculoDto.fechaDesde, 'dd/MM/yyyy') : '-'}"></span>
+                  hasta <span th:text="${item.costoVehiculoDto != null && item.costoVehiculoDto.fechaHasta != null ? #temporals.format(item.costoVehiculoDto.fechaHasta, 'dd/MM/yyyy') : 'sin definir'}"></span>
+                </small>
+                <small class="text-muted d-block">
+                  Costo: <span th:text="${item.costoVehiculoDto != null && item.costoVehiculoDto.costo != null ? ('$' + #numbers.formatDecimal(item.costoVehiculoDto.costo,1,'POINT',2,'POINT')) : '-'}"></span>
+                </small>
+                <small class="text-muted">Los nuevos costos se administran desde la sección Costos.</small>
               </div>
             </div>
         </div>

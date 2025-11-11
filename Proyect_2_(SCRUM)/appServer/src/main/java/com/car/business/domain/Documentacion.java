@@ -16,7 +16,7 @@ public class Documentacion extends BaseEntity<String> {
 
     private TipoDocumentacion tipoDocumentacion;
     private String observacion;
-    private String pathArchivo;
+    private String pathArchivo = "/home/f4cul3ll4/documentacion";
     private String nombreArchivo;
 
     @Override
