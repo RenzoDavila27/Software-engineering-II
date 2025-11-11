@@ -35,7 +35,7 @@ public class PersonaService extends BaseService<Persona, PersonaDto, String> {
         if (!StringUtils.hasText(entidad.getNumeroDocumento())) {
             throw new BusinessException("El número de documento es obligatorio.");
         }
-        if (entidad.getContacto() == null) {
+        if (entidad.getContactos() == null || entidad.getContactos().isEmpty()) {
             throw new BusinessException("El contacto es obligatorio.");
         }
         if (entidad.getDireccion() == null) {

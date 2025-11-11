@@ -79,25 +79,33 @@ public class DemoUserDataSeeder implements ApplicationRunner {
     }
 
     private Persona crearPersonaDemo() {
-        Pais pais = new Pais();
-        pais.setNombre("Argentina");
-        pais = paisRepository.save(pais);
+        Pais pais = paisRepository.findByNombre("Argentina").orElseGet(() -> {
+            Pais newPais = new Pais();
+            newPais.setNombre("Argentina");
+            return paisRepository.save(newPais);
+        });
 
-        Provincia provincia = new Provincia();
-        provincia.setNombre("Buenos Aires");
-        provincia.setPais(pais);
-        provincia = provinciaRepository.save(provincia);
+        Provincia provincia = provinciaRepository.findByNombre("Buenos Aires").orElseGet(() -> {
+            Provincia newProvincia = new Provincia();
+            newProvincia.setNombre("Buenos Aires");
+            newProvincia.setPais(pais);
+            return provinciaRepository.save(newProvincia);
+        });
 
-        Departamento departamento = new Departamento();
-        departamento.setNombre("La Plata");
-        departamento.setProvincia(provincia);
-        departamento = departamentoRepository.save(departamento);
+        Departamento departamento = departamentoRepository.findByNombre("La Plata").orElseGet(() -> {
+            Departamento newDepartamento = new Departamento();
+            newDepartamento.setNombre("La Plata");
+            newDepartamento.setProvincia(provincia);
+            return departamentoRepository.save(newDepartamento);
+        });
 
-        Localidad localidad = new Localidad();
-        localidad.setNombre("La Plata");
-        localidad.setCodigoPostal("1900");
-        localidad.setDepartamento(departamento);
-        localidad = localidadRepository.save(localidad);
+        Localidad localidad = localidadRepository.findByNombre("La Plata").orElseGet(() -> {
+            Localidad newLocalidad = new Localidad();
+            newLocalidad.setNombre("La Plata");
+            newLocalidad.setCodigoPostal("1900");
+            newLocalidad.setDepartamento(departamento);
+            return localidadRepository.save(newLocalidad);
+        });
 
         Direccion direccion = new Direccion();
         direccion.setCalle("Calle Falsa");
@@ -122,9 +130,11 @@ public class DemoUserDataSeeder implements ApplicationRunner {
         contacto.setEmail("demo@example.com");
         contacto = contactoCorreoElectronicoRepository.save(contacto);
 
-        Nacionalidad nacionalidad = new Nacionalidad();
-        nacionalidad.setNombre("Argentina");
-        nacionalidad = nacionalidadRepository.save(nacionalidad);
+        Nacionalidad nacionalidad = nacionalidadRepository.findByNombre("Argentina").orElseGet(() -> {
+            Nacionalidad newNacionalidad = new Nacionalidad();
+            newNacionalidad.setNombre("Argentina");
+            return nacionalidadRepository.save(newNacionalidad);
+        });
 
         Cliente cliente = new Cliente();
         cliente.setNombre("Demo");
@@ -132,7 +142,7 @@ public class DemoUserDataSeeder implements ApplicationRunner {
         cliente.setFechaNacimiento(LocalDate.of(1990, 1, 1));
         cliente.setTipoDocumento(TipoDocumento.DNI);
         cliente.setNumeroDocumento("12345678");
-        cliente.setContacto(contacto);
+        cliente.getContactos().add(contacto);
         cliente.setDireccion(direccion);
         cliente.setImagen(imagen);
         cliente.setDireccionEstadia("Dirección temporal");

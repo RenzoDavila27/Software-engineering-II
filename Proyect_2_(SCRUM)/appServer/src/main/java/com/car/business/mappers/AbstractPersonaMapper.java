@@ -46,7 +46,7 @@ public abstract class AbstractPersonaMapper<E extends Persona, D extends Persona
         entity.setTipoDocumento(dto.getTipoDocumento());
         entity.setNumeroDocumento(dto.getNumeroDocumento());
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
-        entity.setContacto(resolver.getReference(Contacto.class, dto.getContactoId()));
+        // entity.setContactos(resolver.getReferences(Contacto.class, dto.getContactoIds())); // Assuming PersonaDto will have getContactoIds()
         entity.setDireccion(resolver.getReference(Direccion.class, dto.getDireccionId()));
         entity.setImagen(resolver.getReference(Imagen.class, dto.getImagenId()));
     }
@@ -63,7 +63,7 @@ public abstract class AbstractPersonaMapper<E extends Persona, D extends Persona
         dto.setFechaNacimiento(entity.getFechaNacimiento());
         dto.setTipoDocumento(entity.getTipoDocumento());
         dto.setNumeroDocumento(entity.getNumeroDocumento());
-        dto.setContactoId(entity.getContacto() != null ? entity.getContacto().getId() : null);
+        // dto.setContactoIds(MapperUtils.toIds(entity.getContactos())); // Assuming PersonaDto will have setContactoIds()
         dto.setDireccionId(entity.getDireccion() != null ? entity.getDireccion().getId() : null);
         dto.setImagenId(entity.getImagen() != null ? entity.getImagen().getId() : null);
     }

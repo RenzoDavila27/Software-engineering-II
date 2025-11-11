@@ -4,17 +4,26 @@ import com.car.business.domain.CaracteristicaVehiculo;
 import com.car.business.domain.CostoVehiculo;
 import com.car.business.domain.Imagen;
 import com.car.business.dto.CaracteristicaVehiculoDto;
+import com.car.business.dto.CostoVehiculoDto;
+import com.car.business.percistence.repository.CostoVehiculoRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CaracteristicaVehiculoMapper implements BaseMapper<CaracteristicaVehiculo, CaracteristicaVehiculoDto, String> {
 
     private final EntityReferenceResolver resolver;
     private final ImagenMapper imagenMapper;
+    private final CostoVehiculoRepository costoVehiculoRepository;
+    private final CostoVehiculoMapper costoVehiculoMapper;
 
-    public CaracteristicaVehiculoMapper(EntityReferenceResolver resolver, ImagenMapper imagenMapper) {
+    public CaracteristicaVehiculoMapper(EntityReferenceResolver resolver, ImagenMapper imagenMapper, CostoVehiculoRepository costoVehiculoRepository, CostoVehiculoMapper costoVehiculoMapper) {
         this.resolver = resolver;
         this.imagenMapper = imagenMapper;
+        this.costoVehiculoRepository = costoVehiculoRepository;
+        this.costoVehiculoMapper = costoVehiculoMapper;
     }
 
     @Override
@@ -33,6 +42,13 @@ public class CaracteristicaVehiculoMapper implements BaseMapper<CaracteristicaVe
         dto.setCantidadTotalVehiculos(entity.getCantidadTotalVehiculos());
         dto.setCantidadTotalVehiculosAlquilados(entity.getCantidadTotalVehiculosAlquilados());
         dto.setImagenDto(imagenMapper.toDto(entity.getImagen()));
+
+        // Fetch and map associated CostoVehiculo entities
+        List<CostoVehiculo> costos = costoVehiculoRepository.listarCostosPorVehiculo(entity.getId());
+        dto.setCostosVehiculo(costos.stream()
+                .map(costoVehiculoMapper::toDto)
+                .collect(Collectors.toList()));
+
         return dto;
     }
 
@@ -62,5 +78,14 @@ public class CaracteristicaVehiculoMapper implements BaseMapper<CaracteristicaVe
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
         Imagen imagen = imagenMapper.toEntity(dto.getImagenDto());
         entity.setImagen(imagen);
+
+        // Handle CostoVehiculo updates
+        if (dto.getCostosVehiculo() != null) {
+            for (CostoVehiculoDto costoDto : dto.getCostosVehiculo()) {
+                CostoVehiculo costo = costoVehiculoMapper.toEntity(costoDto);
+                costo.setCaracteristicaVehiculo(entity); // Set the bidirectional relationship
+                costoVehiculoRepository.save(costo); // Save or update the CostoVehiculo
+            }
+        }
     }
 }

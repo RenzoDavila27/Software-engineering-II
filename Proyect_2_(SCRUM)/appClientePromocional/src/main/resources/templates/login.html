@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Cental - Iniciar Sesión</title>
+    <title>MyCar - Iniciar Sesión</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -72,9 +72,9 @@
                             <div class="col-12 text-center">
                                 <p class="text-white">O inicia sesión con:</p>
                                 <div class="d-flex justify-content-center">
-                                    <a href="#" class="btn btn-light btn-sm-square rounded-circle me-3"><i class="fab fa-google"></i></a>
-                                    <a href="#" class="btn btn-light btn-sm-square rounded-circle me-3"><i class="fab fa-facebook-f"></i></a>
-                                    <a href="#" class="btn btn-light btn-sm-square rounded-circle"><i class="fab fa-twitter"></i></a>
+                                    <a th:href="@{/oauth2/authorization/google}" class="btn btn-light btn-sm-square rounded-circle me-3"><i class="fab fa-google"></i></a>
+                                    <a th:href="@{/oauth2/authorization/facebook}" class="btn btn-light btn-sm-square rounded-circle me-3"><i class="fab fa-facebook-f"></i></a>
+                                    <a th:href="@{/oauth2/authorization/twitter}" class="btn btn-light btn-sm-square rounded-circle"><i class="fab fa-twitter"></i></a>
                                 </div>
                             </div>
                             <div class="col-12 text-center mt-3">

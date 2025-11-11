@@ -48,9 +48,23 @@
                                     <div class="row g-5">
                                         <div class="col-lg-6 fadeInLeft animated" data-animation="fadeInLeft" data-delay="1s" style="animation-delay: 1s;">
                                             <div class="text-start">
-                                                <h1 class="display-5 text-white">Get 15% off your rental Plan your trip now</h1>
-                                                <p>Treat yourself in USA</p>
-                                                <a th:href="@{/vehiculos}" class="btn btn-primary rounded-pill py-3 px-5 animated slideInRight">Ver Vehiculos Disponibles</a>
+                                                <h1 class="display-5 text-white">¡Planifica tu viaje ahora con los mejores precios!</h1>
+                                                <p>Disfruta en tu destino</p>
+                                                <a th:href="@{/vehiculos}" class="btn btn-primary rounded-pill py-3 px-5 animated slideInRight">Ver Vehículos Disponibles</a>
+                                                <div class="row mt-4">
+                                                    <div class="col-md-6">
+                                                        <div class="bg-light rounded p-3">
+                                                            <h5 class="text-dark">Dólar Venta</h5>
+                                                            <p id="dolar-venta" class="text-dark mb-0">Cargando...</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="bg-light rounded p-3">
+                                                            <h5 class="text-dark">Clima Actual</h5>
+                                                            <p id="clima" class="text-dark mb-0">Cargando...</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -64,9 +78,23 @@
                                     <div class="row g-5">
                                         <div class="col-lg-6 fadeInLeft animated" data-animation="fadeInLeft" data-delay="1s" style="animation-delay: 1s;">
                                             <div class="text-start">
-                                                <h1 class="display-5 text-white">Get 15% off your rental! Choose Your Model </h1>
-                                                <p>Treat yourself in USA</p>
-                                                <a th:href="@{/vehiculos}" class="btn btn-primary rounded-pill py-3 px-5 animated slideInRight">Ver Vehiculos Disponibles</a>
+                                                <h1 class="display-5 text-white">¡Obtén un 15% de descuento en tu alquiler! Elige tu Modelo</h1>
+                                                <p>Disfruta en tu destino</p>
+                                                <a th:href="@{/vehiculos}" class="btn btn-primary rounded-pill py-3 px-5 animated slideInRight">Ver Vehículos Disponibles</a>
+                                                <div class="row mt-4">
+                                                    <div class="col-md-6">
+                                                        <div class="bg-light rounded p-3">
+                                                            <h5 class="text-dark">Dólar Venta</h5>
+                                                            <p id="dolar-venta-2" class="text-dark mb-0">Cargando...</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="bg-light rounded p-3">
+                                                            <h5 class="text-dark">Clima Actual</h5>
+                                                            <p id="clima-2" class="text-dark mb-0">Cargando...</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -85,9 +113,8 @@
                         <div class="col-xl-6 wow fadeInLeft" data-wow-delay="0.2s">
                             <div class="about-item">
                                 <div class="pb-5">
-                                    <h1 class="display-5 text-capitalize">Cental <span class="text-primary">About</span></h1>
-                                    <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut amet nemo expedita asperiores commodi accusantium at cum harum, excepturi, quia tempora cupiditate! Adipisci facilis modi quisquam quia distinctio,
-                                    </p>
+                                    <h1 class="display-5 text-capitalize">Sobre <span class="text-primary">MyCar</span></h1>
+                                    <p class="mb-0">En MyCar, somos tu socio ideal para explorar el mundo sobre ruedas. Con una flota moderna y un servicio excepcional, hacemos que cada viaje sea una experiencia inolvidable. Descubre la libertad de la carretera con nosotros.</p>
                                 </div>
                                 <div class="row g-4">
                                     <div class="col-lg-6">
@@ -95,8 +122,8 @@
                                             <div class="about-icon mb-4">
                                                 <img th:src="@{/img/about-icon-1.png}" class="img-fluid w-50 h-50" alt="Icon">
                                             </div>
-                                            <h5 class="mb-3">Our Vision</h5>
-                                            <p class="mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                                            <h5 class="mb-3">Nuestra Visión</h5>
+                                            <p class="mb-0">Ser la empresa líder en alquiler de vehículos, reconocida por nuestra innovación, calidad de servicio y compromiso con la satisfacción del cliente.</p>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
@@ -104,37 +131,36 @@
                                             <div class="about-icon mb-4">
                                                 <img th:src="@{/img/about-icon-2.png}" class="img-fluid h-50 w-50" alt="Icon">
                                             </div>
-                                            <h5 class="mb-3">Our Mision</h5>
-                                            <p class="mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                                            <h5 class="mb-3">Nuestra Misión</h5>
+                                            <p class="mb-0">Ofrecer soluciones de movilidad flexibles y accesibles, superando las expectativas de nuestros clientes a través de un servicio personalizado y una flota de vehículos de primera calidad.</p>
                                         </div>
                                     </div>
                                 </div>
-                                <p class="text-item my-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Beatae, aliquam ipsum. Sed suscipit dolorem libero sequi aut natus debitis reprehenderit facilis quaerat similique, est at in eum. Quo, obcaecati in!
-                                </p>
+                                <p class="text-item my-4">En MyCar, nos esforzamos por hacer que tu experiencia de alquiler sea sencilla y placentera. Desde la reserva hasta la devolución, nuestro equipo está aquí para asistirte en cada paso del camino.</p>
                                 <div class="row g-4">
                                     <div class="col-lg-6">
                                         <div class="text-center rounded bg-secondary p-4">
-                                            <h1 class="display-6 text-white">17</h1>
-                                            <h5 class="text-light mb-0">Years Of Experience</h5>
+                                            <h3 class="display-10 text-white">Compromiso</h3>
+                                            <h5 class="text-light mb-0">¡La palabra que nos define!</h5>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="rounded">
-                                            <p class="mb-2"><i class="fa fa-check-circle text-primary me-1"></i> Morbi tristique senectus</p>
-                                            <p class="mb-2"><i class="fa fa-check-circle text-primary me-1"></i> A scelerisque purus</p>
-                                            <p class="mb-2"><i class="fa fa-check-circle text-primary me-1"></i> Dictumst vestibulum</p>
-                                            <p class="mb-0"><i class="fa fa-check-circle text-primary me-1"></i> dio aenean sed adipiscing</p>
+                                            <p class="mb-2"><i class="fa fa-check-circle text-primary me-1"></i> Amplia flota de vehículos</p>
+                                            <p class="mb-2"><i class="fa fa-check-circle text-primary me-1"></i> Precios competitivos</p>
+                                            <p class="mb-2"><i class="fa fa-check-circle text-primary me-1"></i> Atención al cliente 24/7</p>
+                                            <p class="mb-0"><i class="fa fa-check-circle text-primary me-1"></i> Proceso de reserva fácil</p>
                                         </div>
                                     </div>
                                     <div class="col-lg-5 d-flex align-items-center">
-                                        <a href="#" class="btn btn-primary rounded py-3 px-5">More About Us</a>
+                                        <a href="#" class="btn btn-primary rounded py-3 px-5">Más Sobre Nosotros</a>
                                     </div>
                                     <div class="col-lg-7">
                                         <div class="d-flex align-items-center">
                                             <img th:src="@{/img/attachment-img.jpg}" class="img-fluid rounded-circle border border-4 border-secondary" style="width: 100px; height: 100px;" alt="Image">
                                             <div class="ms-4">
                                                 <h4>William Burgess</h4>
-                                                <p class="mb-0">Carveo Founder</p>
+                                                <p class="mb-0">Fundador de MyCar</p>
                                             </div>
                                         </div>
                                     </div>
@@ -160,184 +186,34 @@
             <div class="container-fluid categories py-5">
                 <div class="container">
                     <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
-                        <h1 class="display-5 text-capitalize mb-3">Our <span class="text-primary">Vehicles</span></h1>
-                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut amet nemo expedita asperiores commodi accusantium at cum harum, excepturi, quia tempora cupiditate! Adipisci facilis modi quisquam quia distinctio,
+                        <h1 class="display-5 text-capitalize mb-3">Nuestros <span class="text-primary">Vehículos</span></h1>
+                        <p class="mb-0">Explora nuestra diversa selección de vehículos, desde compactos económicos hasta SUVs espaciosos y autos de lujo. Encuentra el coche perfecto para tu próxima aventura con MyCar.
                         </p>
                     </div>
                     <div class="categories-carousel owl-carousel wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="categories-item p-4">
+                        <div class="categories-item p-4" th:each="vehiculo : ${vehiculos}">
                             <div class="categories-item-inner">
                                 <div class="categories-img rounded-top">
-                                    <img th:src="@{/img/car-1.png}" class="img-fluid w-100 rounded-top" alt="">
+                                    <img th:if="${vehiculo.imagenBase64 != null}" th:src="'data:image/png;base64,' + ${vehiculo.imagenBase64}" class="img-fluid w-100 rounded-top" alt="">
+                                    <img th:if="${vehiculo.imagenBase64 == null}" th:src="@{/img/car-1.png}" class="img-fluid w-100 rounded-top" alt="">
                                 </div>
                                 <div class="categories-content rounded-bottom p-4">
-                                    <h4>Mercedes Benz R3</h4>
-                                    <div class="categories-review mb-4">
-                                        <div class="me-3">4.5 Review</div>
-                                        <div class="d-flex justify-content-center text-secondary">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star text-body"></i>
-                                        </div>
-                                    </div>
+                                    <h4 th:text="${vehiculo.marca + ' ' + vehiculo.modelo}"></h4>
                                     <div class="mb-4">
-                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0">$99:00/Day</h4>
+                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0" th:text="${'$' + vehiculo.costo + '/Dia'}"></h4>
                                     </div>
                                     <div class="row gy-2 gx-0 text-center mb-4">
                                         <div class="col-4 border-end border-white">
-                                            <i class="fa fa-users text-dark"></i> <span class="text-body ms-1">4 Seat</span>
+                                            <i class="fa fa-users text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.cantidadAsientos + ' Seat'}"></span>
                                         </div>
                                         <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1">AT/MT</span>
+                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.cantidadPuertas + ' Doors'}"></span>
                                         </div>
                                         <div class="col-4">
-                                            <i class="fa fa-gas-pump text-dark"></i> <span class="text-body ms-1">Petrol</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1">2015</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-cogs text-dark"></i> <span class="text-body ms-1">AUTO</span>
-                                        </div>
-                                        <div class="col-4">
-                                            <i class="fa fa-road text-dark"></i> <span class="text-body ms-1">27K</span>
+                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.anio}"></span>
                                         </div>
                                     </div>
-                                    <a href="#" class="btn btn-primary rounded-pill d-flex justify-content-center py-3">Book Now</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="categories-item p-4">
-                            <div class="categories-item-inner">
-                                <div class="categories-img rounded-top">
-                                    <img th:src="@{/img/car-2.png}" class="img-fluid w-100 rounded-top" alt="">
-                                </div>
-                                <div class="categories-content rounded-bottom p-4">
-                                    <h4>Toyota Corolla Cross</h4>
-                                    <div class="categories-review mb-4">
-                                        <div class="me-3">3.5 Review</div>
-                                        <div class="d-flex justify-content-center text-secondary">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star text-body"></i>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4">
-                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0">$128:00/Day</h4>
-                                    </div>
-                                    <div class="row gy-2 gx-0 text-center mb-4">
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-users text-dark"></i> <span class="text-body ms-1">4 Seat</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1">AT/MT</span>
-                                        </div>
-                                        <div class="col-4">
-                                            <i class="fa fa-gas-pump text-dark"></i> <span class="text-body ms-1">Petrol</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1">2015</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-cogs text-dark"></i> <span class="text-body ms-1">AUTO</span>
-                                        </div>
-                                        <div class="col-4">
-                                            <i class="fa fa-road text-dark"></i> <span class="text-body ms-1">27K</span>
-                                        </div>
-                                    </div>
-                                    <a href="#" class="btn btn-primary rounded-pill d-flex justify-content-center py-3">Book Now</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="categories-item p-4">
-                            <div class="categories-item-inner">
-                                <div class="categories-img rounded-top">
-                                    <img th:src="@{/img/car-3.png}" class="img-fluid w-100 rounded-top" alt="">
-                                </div>
-                                <div class="categories-content rounded-bottom p-4">
-                                    <h4>Tesla Model S Plaid</h4>
-                                    <div class="categories-review mb-4">
-                                        <div class="me-3">3.8 Review</div>
-                                        <div class="d-flex justify-content-center text-secondary">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star text-body"></i>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4">
-                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0">$170:00/Day</h4>
-                                    </div>
-                                    <div class="row gy-2 gx-0 text-center mb-4">
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-users text-dark"></i> <span class="text-body ms-1">4 Seat</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1">AT/MT</span>
-                                        </div>
-                                        <div class="col-4">
-                                            <i class="fa fa-gas-pump text-dark"></i> <span class="text-body ms-1">Petrol</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1">2015</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-cogs text-dark"></i> <span class="text-body ms-1">AUTO</span>
-                                        </div>
-                                        <div class="col-4">
-                                            <i class="fa fa-road text-dark"></i> <span class="text-body ms-1">27K</span>
-                                        </div>
-                                    </div>
-                                    <a href="#" class="btn btn-primary rounded-pill d-flex justify-content-center py-3">Book Now</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="categories-item p-4">
-                            <div class="categories-item-inner">
-                                <div class="categories-img rounded-top">
-                                    <img th:src="@{/img/car-4.png}" class="img-fluid w-100 rounded-top" alt="">
-                                </div>
-                                <div class="categories-content rounded-bottom p-4">
-                                    <h4>Hyundai Kona Electric</h4>
-                                    <div class="categories-review mb-4">
-                                        <div class="me-3">4.8 Review</div>
-                                        <div class="d-flex justify-content-center text-secondary">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4">
-                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0">$187:00/Day</h4>
-                                    </div>
-                                    <div class="row gy-2 gx-0 text-center mb-4">
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-users text-dark"></i> <span class="text-body ms-1">4 Seat</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1">AT/MT</span>
-                                        </div>
-                                        <div class="col-4">
-                                            <i class="fa fa-gas-pump text-dark"></i> <span class="text-body ms-1">Petrol</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1">2015</span>
-                                        </div>
-                                        <div class="col-4 border-end border-white">
-                                            <i class="fa fa-cogs text-dark"></i> <span class="text-body ms-1">AUTO</span>
-                                        </div>
-                                        <div class="col-4">
-                                            <i class="fa fa-road text-dark"></i> <span class="text-body ms-1">27K</span>
-                                        </div>
-                                    </div>
-                                    <a href="#" class="btn btn-primary rounded-pill d-flex justify-content-center py-3">Book Now</a>
+                                    <a th:href="@{/book(vehiculoId=${vehiculo.id})}" class="btn btn-primary rounded-pill d-flex justify-content-center py-3">Book Now</a>
                                 </div>
                             </div>
                         </div>
@@ -363,6 +239,36 @@
         
             <!-- Template Javascript -->
             <script th:src="@{/js/main.js}"></script>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Dolar API
+                    fetch('https://dolarapi.com/v1/dolares/oficial')
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('dolar-venta').innerText = '$' + data.venta;
+                            document.getElementById('dolar-venta-2').innerText = '$' + data.venta;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching dollar data:', error);
+                            document.getElementById('dolar-venta').innerText = 'Error';
+                            document.getElementById('dolar-venta-2').innerText = 'Error';
+                        });
+
+                    // Weather API
+                    fetch('https://api.open-meteo.com/v1/forecast?latitude=-32.8895&longitude=-68.8458&current=temperature_2m')
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('clima').innerText = data.current.temperature_2m + '°C';
+                            document.getElementById('clima-2').innerText = data.current.temperature_2m + '°C';
+                        })
+                        .catch(error => {
+                            console.error('Error fetching weather data:', error);
+                            document.getElementById('clima').innerText = 'Error';
+                            document.getElementById('clima-2').innerText = 'Error';
+                        });
+                });
+            </script>
             </body>
         
         </html>

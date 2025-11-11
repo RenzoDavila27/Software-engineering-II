@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Cental - Reservar Vehículo</title>
+    <title>FioriRent's - Reservar Vehículo</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -51,23 +51,26 @@
         <div class="row g-5">
             <div class="col-lg-5 wow fadeInUp" data-wow-delay="0.1s">
                 <div class="bg-secondary p-4 rounded" th:object="${vehiculo}">
-                    <h4 class="text-white text-center mb-4" th:text="*{marca + ' ' + modelo}"></h4>
+                    <h4 class="text-white text-center mb-4" th:text="*{caracteristicaVehiculo.marca + ' ' + caracteristicaVehiculo.modelo}"></h4>
                     <div class="categories-img rounded">
-                        <img th:if="*{imagenBase64 != null}" th:src="'data:image/png;base64,' + *{imagenBase64}" class="img-fluid w-100 rounded" alt="">
-                        <img th:if="*{imagenBase64 == null}" th:src="@{/img/car-1.png}" class="img-fluid w-100 rounded" alt="">
+                        <img th:if="*{caracteristicaVehiculo.imagenDto != null && caracteristicaVehiculo.imagenDto.contenido != null}" th:src="'data:image/png;base64,' + *{caracteristicaVehiculo.imagenDto.getContenidoAsBase64()}" class="img-fluid w-100 rounded" alt="">
+                        <img th:if="*{caracteristicaVehiculo.imagenDto == null || caracteristicaVehiculo.imagenDto.contenido == null}" th:src="@{/img/car-1.png}" class="img-fluid w-100 rounded" alt="">
                     </div>
                     <div class="row gy-2 gx-0 text-center mt-3">
-                        <div class="col-6 border-end border-white">
-                            <i class="fa fa-users text-white"></i> <span class="text-white ms-1" th:text="*{cantidadAsientos + ' Asientos'}"></span>
+                        <div class="col-6">
+                            <i class="fa fa-users text-white"></i> <span class="text-white ms-1" th:text="*{caracteristicaVehiculo.cantidadAsientos + ' Asientos'}"></span>
                         </div>
                         <div class="col-6">
-                            <i class="fa fa-car text-white"></i> <span class="text-white ms-1" th:text="*{cantidadPuertas + ' Puertas'}"></span>
+                            <i class="fa fa-car text-white"></i> <span class="text-white ms-1" th:text="*{caracteristicaVehiculo.cantidadPuertas + ' Puertas'}"></span>
+                        </div>
+                        <div class="col-6">
+                            <i class="fa fa-car text-white"></i> <span class="text-white ms-1" th:text="*{caracteristicaVehiculo.anio}"></span>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <i class="fa fa-car text-white"></i> <span class = "text-white ms-1" th:text="*{'Disponibles: ' + (caracteristicaVehiculo.cantidadTotalVehiculos - caracteristicaVehiculo.cantidadTotalVehiculosAlquilados)}"></span>
                         </div>
                         <div class="col-12 mt-2">
-                            <i class="fa fa-car text-white"></i> <span class="text-white ms-1" th:text="*{anio}"></span>
-                        </div>
-                        <div class="col-12 mt-2">
-                            <h5 class="text-white text-center mb-0" th:text="${'$' + vehiculo.costo + '/Día'}"></h5>
+                            <h5 class="text-white text-center mb-0" th:text="${'$' + vehiculo.costoVehiculo.costo + '/Día'}"></h5>
                         </div>
                     </div>
                 </div>
@@ -75,23 +78,26 @@
             <div class="col-lg-7 wow fadeInUp" data-wow-delay="0.3s">
                 <div class="bg-secondary p-5 rounded">
                     <h3 class="text-white text-center mb-4">Formulario de Reserva</h3>
-                    <form>
+                    <form id="bookingForm" th:action="@{/payment}" method="get">
+                        <input type="hidden" name="vehiculoId" th:value="${vehiculo.id}">
+                        <input type="hidden" name="costPerDay" th:value="${vehiculo.costoVehiculo.costo}">
+                        <input type="hidden" name="rentalDays" id="rentalDaysInput">
                         <div class="row g-3">
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="vehiculo" th:value="${vehiculo.marca + ' ' + vehiculo.modelo}" readonly>
+                                    <input type="text" class="form-control" id="vehiculo" th:value="${vehiculo.caracteristicaVehiculo.marca + ' ' + vehiculo.caracteristicaVehiculo.modelo}" readonly>
                                     <label for="vehiculo">Vehículo</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input class="form-control" type="date" id="fechaRetiro">
+                                    <input class="form-control" type="date" id="fechaRetiro" required>
                                     <label for="fechaRetiro">Fecha de Retiro</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input class="form-control" type="date" id="fechaEntrega">
+                                    <input class="form-control" type="date" id="fechaEntrega" required>
                                     <label for="fechaEntrega">Fecha de Entrega</label>
                                 </div>
                             </div>
@@ -107,7 +113,7 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-light w-100 py-3" type="submit">Reservar Ahora</button>
+                                <button class="btn btn-light w-100 py-3" type="submit" id="reserveButton">Reservar Ahora</button>
                             </div>
                         </div>
                     </form>
@@ -130,6 +136,22 @@
 
 <!-- Template Javascript -->
 <script th:src="@{/js/main.js}"></script>
+<script>
+    document.getElementById('bookingForm').addEventListener('submit', function(event) {
+        const fechaRetiro = new Date(document.getElementById('fechaRetiro').value);
+        const fechaEntrega = new Date(document.getElementById('fechaEntrega').value);
+
+        if (isNaN(fechaRetiro) || isNaN(fechaEntrega) || fechaRetiro >= fechaEntrega) {
+            alert('Por favor, selecciona fechas de retiro y entrega válidas. La fecha de entrega debe ser posterior a la de retiro.');
+            event.preventDefault();
+            return;
+        }
+
+        const diffTime = Math.abs(fechaEntrega - fechaRetiro);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        document.getElementById('rentalDaysInput').value = diffDays;
+    });
+</script>
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 package com.car.business.mappers;
 
 import com.car.business.domain.CaracteristicaVehiculo;
+import com.car.business.domain.CostoVehiculo;
 import com.car.business.domain.Vehiculo;
 import com.car.business.dto.VehiculoDto;
 import org.springframework.stereotype.Component;
@@ -8,9 +9,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class VehiculoMapper implements BaseMapper<Vehiculo, VehiculoDto, String> {
 
+    private final CaracteristicaVehiculoMapper caracteristicaVehiculoMapper;
+    private final CostoVehiculoMapper costoVehiculoMapper;
     private final EntityReferenceResolver resolver;
 
-    public VehiculoMapper(EntityReferenceResolver resolver) {
+    public VehiculoMapper(CaracteristicaVehiculoMapper caracteristicaVehiculoMapper, CostoVehiculoMapper costoVehiculoMapper, EntityReferenceResolver resolver) {
+        this.caracteristicaVehiculoMapper = caracteristicaVehiculoMapper;
+        this.costoVehiculoMapper = costoVehiculoMapper;
         this.resolver = resolver;
     }
 
@@ -24,7 +29,7 @@ public class VehiculoMapper implements BaseMapper<Vehiculo, VehiculoDto, String>
         dto.setEliminado(entity.getEliminado());
         dto.setEstadoVehiculo(entity.getEstadoVehiculo());
         dto.setPatente(entity.getPatente());
-        dto.setCaracteristicaVehiculoId(entity.getCaracteristicaVehiculo() != null ? entity.getCaracteristicaVehiculo().getId() : null);
+        dto.setCaracteristicaVehiculo(caracteristicaVehiculoMapper.toDto(entity.getCaracteristicaVehiculo()));
         return dto;
     }
 
@@ -47,6 +52,6 @@ public class VehiculoMapper implements BaseMapper<Vehiculo, VehiculoDto, String>
         entity.setEstadoVehiculo(dto.getEstadoVehiculo());
         entity.setPatente(dto.getPatente());
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
-        entity.setCaracteristicaVehiculo(resolver.getReference(CaracteristicaVehiculo.class, dto.getCaracteristicaVehiculoId()));
+        entity.setCaracteristicaVehiculo(resolver.getReference(CaracteristicaVehiculo.class, dto.getCaracteristicaVehiculo().getId()));
     }
 }

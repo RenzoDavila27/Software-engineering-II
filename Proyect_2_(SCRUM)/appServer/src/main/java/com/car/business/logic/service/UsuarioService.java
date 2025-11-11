@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 @Service
 public class UsuarioService extends BaseService<Usuario, UsuarioDto, String> {
 
@@ -17,6 +19,10 @@ public class UsuarioService extends BaseService<Usuario, UsuarioDto, String> {
     public UsuarioService(UsuarioRepository repository, UsuarioMapper mapper, PasswordEncoder passwordEncoder) {
         super(repository, mapper);
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public Optional<Usuario> findByNombreUsuario(String nombreUsuario) {
+        return ((UsuarioRepository) repository).findByNombreUsuarioAndEliminadoFalse(nombreUsuario);
     }
 
     @Override

@@ -1,16 +1,18 @@
 package com.car.business.mappers;
 
+import com.car.business.domain.CaracteristicaVehiculo;
 import com.car.business.domain.CostoVehiculo;
+import com.car.business.dto.CaracteristicaVehiculoDto;
 import com.car.business.dto.CostoVehiculoDto;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehiculoDto, String> {
 
-    private final CaracteristicaVehiculoMapper caracteristicaVehiculoMapper;
+    private final EntityReferenceResolver resolver;
 
-    public CostoVehiculoMapper(CaracteristicaVehiculoMapper caracteristicaVehiculoMapper){
-        this.caracteristicaVehiculoMapper = caracteristicaVehiculoMapper;
+    public CostoVehiculoMapper(EntityReferenceResolver resolver){
+        this.resolver = resolver;
     }
 
     @Override
@@ -24,7 +26,12 @@ public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehic
         dto.setFechaDesde(entity.getFechaDesde());
         dto.setFechaHasta(entity.getFechaHasta());
         dto.setCosto(entity.getCosto());
-        dto.setCaracteristicaVehiculoDto(caracteristicaVehiculoMapper.toDto(entity.getCaracteristicaVehiculo()));
+        if (entity.getCaracteristicaVehiculo() != null) {
+            CaracteristicaVehiculoDto caracteristicaDto = new CaracteristicaVehiculoDto();
+            caracteristicaDto.setId(entity.getCaracteristicaVehiculo().getId());
+            // Only map the ID to break the circular dependency in DTOs
+            dto.setCaracteristicaVehiculoDto(caracteristicaDto);
+        }
         return dto;
     }
 
@@ -48,6 +55,8 @@ public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehic
         entity.setFechaHasta(dto.getFechaHasta());
         entity.setCosto(dto.getCosto());
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
-        entity.setCaracteristicaVehiculo(caracteristicaVehiculoMapper.toEntity(dto.getCaracteristicaVehiculoDto()));
+        if (dto.getCaracteristicaVehiculoDto() != null && dto.getCaracteristicaVehiculoDto().getId() != null) {
+            entity.setCaracteristicaVehiculo(resolver.getReference(CaracteristicaVehiculo.class, dto.getCaracteristicaVehiculoDto().getId()));
+        }
     }
 }

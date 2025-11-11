@@ -1,16 +1,21 @@
 package com.fioritech.car.controller;
 
+import com.fioritech.car.bussiness.service.VehiculoService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
+
+    private final VehiculoService vehiculoService;
 
     @GetMapping("/")
     public String home(Model model, HttpServletRequest request) {
+        model.addAttribute("vehiculos", vehiculoService.findAll().collectList().block());
         model.addAttribute("requestURI", request.getRequestURI());
         return "index";
     }

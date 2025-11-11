@@ -1,6 +1,8 @@
 package com.car.business.domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.car.business.domain.enums.TipoDocumento;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,8 +36,8 @@ public class Persona extends BaseEntity<String> {
     @Column(nullable = false)
     private String numeroDocumento;
 
-    @ManyToOne(optional = false)
-    private Contacto contacto;
+    @OneToMany(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contacto> contactos = new ArrayList<>();
 
     @ManyToOne(optional = false)
     private Direccion direccion;

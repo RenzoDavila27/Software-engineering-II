@@ -3,6 +3,8 @@ package com.car.business.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CaracteristicaVehiculoDto extends BaseDto<String> {
@@ -15,4 +17,6 @@ public class CaracteristicaVehiculoDto extends BaseDto<String> {
     private int cantidadTotalVehiculos;
     private int cantidadTotalVehiculosAlquilados;
     private ImagenDto imagenDto;
+    private List<CostoVehiculoDto> costosVehiculo;
+
 }

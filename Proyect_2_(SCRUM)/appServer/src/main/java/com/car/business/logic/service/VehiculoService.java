@@ -2,11 +2,13 @@ package com.car.business.logic.service;
 
 import com.car.business.domain.CaracteristicaVehiculo;
 import com.car.business.domain.Vehiculo;
+import com.car.business.domain.enums.EstadoVehiculo;
 import com.car.business.dto.VehiculoDto;
 import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.VehiculoMapper;
 import com.car.business.percistence.repository.VehiculoRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,20 @@ public class VehiculoService extends BaseService<Vehiculo, VehiculoDto, String> 
     @Autowired
     private CaracteristicaVehiculoService caracteristicaVehiculoService;
 
+    private final VehiculoRepository vehiculoRepository;
+
     public VehiculoService(VehiculoRepository repository, VehiculoMapper mapper) {
         super(repository, mapper);
+        this.vehiculoRepository = repository;
     }
+
+    public List<VehiculoDto> findAvailable() {
+        return vehiculoRepository.findAllByEstadoVehiculo(EstadoVehiculo.DISPONIBLE)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
 
     @Override
     protected void validar(Vehiculo entidad) throws BusinessException {

@@ -35,6 +35,10 @@ public abstract class Contacto extends BaseEntity<String> {
     @Column(length = 1024)
     private String observacion;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "persona_id")
+    private Persona persona;
+
     @Override
     public String getId() { return id; }
 

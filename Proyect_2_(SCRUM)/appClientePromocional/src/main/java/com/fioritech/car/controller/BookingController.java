@@ -1,6 +1,6 @@
 package com.fioritech.car.controller;
 
-import com.fioritech.car.service.VehiculoService;
+import com.fioritech.car.bussiness.service.VehiculoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
