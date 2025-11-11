@@ -12,11 +12,11 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class Cliente extends Persona{
 
-    @Column(name = "direccion_estadia", nullable = false)
+    @Column(name = "direccion_estadia")
     private String direccionEstadia;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "nacionalidad_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "nacionalidad_id")
     private Nacionalidad nacionalidad;
 
 }

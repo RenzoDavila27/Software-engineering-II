@@ -1,32 +1,29 @@
 package com.car.business.domain;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
 @Data
 @Getter
 @Setter
-@Entity
 @EqualsAndHashCode(callSuper = true)
-public class DetalleFactura extends BaseEntity<String> {
+public class Promocion extends BaseEntity<String>{
 
-    private int cantidad;
-    private double subtotal;
+    private double porcentajeDescuento;
 
-    @ManyToOne
-    @JoinColumn(name = "factura_id")
-    private Factura factura;
+    private double codigoDescuento;
 
-    @ManyToOne(optional = false)
-    private Alquiler alquiler;
+    private String descripcionDescuento;
 
-    @ManyToOne(optional = true)
-    private Promocion promocion;
+    private LocalDate fechaDesde;
+
+    private LocalDate fechaHasta;
 
     @Override
     public String getId() { return id; }
@@ -39,4 +36,5 @@ public class DetalleFactura extends BaseEntity<String> {
 
     @Override
     public void setEliminado(Boolean eliminado) { this.eliminado = eliminado; }
+    
 }

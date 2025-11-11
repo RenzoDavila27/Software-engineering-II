@@ -5,14 +5,18 @@ import com.car.business.dto.UsuarioDto;
 import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.UsuarioMapper;
 import com.car.business.percistence.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
 public class UsuarioService extends BaseService<Usuario, UsuarioDto, String> {
 
-    public UsuarioService(UsuarioRepository repository, UsuarioMapper mapper) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UsuarioService(UsuarioRepository repository, UsuarioMapper mapper, PasswordEncoder passwordEncoder) {
         super(repository, mapper);
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -32,5 +36,26 @@ public class UsuarioService extends BaseService<Usuario, UsuarioDto, String> {
         if (entidad.getPersona() == null) {
             throw new BusinessException("La persona asociada es obligatoria.");
         }
+    }
+
+    @Override
+    protected void preAlta(Usuario entidad) {
+        codificarClave(entidad);
+    }
+
+    @Override
+    protected void preModificacion(Usuario entidad) {
+        codificarClave(entidad);
+    }
+
+    private void codificarClave(Usuario entidad) {
+        String clave = entidad.getClave();
+        if (StringUtils.hasText(clave) && !estaCodificada(clave)) {
+            entidad.setClave(passwordEncoder.encode(clave));
+        }
+    }
+
+    private boolean estaCodificada(String clave) {
+        return clave.startsWith("$2a$") || clave.startsWith("$2b$") || clave.startsWith("$2y$");
     }
 }
