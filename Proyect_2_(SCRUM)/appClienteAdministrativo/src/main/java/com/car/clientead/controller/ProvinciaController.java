@@ -1,6 +1,9 @@
 package com.car.clientead.controller;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,6 +42,7 @@ public class ProvinciaController {
             model.addAttribute("items", Collections.emptyList());
             model.addAttribute("errorMessage", ex.getMessage());
         }
+        cargarNombrePaises(model);
         model.addAttribute("titleList", "Listado de Provincias");
         return LIST_VIEW;
     }
@@ -125,6 +129,19 @@ public class ProvinciaController {
             model.addAttribute("paises", paisService.listarPaises());
         } catch (ApiClientException ex) {
             model.addAttribute("paises", Collections.<PaisDto>emptyList());
+            appendError(model, ex.getMessage());
+        }
+    }
+
+    private void cargarNombrePaises(Model model) {
+        try {
+            Map<String, String> nombres = paisService.listarPaises().stream()
+                    .filter(Objects::nonNull)
+                    .filter(pais -> pais.getId() != null)
+                    .collect(Collectors.toMap(PaisDto::getId, PaisDto::getNombre, (a, b) -> a));
+            model.addAttribute("paisNombrePorId", nombres);
+        } catch (ApiClientException ex) {
+            model.addAttribute("paisNombrePorId", Collections.emptyMap());
             appendError(model, ex.getMessage());
         }
     }

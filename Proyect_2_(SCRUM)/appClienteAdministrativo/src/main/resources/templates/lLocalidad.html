@@ -80,7 +80,7 @@
           <tr>
             <th>Nombre</th>
             <th>Código Postal</th>
-            <th>Departamento (ID)</th>
+            <th>Departamento</th>
             <th class="actions-column">Acciones</th>
           </tr>
           </thead>
@@ -88,7 +88,7 @@
           <tr th:each="item : ${items}">
             <td th:text="${item.nombre}"></td>
             <td th:text="${item.codigoPostal}"></td>
-            <td th:text="${item.departamentoId}"></td>
+            <td th:text="${departamentoNombrePorId[item.departamentoId]} ?: 'Sin departamento'"></td>
             <td class="actions-column">
               <a th:href="@{|/localidades/consultar/${item.id}|}" class="btn-action btn-view" title="Ver">
                 <i class="fa-solid fa-eye"></i>

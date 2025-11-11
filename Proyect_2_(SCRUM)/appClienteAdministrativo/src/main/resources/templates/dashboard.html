@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titleList}">Dashboard</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+  <style>
+    .table-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .styled-table th {
+      background-color: #0f172a;
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      padding: 12px;
+    }
+    .styled-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+      vertical-align: top;
+    }
+    .alquiler-item {
+      border-left: 3px solid #0d9488;
+      padding-left: 10px;
+      margin-bottom: 12px;
+    }
+    .alquiler-item:last-child {
+      margin-bottom: 0;
+    }
+    .badge-kpi {
+      display: inline-flex;
+      flex-direction: column;
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 12px 18px;
+      border: 1px solid #e2e8f0;
+      min-width: 160px;
+    }
+    .badge-kpi span {
+      font-size: 0.78rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .badge-kpi strong {
+      font-size: 1.35rem;
+      color: #0f172a;
+    }
+    .filter-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: inset 0 0 0 rgba(0,0,0,0);
+    }
+    .filter-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .filter-actions {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    .export-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    }
+    .export-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .export-actions form {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside th:replace="fragments/fragments :: sidebar"></aside>
+
+  <div class="main">
+    <header th:replace="fragments/fragments :: topnav"></header>
+
+    <main class="content">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+          <h1 class="mb-0" th:text="${titleList}">Dashboard</h1>
+          <small class="text-muted">Vista general de alquileres y recaudación</small>
+        </div>
+        <div class="d-flex gap-3">
+          <div class="badge-kpi text-center">
+            <span>Alquileres</span>
+            <strong th:text="${reporte.totalAlquileres}">0</strong>
+          </div>
+          <div class="badge-kpi text-center">
+            <span>Total recaudado</span>
+            <strong th:text="'$' + ${#numbers.formatDecimal(reporte.totalGeneralRecaudado, 1, 'DEFAULT', 2, 'DEFAULT')}">$0,00</strong>
+          </div>
+        </div>
+      </div>
+
+      <form class="filter-card mb-4" th:action="@{/dashboard}" method="get">
+        <div class="filter-grid">
+          <div>
+            <label class="form-label">Desde</label>
+            <input type="date" class="form-control" name="desde"
+                   th:value="${filtroDesde != null ? filtroDesde : ''}">
+          </div>
+          <div>
+            <label class="form-label">Hasta</label>
+            <input type="date" class="form-control" name="hasta"
+                   th:value="${filtroHasta != null ? filtroHasta : ''}">
+          </div>
+        </div>
+        <div class="filter-actions d-flex flex-wrap justify-content-end gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-filter"></i> Aplicar filtros
+          </button>
+          <a th:href="@{/dashboard}" class="btn btn-outline-secondary" title="Restablecer">
+            <i class="fa-solid fa-rotate-right"></i>
+          </a>
+        </div>
+      </form>
+
+      <div class="export-card mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-md-center">
+          <div>
+            <p class="fw-semibold mb-1">Descargar analíticas</p>
+          </div>
+          <div class="export-actions">
+            <form th:action="@{/dashboard/export}" method="get">
+              <input type="hidden" name="tipo" value="pdf">
+              <input type="hidden" name="desde" th:value="${filtroDesde != null ? filtroDesde : ''}">
+              <input type="hidden" name="hasta" th:value="${filtroHasta != null ? filtroHasta : ''}">
+              <button type="submit" class="btn btn-outline-danger">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+              </button>
+            </form>
+            <form th:action="@{/dashboard/export}" method="get">
+              <input type="hidden" name="tipo" value="excel">
+              <input type="hidden" name="desde" th:value="${filtroDesde != null ? filtroDesde : ''}">
+              <input type="hidden" name="hasta" th:value="${filtroHasta != null ? filtroHasta : ''}">
+              <button type="submit" class="btn btn-outline-success">
+                <i class="fa-solid fa-file-excel"></i> Excel
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+      <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="h4 mb-3">Vehículos alquilados en el período</h2>
+          <small class="text-muted" th:text="${#lists.size(vehiculos)} + ' vehículos con movimientos'"></small>
+        </div>
+        <div class="table-card">
+          <table class="styled-table">
+            <thead>
+            <tr>
+              <th>Vehículo</th>
+              <th>Alquileres</th>
+              <th class="text-end">Total generado</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(vehiculos)}">
+              <td colspan="3" class="text-center text-muted py-4">
+                No se registran alquileres en el período seleccionado.
+              </td>
+            </tr>
+            <tr th:each="vehiculo : ${vehiculos}">
+              <td>
+                <div class="fw-semibold" th:text="${vehiculo.caracteristica != null ? vehiculo.caracteristica.marca + ' ' + vehiculo.caracteristica.modelo : 'Modelo no disponible'}"></div>
+                <div class="text-muted small">
+                  <span th:text="'Patente: ' + ${vehiculo.vehiculo.patente}"></span>
+                  <span th:if="${vehiculo.caracteristica != null and vehiculo.caracteristica.anio != null}"
+                        th:text="' · Año ' + ${vehiculo.caracteristica.anio}"></span>
+                </div>
+              </td>
+              <td>
+                <div th:each="alquiler : ${vehiculo.alquileres}" class="alquiler-item">
+                  <div class="d-flex justify-content-between flex-wrap">
+                    <strong th:text="${alquiler.clienteNombre}">Cliente</strong>
+                    <span class="text-muted small" th:text="${alquiler.clienteDocumento}">Documento</span>
+                  </div>
+                  <div class="text-muted small">
+                    <span th:text="'Desde: ' + ${alquiler.fechaDesde != null ? #temporals.format(alquiler.fechaDesde, 'dd/MM/yyyy') : 'N/D'}"></span>
+                    <span class="mx-1">|</span>
+                    <span th:text="'Hasta: ' + ${alquiler.fechaHasta != null ? #temporals.format(alquiler.fechaHasta, 'dd/MM/yyyy') : 'N/D'}"></span>
+                  </div>
+                  <div>
+                    <span class="fw-semibold"
+                          th:text="'$' + ${#numbers.formatDecimal(alquiler.montoPagado, 1, 'DEFAULT', 2, 'DEFAULT')}"></span>
+                  </div>
+                </div>
+              </td>
+              <td class="text-end">
+                <span class="badge bg-dark-subtle text-dark"
+                      th:text="'$' + ${#numbers.formatDecimal(vehiculo.totalGenerado, 1, 'DEFAULT', 2, 'DEFAULT')}"></span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="h4 mb-3">Recaudación por modelo</h2>
+          <small class="text-muted" th:text="${#lists.size(recaudaciones)} + ' modelos con ingresos'"></small>
+        </div>
+        <div class="table-card">
+          <table class="styled-table">
+            <thead>
+            <tr>
+              <th>Modelo</th>
+              <th class="text-center">Alquileres</th>
+              <th class="text-end">Total recaudado</th>
+              <th class="text-end">Ticket promedio</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(recaudaciones)}">
+              <td colspan="4" class="text-center text-muted py-4">
+                No se registran ingresos para el período indicado.
+              </td>
+            </tr>
+            <tr th:each="modelo : ${recaudaciones}">
+              <td>
+                <strong th:text="${modelo.etiquetaModelo}">Modelo</strong>
+              </td>
+              <td class="text-center" th:text="${modelo.cantidadAlquileres}">0</td>
+              <td class="text-end"
+                  th:text="'$' + ${#numbers.formatDecimal(modelo.totalRecaudado, 1, 'DEFAULT', 2, 'DEFAULT')}">$0,00</td>
+              <td class="text-end"
+                  th:text="${modelo.cantidadAlquileres > 0 ? '$' + #numbers.formatDecimal(modelo.totalRecaudado / modelo.cantidadAlquileres, 1, 'DEFAULT', 2, 'DEFAULT') : '$0,00'}">$0,00</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> FioriRentCar
+    </footer>
+  </div>
+</div>
+
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

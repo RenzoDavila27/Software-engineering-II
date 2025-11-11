@@ -1,6 +1,9 @@
 package com.car.clientead.controller;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,6 +42,7 @@ public class LocalidadController {
             model.addAttribute("items", Collections.emptyList());
             model.addAttribute("errorMessage", ex.getMessage());
         }
+        cargarNombreDepartamentos(model);
         model.addAttribute("titleList", "Listado de Localidades");
         return LIST_VIEW;
     }
@@ -125,6 +129,19 @@ public class LocalidadController {
             model.addAttribute("departamentos", departamentoService.listar());
         } catch (ApiClientException ex) {
             model.addAttribute("departamentos", Collections.<DepartamentoDto>emptyList());
+            appendError(model, ex.getMessage());
+        }
+    }
+
+    private void cargarNombreDepartamentos(Model model) {
+        try {
+            Map<String, String> nombres = departamentoService.listar().stream()
+                    .filter(Objects::nonNull)
+                    .filter(departamento -> departamento.getId() != null)
+                    .collect(Collectors.toMap(DepartamentoDto::getId, DepartamentoDto::getNombre, (a, b) -> a));
+            model.addAttribute("departamentoNombrePorId", nombres);
+        } catch (ApiClientException ex) {
+            model.addAttribute("departamentoNombrePorId", Collections.emptyMap());
             appendError(model, ex.getMessage());
         }
     }

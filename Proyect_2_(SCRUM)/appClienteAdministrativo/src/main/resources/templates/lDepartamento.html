@@ -79,14 +79,14 @@
           <thead>
           <tr>
             <th>Nombre</th>
-            <th>Provincia (ID)</th>
+            <th>Provincia</th>
             <th class="actions-column">Acciones</th>
           </tr>
           </thead>
           <tbody>
           <tr th:each="item : ${items}">
             <td th:text="${item.nombre}"></td>
-            <td th:text="${item.provinciaId}"></td>
+            <td th:text="${provinciaNombrePorId[item.provinciaId]} ?: 'Sin provincia'"></td>
             <td class="actions-column">
               <a th:href="@{|/departamentos/consultar/${item.id}|}" class="btn-action btn-view" title="Ver">
                 <i class="fa-solid fa-eye"></i>
