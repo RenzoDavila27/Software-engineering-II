@@ -1,5 +1,6 @@
 package com.car.clientead.client.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,4 +16,7 @@ public class CaracteristicaVehiculoDto extends BaseDto<String> {
     private int cantidadTotalVehiculos;
     private int cantidadTotalVehiculosAlquilados;
     private ImagenDto imagenDto;
+
+    @JsonIgnore
+    private String imagenDataUri;
 }

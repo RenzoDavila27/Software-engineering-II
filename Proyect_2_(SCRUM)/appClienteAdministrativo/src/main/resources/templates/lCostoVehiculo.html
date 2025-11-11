@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${titleList}">Listado de Características</title>
+  <title th:text="${titleList}">Listado de Costos</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -49,13 +49,6 @@
     .btn-view { background-color: #198754; color: #fff; }
     .btn-edit { background-color: #ffc107; color: #000; }
     .btn-delete { background-color: #dc3545; color: #fff; }
-    .thumb-img {
-      width: 90px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1px solid #dee2e6;
-    }
   </style>
 </head>
 <body>
@@ -68,35 +61,38 @@
       <div class="page-header">
         <div>
           <p class="page-subtitle">Gestión de flota</p>
-          <h1 th:text="${titleList}">Listado de Características</h1>
+          <h1 th:text="${titleList}">Listado de Costos de Vehículo</h1>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-          <a th:href="@{/caracteristicas-vehiculo/alta}" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i> Nueva característica
+          <a th:href="@{/vehiculos}" class="btn btn-light">
+            <i class="fa-solid fa-angles-left"></i> Volver a vehículos
+          </a>
+          <a th:href="@{/costos-vehiculo/alta}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Registrar costo
           </a>
         </div>
       </div>
 
       <div class="workflow-tabs">
-        <a th:href="@{/caracteristicas-vehiculo}" class="step active">
-          <i class="fa-solid fa-gears"></i> 1. Características
+        <a th:href="@{/caracteristicas-vehiculo}" class="step completed">
+          <i class="fa-solid fa-circle-check"></i> 1. Características
         </a>
-        <a th:href="@{/vehiculos}" class="step">
+        <a th:href="@{/vehiculos}" class="step completed">
           <i class="fa-solid fa-car"></i> 2. Vehículos
         </a>
-        <a th:href="@{/costos-vehiculo}" class="step">
+        <a th:href="@{/costos-vehiculo}" class="step active">
           <i class="fa-solid fa-dollar-sign"></i> 3. Costos
         </a>
       </div>
 
       <div class="quick-actions">
-        <a th:href="@{/vehiculos}" class="card-link">
-          <strong>Gestionar Vehículos</strong>
-          <span>Consulta, altas y estados de la flota</span>
+        <a th:href="@{/caracteristicas-vehiculo}" class="card-link">
+          <strong>Volver a características</strong>
+          <span>Revisa el detalle de cada modelo</span>
         </a>
-        <a th:href="@{/costos-vehiculo}" class="card-link">
-          <strong>Gestionar Costos</strong>
-          <span>Registra tarifas vigentes y futuras</span>
+        <a th:href="@{/vehiculos}" class="card-link">
+          <strong>Revisar vehículos</strong>
+          <span>Confirma disponibilidad antes de actualizar costos</span>
         </a>
       </div>
 
@@ -106,41 +102,26 @@
         <table class="styled-table">
           <thead>
             <tr>
-              <th>Marca</th>
-              <th>Modelo</th>
-              <th>Imagen</th>
-              <th>Año</th>
-              <th>Puertas</th>
-              <th>Asientos</th>
-              <th>Total</th>
-              <th>Alquilados</th>
+              <th>Fecha Desde</th>
+              <th>Fecha Hasta</th>
+              <th>Costo</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr th:each="item : ${items}">
-              <td th:text="${item.marca}"></td>
-              <td th:text="${item.modelo}"></td>
-              <td>
-                <img th:if="${item.imagenDataUri != null}"
-                     th:src="${item.imagenDataUri}"
-                     alt="Imagen vehículo" class="thumb-img">
-                <span class="text-muted" th:if="${item.imagenDataUri == null}">Sin imagen</span>
-              </td>
-              <td th:text="${item.anio}"></td>
-              <td th:text="${item.cantidadPuertas}"></td>
-              <td th:text="${item.cantidadAsientos}"></td>
-              <td th:text="${item.cantidadTotalVehiculos}"></td>
-              <td th:text="${item.cantidadTotalVehiculosAlquilados}"></td>
+              <td th:text="${item.fechaDesde != null ? #temporals.format(item.fechaDesde, 'dd/MM/yyyy') : '-'}"></td>
+              <td th:text="${item.fechaHasta != null ? #temporals.format(item.fechaHasta, 'dd/MM/yyyy') : 'Vigente'}"></td>
+              <td th:text="${item.costo != null ? #numbers.formatDecimal(item.costo, 1, 'POINT', 2, 'POINT') : '-'}"></td>
               <td class="actions-column">
-                <a th:href="@{|/caracteristicas-vehiculo/consultar/${item.id}|}" class="btn-action btn-view">
+                <a th:href="@{|/costos-vehiculo/consultar/${item.id}|}" class="btn-action btn-view" title="Ver">
                   <i class="fa-solid fa-eye"></i>
                 </a>
-                <a th:href="@{|/caracteristicas-vehiculo/modificar/${item.id}|}" class="btn-action btn-edit">
+                <a th:href="@{|/costos-vehiculo/modificar/${item.id}|}" class="btn-action btn-edit" title="Editar">
                   <i class="fa-solid fa-pen"></i>
                 </a>
-                <a th:href="@{|/caracteristicas-vehiculo/baja/${item.id}|}" class="btn-action btn-delete"
-                   onclick="return confirm('¿Seguro que desea eliminar este registro?');">
+                <a th:href="@{|/costos-vehiculo/baja/${item.id}|}" class="btn-action btn-delete" title="Eliminar"
+                   onclick="return confirm('¿Seguro que desea eliminar este costo?');">
                   <i class="fa-solid fa-trash"></i>
                 </a>
               </td>

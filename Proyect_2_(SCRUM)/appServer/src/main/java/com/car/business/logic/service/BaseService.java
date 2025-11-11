@@ -71,15 +71,21 @@ public abstract class BaseService<T extends BaseEntity<ID>, D extends BaseDto<ID
     }
 
     public boolean bajaLogica(ID id) throws BusinessException {
-        try {
+    try {
             preBaja(id);
 
-            return repository.findById(id).map(entidad -> {
-                entidad.setEliminado(true);
-                repository.save(entidad);
-                return true;
-            }).orElse(false);
+            T entidad = repository.findById(id)
+                    .orElseThrow(() -> new BusinessException("No existe la entidad con ID: " + id));
 
+            entidad.setEliminado(true);
+            T guardada = repository.save(entidad);
+
+            postBaja(guardada);  
+
+            return true;
+
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessException("Error de Sistemas");
         }
@@ -111,4 +117,5 @@ public abstract class BaseService<T extends BaseEntity<ID>, D extends BaseDto<ID
     protected void postAlta(T entidad) throws BusinessException {}
     protected void preModificacion(T entidad) throws BusinessException {}
     protected void preBaja(ID id) throws BusinessException {}
+    protected void postBaja(T entidad) throws BusinessException{}
 }

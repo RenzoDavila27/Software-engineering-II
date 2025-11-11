@@ -1,6 +1,7 @@
 package com.car.clientead.business.logic;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,12 +26,13 @@ public class CaracteristicaVehiculoService {
     public List<CaracteristicaVehiculoDto> listar() {
         return repository.findAll().stream()
                 .filter(this::vehiculoValido)
+                .map(this::prepararImagen)
                 .collect(Collectors.toList());
     }
 
     // 🔹 Consultar por ID
     public CaracteristicaVehiculoDto consultar(String id) {
-        return repository.findById(id);
+        return prepararImagen(repository.findById(id));
     }
 
     // 🔹 Crear nueva característica (con imagen opcional)
@@ -40,7 +42,7 @@ public class CaracteristicaVehiculoService {
             if (imagenFile != null && !imagenFile.isEmpty()) {
                 dto.setImagenDto(convertirImagen(imagenFile));
             }
-            return repository.create(dto);
+            return prepararImagen(repository.create(dto));
         } catch (IOException e) {
             throw new ApiClientException("Error al procesar la imagen del vehículo.", e);
         }
@@ -53,7 +55,7 @@ public class CaracteristicaVehiculoService {
             if (imagenFile != null && !imagenFile.isEmpty()) {
                 dto.setImagenDto(convertirImagen(imagenFile));
             }
-            return repository.update(id, dto);
+            return prepararImagen(repository.update(id, dto));
         } catch (IOException e) {
             throw new ApiClientException("Error al procesar la imagen del vehículo.", e);
         }
@@ -82,6 +84,23 @@ public class CaracteristicaVehiculoService {
         return dto != null && StringUtils.hasText(dto.getMarca());
     }
 
+    private CaracteristicaVehiculoDto prepararImagen(CaracteristicaVehiculoDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        if (dto.getImagenDto() != null &&
+            dto.getImagenDto().getContenido() != null &&
+            dto.getImagenDto().getContenido().length > 0) {
+            String mime = StringUtils.hasText(dto.getImagenDto().getMime()) ?
+                    dto.getImagenDto().getMime() : "image/png";
+            String base64 = Base64.getEncoder().encodeToString(dto.getImagenDto().getContenido());
+            dto.setImagenDataUri("data:" + mime + ";base64," + base64);
+        } else {
+            dto.setImagenDataUri(null);
+        }
+        return dto;
+    }
+
     // Convierte el archivo en ImagenDto
     private ImagenDto convertirImagen(MultipartFile file) throws IOException {
         ImagenDto imagenDto = new ImagenDto();
@@ -92,4 +111,3 @@ public class CaracteristicaVehiculoService {
         return imagenDto;
     }
 }
-

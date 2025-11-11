@@ -5,8 +5,14 @@ import com.car.business.dto.CaracteristicaVehiculoDto;
 import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.CaracteristicaVehiculoMapper;
 import com.car.business.percistence.repository.CaracteristicaVehiculoRepository;
+
+import jakarta.transaction.Transactional;
+
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.method.annotation.ErrorsMethodArgumentResolver;
 
 @Service
 public class CaracteristicaVehiculoService extends BaseService<CaracteristicaVehiculo, CaracteristicaVehiculoDto, String> {
@@ -45,7 +51,36 @@ public class CaracteristicaVehiculoService extends BaseService<CaracteristicaVeh
             throw new BusinessException("Los vehículos alquilados no pueden superar los existentes.");
         }
         if (entidad.getImagen() == null) {
-            throw new BusinessException("La imagen es obligatorio.");
+            throw new BusinessException("La imagen es obligatoria.");
         }
+    }
+
+    @Transactional
+    public void sumarAuto(String id) throws BusinessException{
+        Optional<CaracteristicaVehiculo> carac = repository.findById(id);
+        if (carac.isPresent()) {
+            CaracteristicaVehiculo caracteristica = carac.get();
+            caracteristica.setCantidadTotalVehiculos(caracteristica.getCantidadTotalVehiculos() +1);
+            repository.save(caracteristica);
+            
+        }else{
+            throw new BusinessException("Error de sistema");
+        }
+
+    }
+
+
+    @Transactional
+    public void restarAuto(String id) throws BusinessException{
+        Optional<CaracteristicaVehiculo> carac = repository.findById(id);
+        if (carac.isPresent()) {
+            CaracteristicaVehiculo caracteristica = carac.get();
+            caracteristica.setCantidadTotalVehiculos(caracteristica.getCantidadTotalVehiculos() - 1);
+            repository.save(caracteristica);
+            
+        }else{
+            throw new BusinessException("Error de sistema");
+        }
+
     }
 }

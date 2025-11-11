@@ -1,15 +1,23 @@
 package com.car.business.logic.service;
 
+import com.car.business.domain.CaracteristicaVehiculo;
 import com.car.business.domain.Vehiculo;
 import com.car.business.dto.VehiculoDto;
 import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.VehiculoMapper;
 import com.car.business.percistence.repository.VehiculoRepository;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
 public class VehiculoService extends BaseService<Vehiculo, VehiculoDto, String> {
+
+    @Autowired
+    private CaracteristicaVehiculoService caracteristicaVehiculoService;
 
     public VehiculoService(VehiculoRepository repository, VehiculoMapper mapper) {
         super(repository, mapper);
@@ -30,4 +38,24 @@ public class VehiculoService extends BaseService<Vehiculo, VehiculoDto, String> 
             throw new BusinessException("La característica del vehículo es obligatoria.");
         }
     }
+
+    @Override
+    protected void postAlta(Vehiculo vehiculo) throws BusinessException {
+        try{
+            caracteristicaVehiculoService.sumarAuto(vehiculo.getCaracteristicaVehiculo().getId());
+        }catch(BusinessException e){
+            throw e;
+        }
+        
+    }
+
+    @Override
+    protected void postBaja(Vehiculo vehiculo) throws BusinessException{
+        try{
+            caracteristicaVehiculoService.restarAuto(vehiculo.getCaracteristicaVehiculo().getId());
+        }catch(BusinessException e){
+            throw e;
+        }
+    }
+
 }

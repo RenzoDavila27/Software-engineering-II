@@ -22,7 +22,7 @@ public class CaracteristicaVehiculo extends BaseEntity<String> {
     private Long anio;
     private int cantidadAsientos;
     private int cantidadPuertas;
-    private int cantidadTotalVehiculos;
+    private int cantidadTotalVehiculos = 0;
     private int cantidadTotalVehiculosAlquilados;
 
     @OneToOne(cascade = CascadeType.ALL)
