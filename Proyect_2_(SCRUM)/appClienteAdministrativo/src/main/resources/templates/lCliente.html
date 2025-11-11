@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titleList}">Listado de Clientes</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+
+  <style>
+    .table-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .styled-table th,
+    .styled-table td {
+      padding: 12px 15px;
+      vertical-align: top;
+    }
+    .styled-table th {
+      background-color: #343a40;
+      color: #fff;
+      text-align: center;
+    }
+    .cliente-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .cliente-meta {
+      font-size: 0.85rem;
+      color: #555;
+    }
+    .alquiler-item {
+      border-bottom: 1px solid #e9ecef;
+      padding: 6px 0;
+    }
+    .alquiler-item:last-child {
+      border-bottom: none;
+    }
+    .btn-action {
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin: 2px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .actions-column {
+      text-align: center;
+      white-space: nowrap;
+    }
+    .badge-total {
+      background-color: #0d6efd;
+      color: #fff;
+      font-size: 0.85rem;
+    }
+    .btn-whatsapp {
+      background-color: #25d366 !important;
+      color: #fff !important;
+    }
+    .btn-whatsapp:hover {
+      background-color: #1ebe5d !important;
+      color: #fff !important;
+    }
+    .btn-pdf {
+      background-color: #6f42c1 !important;
+      color: #fff !important;
+    }
+    .btn-pdf:hover {
+      background-color: #593196 !important;
+      color: #fff !important;
+    }
+    .badge-whatsapp {
+      background-color: #25d366;
+      color: #fff;
+      font-size: 0.75rem;
+    }
+    #exportModal {
+      display: none;
+    }
+    #exportModal.show {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      z-index: 1055;
+    }
+    #exportModal .modal-dialog {
+      margin: 0;
+      max-width: 540px;
+      width: 100%;
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #exportModal .modal-content {
+      border-radius: 22px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      padding: 24px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside th:replace="fragments/fragments :: sidebar"></aside>
+
+  <div class="main">
+    <header th:replace="fragments/fragments :: topnav"></header>
+
+    <main class="content">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 th:text="${titleList}">Listado de Clientes</h1>
+        <a th:href="@{/clientes/alta}" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> Nuevo Cliente
+        </a>
+      </div>
+
+      <div class="mb-4">
+        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#exportModal">
+          <i class="fa-solid fa-file-export"></i> Exportar Clientes
+        </button>
+      </div>
+
+      <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+      <div class="table-card">
+        <table class="styled-table">
+          <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Dirección de Estadía</th>
+            <th>Documento / Nacionalidad</th>
+            <th>Contacto</th>
+            <th>Dirección (Detalle)</th>
+            <th>Resumen de Alquileres</th>
+            <th>Total Pagado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="resumen : ${items}">
+            <td>
+              <div class="cliente-name"
+                   th:text="${resumen.cliente.nombre} + ' ' + ${resumen.cliente.apellido}">Nombre Apellido</div>
+              <div class="cliente-meta">
+              </div>
+            </td>
+            <td>
+              <span th:text="${resumen.cliente.fechaNacimiento != null ? #temporals.format(resumen.cliente.fechaNacimiento, 'dd/MM/yyyy') : 'Sin fecha'}"></span>
+            </td>
+            <td>
+              <span th:text="${resumen.cliente.direccionEstadia != null ? resumen.cliente.direccionEstadia : 'Sin información'}"></span>
+            </td>
+            <td>
+              <div>
+                <strong th:text="${resumen.cliente.tipoDocumento} + ' ' + ${resumen.cliente.numeroDocumento}"></strong>
+              </div>
+              <div th:text="${resumen.nacionalidadNombre != null ? resumen.nacionalidadNombre : 'Nacionalidad N/D'}"></div>
+            </td>
+            <td>
+              <div th:text="${resumen.contactoResumen != null ? resumen.contactoResumen : 'Sin datos de contacto'}"></div>
+              <div th:if="${resumen.whatsappUrl != null}" class="mt-1">
+                <span class="badge badge-whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</span>
+              </div>
+            </td>
+            <td>
+              <div th:text="${resumen.direccionResumen != null ? resumen.direccionResumen : 'Sin dirección registrada'}"></div>
+            </td>
+            <td>
+              <div th:if="${#lists.isEmpty(resumen.alquileres)}" class="text-muted">
+                Sin alquileres registrados.
+              </div>
+              <div th:each="alquiler : ${resumen.alquileres}" class="alquiler-item">
+                <div>
+                  <strong th:text="${alquiler.vehiculoPatente != null ? alquiler.vehiculoPatente : 'Vehículo ID: ' + alquiler.vehiculoId}"></strong>
+                </div>
+                <div class="cliente-meta">
+                  <span th:text="'Desde: ' + ${#temporals.format(alquiler.fechaDesde, 'dd/MM/yyyy')}"></span>
+                  <span th:text="' / Hasta: ' + ${#temporals.format(alquiler.fechaHasta, 'dd/MM/yyyy')}"></span>
+                </div>
+                <div>
+                  <span th:text="'Monto: $' + ${#numbers.formatDecimal(alquiler.montoPagado, 1, 'DEFAULT', 2, 'DEFAULT')}"></span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge badge-total"
+                    th:text="'$' + ${#numbers.formatDecimal(resumen.totalPagado, 1, 'DEFAULT', 2, 'DEFAULT')}"></span>
+            </td>
+            <td class="actions-column">
+              <a th:href="@{|/clientes/consultar/${resumen.cliente.id}|}" class="btn-action btn btn-success btn-sm">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+              <a th:href="@{|/clientes/modificar/${resumen.cliente.id}|}" class="btn-action btn btn-warning btn-sm">
+                <i class="fa-solid fa-pen"></i>
+              </a>
+              <a th:href="@{|/clientes/pdf/${resumen.cliente.id}|}" class="btn-action btn btn-pdf btn-sm" title="Descargar PDF">
+                <i class="fa-solid fa-file-pdf"></i>
+              </a>
+              <a th:if="${resumen.whatsappUrl != null}"
+                 th:href="${resumen.whatsappUrl}"
+                 class="btn-action btn btn-whatsapp btn-sm"
+                 target="_blank"
+                 title="Contactar por WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
+              <a th:href="@{|/clientes/baja/${resumen.cliente.id}|}"
+                 class="btn-action btn btn-danger btn-sm"
+                 onclick="return confirm('¿Seguro que desea eliminar este cliente?');">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="footer">
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> FioriRentCar
+    </footer>
+  </div>
+</div>
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true"
+     data-bs-backdrop="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form th:action="@{/clientes/export}" method="get">
+        <div class="modal-body">
+          <div class="d-flex flex-column gap-3 align-items-center">
+            <div class="w-100">
+              <label class="form-label">Desde</label>
+              <input type="date" class="form-control text-center" name="desde" required>
+            </div>
+            <div class="w-100">
+              <label class="form-label">Hasta</label>
+              <input type="date" class="form-control text-center" name="hasta" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-center gap-4">
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success px-4">
+            <i class="fa-solid fa-check"></i> Generar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

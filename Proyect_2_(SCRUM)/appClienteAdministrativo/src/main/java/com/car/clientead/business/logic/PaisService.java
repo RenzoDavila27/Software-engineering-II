@@ -22,6 +22,24 @@ public class PaisService {
                 .collect(Collectors.toList());
     }
 
+    public PaisDto consultar(String id) {
+        return paisRepository.findById(id);
+    }
+
+    public PaisDto crear(PaisDto pais) {
+        validarPais(pais);
+        return paisRepository.create(pais);
+    }
+
+    public PaisDto modificar(String id, PaisDto pais) {
+        validarPais(pais);
+        return paisRepository.update(id, pais);
+    }
+
+    public void eliminar(String id) {
+        paisRepository.delete(id);
+    }
+
     private boolean paisValido(PaisDto pais) {
         return pais != null && StringUtils.hasText(pais.getNombre());
     }
