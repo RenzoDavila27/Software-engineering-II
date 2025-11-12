@@ -21,6 +21,8 @@ public class PaymentController {
 
     private static final String SESSION_FECHA_DESDE = "payment.fechaDesde";
     private static final String SESSION_FECHA_HASTA = "payment.fechaHasta";
+    private static final String MERCADO_PAGO_RETURN_BASE_URL =
+        "https://arrantly-nonperturbing-darlena.ngrok-free.dev";
 
     private final VehiculoService vehiculoService;
     private final PaymentService paymentService; // Corrected semicolon
@@ -81,7 +83,7 @@ public class PaymentController {
                 return "redirect:/success";
             case "mercadoPago":
                 String initPoint = paymentService.processMercadoPagoPayment(
-                        vehiculoId, rentalDays, totalPrice, fechaDesde, fechaHasta, resolveBaseUrl(request))
+                        vehiculoId, rentalDays, totalPrice, fechaDesde, fechaHasta, MERCADO_PAGO_RETURN_BASE_URL)
                     .block();
                 if (initPoint == null || initPoint.isBlank()) {
                     throw new IllegalStateException("No se pudo obtener la URL de Mercado Pago");
@@ -122,14 +124,5 @@ public class PaymentController {
             session.removeAttribute(SESSION_FECHA_DESDE);
             session.removeAttribute(SESSION_FECHA_HASTA);
         }
-    }
-
-    private String resolveBaseUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int serverPort = request.getServerPort();
-        boolean defaultPort = (serverPort == 80 && "http".equalsIgnoreCase(scheme))
-            || (serverPort == 443 && "https".equalsIgnoreCase(scheme));
-        return scheme + "://" + serverName + (defaultPort ? "" : ":" + serverPort);
     }
 }
