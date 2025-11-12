@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -41,6 +42,42 @@ public class ImagenRepository {
             return restTemplate.getForObject(baseUrl + "/" + id, ImagenDto.class);
         } catch (RestClientException ex) {
             throw new ApiClientException("No se pudo obtener la imagen con ID: " + id, ex);
+        }
+    }
+
+    public ImagenDto create(ImagenDto dto) {
+        try {
+            ResponseEntity<ImagenDto> response = restTemplate.postForEntity(
+                    baseUrl,
+                    dto,
+                    ImagenDto.class
+            );
+            return response.getBody();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo crear la imagen.", ex);
+        }
+    }
+
+    public ImagenDto update(String id, ImagenDto dto) {
+        try {
+            HttpEntity<ImagenDto> requestEntity = new HttpEntity<>(dto);
+            ResponseEntity<ImagenDto> response = restTemplate.exchange(
+                    baseUrl + "/" + id,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    ImagenDto.class
+            );
+            return response.getBody();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo actualizar la imagen con ID: " + id, ex);
+        }
+    }
+
+    public void delete(String id) {
+        try {
+            restTemplate.delete(baseUrl + "/" + id);
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo eliminar la imagen con ID: " + id, ex);
         }
     }
 }

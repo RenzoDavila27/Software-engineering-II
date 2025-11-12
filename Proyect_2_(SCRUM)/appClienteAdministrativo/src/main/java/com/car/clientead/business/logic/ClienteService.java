@@ -3,6 +3,7 @@ package com.car.clientead.business.logic;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Deque;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -272,13 +274,325 @@ public class ClienteService {
         return clienteRepository.create(dto);
     }
 
+    public ClienteDto crearConDatosRelacionados(ClienteDto dto,
+                                                DireccionDto nuevaDireccion,
+                                                ImagenDto nuevaImagen,
+                                                ContactoTelefonicoDto nuevoContactoTelefonico,
+                                                ContactoCorreoElectronicoDto nuevoContactoCorreo,
+                                                String tipoContactoPreferido) {
+        validar(dto, false);
+        Deque<Runnable> rollbacks = new ArrayDeque<>();
+        try {
+            if (!StringUtils.hasText(dto.getDireccionId())) {
+                DireccionDto direccionCreada = crearDireccion(nuevaDireccion);
+                dto.setDireccionId(direccionCreada.getId());
+                rollbacks.push(() -> eliminarDireccionSeguro(direccionCreada.getId()));
+            }
+            if (!StringUtils.hasText(dto.getImagenId())) {
+                ImagenDto imagenCreada = crearImagen(nuevaImagen);
+                dto.setImagenId(imagenCreada.getId());
+                rollbacks.push(() -> eliminarImagenSeguro(imagenCreada.getId()));
+            }
+            if (!StringUtils.hasText(dto.getContactoId())) {
+                if (usaContactoCorreo(tipoContactoPreferido)) {
+                    ContactoCorreoElectronicoDto contactoCreado = crearContactoCorreo(nuevoContactoCorreo);
+                    dto.setContactoId(contactoCreado.getId());
+                    rollbacks.push(() -> eliminarContactoCorreoSeguro(contactoCreado.getId()));
+                } else {
+                    ContactoTelefonicoDto contactoCreado = crearContactoTelefonico(nuevoContactoTelefonico);
+                    dto.setContactoId(contactoCreado.getId());
+                    rollbacks.push(() -> eliminarContactoTelefonicoSeguro(contactoCreado.getId()));
+                }
+            }
+
+            validar(dto);
+            return clienteRepository.create(dto);
+        } catch (RuntimeException ex) {
+            ejecutarRollbacks(rollbacks);
+            throw ex;
+        }
+    }
+
     public ClienteDto modificar(String id, ClienteDto dto) {
         validar(dto);
         return clienteRepository.update(id, dto);
     }
 
+    public ClienteDto modificarConDatosRelacionados(String id,
+                                                    ClienteDto dto,
+                                                    DireccionDto direccionActualizada,
+                                                    ImagenDto imagenActualizada,
+                                                    ContactoTelefonicoDto contactoTelefonicoActualizado,
+                                                    ContactoCorreoElectronicoDto contactoCorreoActualizado,
+                                                    String tipoContactoPreferido) {
+        validar(dto, false);
+        ClienteDto existente = clienteRepository.findById(id);
+        if (existente == null) {
+            throw new ApiClientException("No se encontró el cliente con ID: " + id);
+        }
+        if (!StringUtils.hasText(dto.getDireccionId())) {
+            dto.setDireccionId(existente.getDireccionId());
+        }
+        if (!StringUtils.hasText(dto.getImagenId())) {
+            dto.setImagenId(existente.getImagenId());
+        }
+        if (!StringUtils.hasText(dto.getContactoId())) {
+            dto.setContactoId(existente.getContactoId());
+        }
+        Deque<Runnable> rollbacks = new ArrayDeque<>();
+        Deque<Runnable> postCommit = new ArrayDeque<>();
+        try {
+            actualizarDireccionRelacion(dto, direccionActualizada, rollbacks);
+            actualizarImagenRelacion(dto, imagenActualizada, rollbacks);
+            actualizarContactoRelacion(dto,
+                    contactoTelefonicoActualizado,
+                    contactoCorreoActualizado,
+                    tipoContactoPreferido,
+                    rollbacks,
+                    postCommit);
+            validar(dto);
+            ClienteDto actualizado = clienteRepository.update(id, dto);
+            ejecutarPostCommit(postCommit);
+            return actualizado;
+        } catch (RuntimeException ex) {
+            ejecutarRollbacks(rollbacks);
+            throw ex;
+        }
+    }
+
     public void eliminar(String id) {
         clienteRepository.delete(id);
+    }
+
+    private DireccionDto crearDireccion(DireccionDto dto) {
+        validarDireccionNueva(dto);
+        return direccionRepository.create(dto);
+    }
+
+    private ImagenDto crearImagen(ImagenDto dto) {
+        validarImagenNueva(dto);
+        return imagenRepository.create(dto);
+    }
+
+    private ContactoTelefonicoDto crearContactoTelefonico(ContactoTelefonicoDto dto) {
+        validarContactoTelefonicoNuevo(dto);
+        return contactoTelefonicoRepository.create(dto);
+    }
+
+    private ContactoCorreoElectronicoDto crearContactoCorreo(ContactoCorreoElectronicoDto dto) {
+        validarContactoCorreoNuevo(dto);
+        return contactoCorreoRepository.create(dto);
+    }
+
+    private void ejecutarRollbacks(Deque<Runnable> rollbacks) {
+        while (!rollbacks.isEmpty()) {
+            Runnable rollback = rollbacks.pop();
+            try {
+                rollback.run();
+            } catch (RuntimeException ex) {
+                log.warn("No se pudo revertir una operación auxiliar: {}", ex.getMessage());
+            }
+        }
+    }
+
+    private void eliminarDireccionSeguro(String id) {
+        if (!StringUtils.hasText(id)) {
+            return;
+        }
+        try {
+            direccionRepository.delete(id);
+        } catch (RuntimeException ex) {
+            log.warn("No se pudo eliminar la dirección {} al revertir el alta del cliente: {}", id, ex.getMessage());
+        }
+    }
+
+    private void eliminarImagenSeguro(String id) {
+        if (!StringUtils.hasText(id)) {
+            return;
+        }
+        try {
+            imagenRepository.delete(id);
+        } catch (RuntimeException ex) {
+            log.warn("No se pudo eliminar la imagen {} al revertir el alta del cliente: {}", id, ex.getMessage());
+        }
+    }
+
+    private void eliminarContactoTelefonicoSeguro(String id) {
+        if (!StringUtils.hasText(id)) {
+            return;
+        }
+        try {
+            contactoTelefonicoRepository.delete(id);
+        } catch (RuntimeException ex) {
+            log.warn("No se pudo eliminar el contacto telefónico {} al revertir el alta del cliente: {}", id, ex.getMessage());
+        }
+    }
+
+    private void eliminarContactoCorreoSeguro(String id) {
+        if (!StringUtils.hasText(id)) {
+            return;
+        }
+        try {
+            contactoCorreoRepository.delete(id);
+        } catch (RuntimeException ex) {
+            log.warn("No se pudo eliminar el contacto de correo {} al revertir el alta del cliente: {}", id, ex.getMessage());
+        }
+    }
+
+    private void actualizarDireccionRelacion(ClienteDto dto,
+                                             DireccionDto direccion,
+                                             Deque<Runnable> rollbacks) {
+        if (direccion == null) {
+            throw new IllegalArgumentException("Debe proporcionar los datos de la dirección.");
+        }
+        validarDireccionNueva(direccion);
+        if (StringUtils.hasText(dto.getDireccionId())) {
+            direccionRepository.update(dto.getDireccionId(), direccion);
+            return;
+        }
+        DireccionDto creada = direccionRepository.create(direccion);
+        dto.setDireccionId(creada.getId());
+        rollbacks.push(() -> eliminarDireccionSeguro(creada.getId()));
+    }
+
+    private void actualizarImagenRelacion(ClienteDto dto,
+                                          ImagenDto imagen,
+                                          Deque<Runnable> rollbacks) {
+        if (imagen == null) {
+            throw new IllegalArgumentException("Debe proporcionar los datos de la imagen.");
+        }
+        validarImagenNueva(imagen);
+        if (StringUtils.hasText(dto.getImagenId())) {
+            imagenRepository.update(dto.getImagenId(), imagen);
+            return;
+        }
+        ImagenDto creada = imagenRepository.create(imagen);
+        dto.setImagenId(creada.getId());
+        rollbacks.push(() -> eliminarImagenSeguro(creada.getId()));
+    }
+
+    private void actualizarContactoRelacion(ClienteDto dto,
+                                            ContactoTelefonicoDto contactoTelefonico,
+                                            ContactoCorreoElectronicoDto contactoCorreo,
+                                            String tipoContactoPreferido,
+                                            Deque<Runnable> rollbacks,
+                                            Deque<Runnable> postCommit) {
+        boolean usarCorreo = usaContactoCorreo(tipoContactoPreferido);
+        String contactoActualId = dto.getContactoId();
+        ContactoTelefonicoDto actualTel = obtenerContactoTelefonico(contactoActualId);
+        ContactoCorreoElectronicoDto actualCorreo = actualTel == null
+                ? obtenerContactoCorreo(contactoActualId)
+                : null;
+
+        if (usarCorreo) {
+            String nuevoId = guardarContactoCorreoEdicion(actualCorreo, contactoCorreo, rollbacks);
+            dto.setContactoId(nuevoId);
+            if (actualTel != null && StringUtils.hasText(actualTel.getId())) {
+                postCommit.push(() -> eliminarContactoTelefonicoSeguro(actualTel.getId()));
+            }
+        } else {
+            String nuevoId = guardarContactoTelefonicoEdicion(actualTel, contactoTelefonico, rollbacks);
+            dto.setContactoId(nuevoId);
+            if (actualCorreo != null && StringUtils.hasText(actualCorreo.getId())) {
+                postCommit.push(() -> eliminarContactoCorreoSeguro(actualCorreo.getId()));
+            }
+        }
+    }
+
+    private String guardarContactoTelefonicoEdicion(ContactoTelefonicoDto actual,
+                                                    ContactoTelefonicoDto datos,
+                                                    Deque<Runnable> rollbacks) {
+        validarContactoTelefonicoNuevo(datos);
+        if (actual != null && StringUtils.hasText(actual.getId())) {
+            datos.setId(actual.getId());
+            contactoTelefonicoRepository.update(actual.getId(), datos);
+            return actual.getId();
+        }
+        ContactoTelefonicoDto creado = contactoTelefonicoRepository.create(datos);
+        rollbacks.push(() -> eliminarContactoTelefonicoSeguro(creado.getId()));
+        return creado.getId();
+    }
+
+    private String guardarContactoCorreoEdicion(ContactoCorreoElectronicoDto actual,
+                                                ContactoCorreoElectronicoDto datos,
+                                                Deque<Runnable> rollbacks) {
+        validarContactoCorreoNuevo(datos);
+        if (actual != null && StringUtils.hasText(actual.getId())) {
+            datos.setId(actual.getId());
+            contactoCorreoRepository.update(actual.getId(), datos);
+            return actual.getId();
+        }
+        ContactoCorreoElectronicoDto creado = contactoCorreoRepository.create(datos);
+        rollbacks.push(() -> eliminarContactoCorreoSeguro(creado.getId()));
+        return creado.getId();
+    }
+
+    private void ejecutarPostCommit(Deque<Runnable> tareas) {
+        while (!tareas.isEmpty()) {
+            Runnable task = tareas.pop();
+            try {
+                task.run();
+            } catch (RuntimeException ex) {
+                log.warn("No se pudo ejecutar la acción posterior al guardado: {}", ex.getMessage());
+            }
+        }
+    }
+
+    private boolean usaContactoCorreo(String tipoContactoPreferido) {
+        return StringUtils.hasText(tipoContactoPreferido)
+                && ("CORREO".equalsIgnoreCase(tipoContactoPreferido)
+                || "EMAIL".equalsIgnoreCase(tipoContactoPreferido));
+    }
+
+    private void validarDireccionNueva(DireccionDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Debe completar los datos de la dirección.");
+        }
+        if (!StringUtils.hasText(dto.getCalle())) {
+            throw new IllegalArgumentException("La calle de la dirección es obligatoria.");
+        }
+        if (!StringUtils.hasText(dto.getLocalidadId())) {
+            throw new IllegalArgumentException("Debe seleccionar la localidad de la dirección.");
+        }
+    }
+
+    private void validarImagenNueva(ImagenDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Debe proporcionar los datos de la imagen del cliente.");
+        }
+        if (dto.getContenido() == null || dto.getContenido().length == 0) {
+            throw new IllegalArgumentException("El archivo de imagen es obligatorio.");
+        }
+        if (!StringUtils.hasText(dto.getNombre())) {
+            dto.setNombre("Imagen cliente");
+        }
+        if (!StringUtils.hasText(dto.getMime())) {
+            dto.setMime("image/png");
+        }
+        if (dto.getTipoImagen() == null) {
+            throw new IllegalArgumentException("Debe seleccionar el tipo de imagen.");
+        }
+    }
+
+    private void validarContactoTelefonicoNuevo(ContactoTelefonicoDto dto) {
+        if (dto == null || !StringUtils.hasText(dto.getTelefono())) {
+            throw new IllegalArgumentException("Debe ingresar un teléfono de contacto.");
+        }
+        if (dto.getTipoTelefono() == null) {
+            throw new IllegalArgumentException("Debe seleccionar el tipo de teléfono.");
+        }
+        if (dto.getTipoContacto() == null) {
+            throw new IllegalArgumentException("Debe indicar el tipo de contacto telefónico.");
+        }
+    }
+
+    private void validarContactoCorreoNuevo(ContactoCorreoElectronicoDto dto) {
+        if (dto == null || !StringUtils.hasText(dto.getEmail())) {
+            throw new IllegalArgumentException("Debe ingresar un correo electrónico de contacto.");
+        }
+        if (dto.getTipoContacto() == null) {
+            throw new IllegalArgumentException("Debe indicar el tipo de contacto de correo.");
+        }
     }
 
     private DatosClienteRelacionado cargarDatosRelacionados(List<ClienteDto> clientes) {
@@ -484,7 +798,7 @@ public class ClienteService {
             return null;
         }
         StringBuilder sb = new StringBuilder(contacto.getTelefono());
-        if (StringUtils.hasText(contacto.getTipoTelefono())) {
+        if (contacto.getTipoTelefono() != null) {
             sb.append(" (").append(contacto.getTipoTelefono()).append(')');
         }
         return sb.toString();
@@ -533,7 +847,7 @@ public class ClienteService {
         return sb.length() > 0 ? sb.toString() : null;
     }
 
-    private ContactoTelefonicoDto obtenerContactoTelefonico(String contactoId) {
+    public ContactoTelefonicoDto obtenerContactoTelefonico(String contactoId) {
         if (!StringUtils.hasText(contactoId)) {
             return null;
         }
@@ -544,7 +858,7 @@ public class ClienteService {
         }
     }
 
-    private DireccionDto obtenerDireccion(String direccionId) {
+    public DireccionDto obtenerDireccion(String direccionId) {
         if (!StringUtils.hasText(direccionId)) {
             return null;
         }
@@ -555,7 +869,7 @@ public class ClienteService {
         }
     }
 
-    private ContactoCorreoElectronicoDto obtenerContactoCorreo(String contactoId) {
+    public ContactoCorreoElectronicoDto obtenerContactoCorreo(String contactoId) {
         if (!StringUtils.hasText(contactoId)) {
             return null;
         }
@@ -566,7 +880,7 @@ public class ClienteService {
         }
     }
 
-    private ImagenDto obtenerImagen(String imagenId) {
+    public ImagenDto obtenerImagen(String imagenId) {
         if (!StringUtils.hasText(imagenId)) {
             return null;
         }
@@ -585,6 +899,10 @@ public class ClienteService {
     }
 
     private void validar(ClienteDto dto) {
+        validar(dto, true);
+    }
+
+    private void validar(ClienteDto dto, boolean validarRelaciones) {
         if (dto == null) {
             throw new IllegalArgumentException("Los datos del cliente no pueden ser nulos.");
         }
@@ -606,9 +924,9 @@ public class ClienteService {
         if (!StringUtils.hasText(dto.getNacionalidadId())) {
             throw new IllegalArgumentException("Debe indicar la nacionalidad del cliente.");
         }
-        if (!StringUtils.hasText(dto.getContactoId())
+        if (validarRelaciones && (!StringUtils.hasText(dto.getContactoId())
                 || !StringUtils.hasText(dto.getDireccionId())
-                || !StringUtils.hasText(dto.getImagenId())) {
+                || !StringUtils.hasText(dto.getImagenId()))) {
             throw new IllegalArgumentException("Contacto, dirección e imagen son obligatorios.");
         }
     }

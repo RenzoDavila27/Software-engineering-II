@@ -78,7 +78,7 @@ public class ClienteCatalogoService {
         } else {
             sb.append("Sin número");
         }
-        if (StringUtils.hasText(dto.getTipoTelefono())) {
+        if (dto.getTipoTelefono() != null) {
             sb.append(" (").append(dto.getTipoTelefono()).append(")");
         }
         return sb.toString();

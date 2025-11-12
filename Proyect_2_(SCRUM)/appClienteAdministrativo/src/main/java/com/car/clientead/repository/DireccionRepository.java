@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -41,6 +42,42 @@ public class DireccionRepository {
             return restTemplate.getForObject(baseUrl + "/" + id, DireccionDto.class);
         } catch (RestClientException ex) {
             throw new ApiClientException("No se pudo obtener la dirección con ID: " + id, ex);
+        }
+    }
+
+    public DireccionDto create(DireccionDto dto) {
+        try {
+            ResponseEntity<DireccionDto> response = restTemplate.postForEntity(
+                    baseUrl,
+                    dto,
+                    DireccionDto.class
+            );
+            return response.getBody();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo crear la dirección.", ex);
+        }
+    }
+
+    public DireccionDto update(String id, DireccionDto dto) {
+        try {
+            HttpEntity<DireccionDto> requestEntity = new HttpEntity<>(dto);
+            ResponseEntity<DireccionDto> response = restTemplate.exchange(
+                    baseUrl + "/" + id,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    DireccionDto.class
+            );
+            return response.getBody();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo actualizar la dirección con ID: " + id, ex);
+        }
+    }
+
+    public void delete(String id) {
+        try {
+            restTemplate.delete(baseUrl + "/" + id);
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo eliminar la dirección con ID: " + id, ex);
         }
     }
 }

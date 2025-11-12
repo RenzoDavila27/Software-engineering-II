@@ -21,8 +21,12 @@
 
       <form th:action="@{${item.id} != null ? '/clientes/modificar/' + ${item.id} : '/clientes/alta'}"
             th:object="${item}"
-            method="post">
+            method="post"
+            enctype="multipart/form-data">
         <div th:replace="~{fragments/fragments :: csrfInput}"></div>
+        <input type="hidden" th:field="*{contactoId}">
+        <input type="hidden" th:field="*{direccionId}">
+        <input type="hidden" th:field="*{imagenId}">
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">Nombre</label>
@@ -38,7 +42,13 @@
             <div th:if="${modoVer}" class="form-control-plaintext border rounded py-2 px-3">
               <span th:text="${detalleFechaNacimiento != null ? #temporals.format(detalleFechaNacimiento, 'dd/MM/yyyy') : 'Sin fecha disponible'}"></span>
             </div>
-            <input th:unless="${modoVer}" type="date" class="form-control" th:field="*{fechaNacimiento}" required>
+            <input th:unless="${modoVer}"
+                   type="date"
+                   class="form-control"
+                   id="fechaNacimiento"
+                   name="fechaNacimiento"
+                   th:value="${item.fechaNacimiento != null ? #temporals.format(item.fechaNacimiento, 'yyyy-MM-dd') : ''}"
+                   required>
           </div>
           <div class="col-md-4 mb-3">
             <label class="form-label">Tipo de documento</label>
@@ -72,41 +82,203 @@
           </div>
 
           <div class="col-md-4 mb-3">
-            <label class="form-label">Contacto</label>
+            <label class="form-label">Contacto <span class="text-danger">*</span></label>
             <div th:if="${modoVer}" class="form-control-plaintext border rounded py-2 px-3">
               <span th:text="${detalleContacto != null ? detalleContacto : 'Sin datos de contacto'}"></span>
             </div>
-            <select th:unless="${modoVer}" class="form-select" th:field="*{contactoId}" required>
-              <option value="">Seleccione un contacto</option>
-              <option th:each="contacto : ${contactosDisponibles}"
-                      th:value="${contacto.value}"
-                      th:text="${contacto.label}"></option>
-            </select>
+            <div th:if="${!modoVer}">
+              <div th:if="${mostrarRelacionesInline}" class="border rounded p-3">
+                <div class="mb-2">
+                  <label class="form-label">Tipo de contacto <span class="text-danger">*</span></label>
+                  <select class="form-select" name="tipoContactoNuevo" id="tipoContactoNuevoSelect" required>
+                    <option value="TELEFONO" th:selected="${tipoContactoNuevo == null || tipoContactoNuevo == 'TELEFONO'}">Teléfono</option>
+                    <option value="CORREO" th:selected="${tipoContactoNuevo == 'CORREO'}">Correo electrónico</option>
+                  </select>
+                </div>
+                <div class="row g-2 contacto-nuevo" data-contacto-section="TELEFONO">
+                  <div class="col-12">
+                    <label class="form-label">Número telefónico <span class="text-danger">*</span></label>
+                    <input type="text"
+                           class="form-control"
+                           name="nuevoContactoTelefonico.telefono"
+                           th:value="${nuevoContactoTelefonico.telefono}"
+                           placeholder="+54 9 11 5555 4444"
+                           data-required="true">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Tipo de teléfono <span class="text-danger">*</span></label>
+                    <select class="form-select"
+                            name="nuevoContactoTelefonico.tipoTelefono"
+                            data-required="true">
+                      <option value="" th:selected="${nuevoContactoTelefonico.tipoTelefono == null}">Seleccione...</option>
+                      <option th:each="tipo : ${tiposTelefono}"
+                              th:value="${tipo}"
+                              th:text="${tipo}"
+                              th:selected="${nuevoContactoTelefonico.tipoTelefono == tipo}"></option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Tipo de contacto <span class="text-danger">*</span></label>
+                    <select class="form-select"
+                            name="nuevoContactoTelefonico.tipoContacto"
+                            data-required="true">
+                      <option value="" th:selected="${nuevoContactoTelefonico.tipoContacto == null}">Seleccione...</option>
+                      <option th:each="tipo : ${tiposContacto}"
+                              th:value="${tipo}"
+                              th:text="${tipo}"
+                              th:selected="${nuevoContactoTelefonico.tipoContacto == tipo}"></option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Observación</label>
+                    <input type="text"
+                           class="form-control"
+                           name="nuevoContactoTelefonico.observacion"
+                           th:value="${nuevoContactoTelefonico.observacion}"
+                           placeholder="Notas adicionales">
+                  </div>
+                </div>
+                <div class="row g-2 mt-2 contacto-nuevo d-none" data-contacto-section="CORREO">
+                  <div class="col-12">
+                    <label class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+                    <input type="email"
+                           class="form-control"
+                           name="nuevoContactoCorreo.email"
+                           th:value="${nuevoContactoCorreo.email}"
+                           placeholder="cliente@correo.com"
+                           data-required="true">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Tipo de contacto <span class="text-danger">*</span></label>
+                    <select class="form-select"
+                            name="nuevoContactoCorreo.tipoContacto"
+                            data-required="true">
+                      <option value="" th:selected="${nuevoContactoCorreo.tipoContacto == null}">Seleccione...</option>
+                      <option th:each="tipo : ${tiposContacto}"
+                              th:value="${tipo}"
+                              th:text="${tipo}"
+                              th:selected="${nuevoContactoCorreo.tipoContacto == tipo}"></option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Observación</label>
+                    <input type="text"
+                           class="form-control"
+                           name="nuevoContactoCorreo.observacion"
+                           th:value="${nuevoContactoCorreo.observacion}"
+                           placeholder="Notas adicionales">
+                  </div>
+                </div>
+                <small class="text-muted">Solo se utilizarán los datos del tipo seleccionado.</small>
+              </div>
+              <div th:if="${!mostrarRelacionesInline}">
+                <select class="form-select" th:field="*{contactoId}" required>
+                  <option value="">Seleccione un contacto</option>
+                  <option th:each="contacto : ${contactosDisponibles}"
+                          th:value="${contacto.value}"
+                          th:text="${contacto.label}"></option>
+                </select>
+              </div>
+            </div>
           </div>
           <div class="col-md-4 mb-3">
-            <label class="form-label">Dirección (registro)</label>
+            <label class="form-label">Dirección (registro) <span class="text-danger">*</span></label>
             <div th:if="${modoVer}" class="form-control-plaintext border rounded py-2 px-3">
               <span th:text="${detalleDireccion != null ? detalleDireccion : 'Sin dirección registrada'}"></span>
             </div>
-            <select th:unless="${modoVer}" class="form-select" th:field="*{direccionId}" required>
-              <option value="">Seleccione una dirección</option>
-              <option th:each="direccion : ${direccionesDisponibles}"
-                      th:value="${direccion.value}"
-                      th:text="${direccion.label}"></option>
-            </select>
+            <div th:if="${!modoVer}">
+              <div th:if="${mostrarRelacionesInline}" class="border rounded p-3" th:object="${nuevaDireccion}">
+                <div class="row g-2">
+                  <div class="col-12">
+                    <label class="form-label">Calle</label>
+                    <input type="text" class="form-control" th:field="*{calle}" required>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Numeración</label>
+                    <input type="text" class="form-control" th:field="*{numeracion}">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Barrio</label>
+                    <input type="text" class="form-control" th:field="*{barrio}">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Manzana / Piso</label>
+                    <input type="text" class="form-control" th:field="*{manzanaPiso}">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Casa / Departamento</label>
+                    <input type="text" class="form-control" th:field="*{casaDepartamento}">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Referencia</label>
+                    <input type="text" class="form-control" th:field="*{referencia}">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Localidad</label>
+                    <select class="form-select" th:field="*{localidadId}" required>
+                      <option value="">Seleccione una localidad</option>
+                      <option th:each="loc : ${localidades}"
+                              th:value="${loc.id}"
+                              th:text="${loc.nombre}"></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div th:if="${!mostrarRelacionesInline}">
+                <select class="form-select" th:field="*{direccionId}" required>
+                  <option value="">Seleccione una dirección</option>
+                  <option th:each="direccion : ${direccionesDisponibles}"
+                          th:value="${direccion.value}"
+                          th:text="${direccion.label}"></option>
+                </select>
+              </div>
+            </div>
           </div>
           <div class="col-md-4 mb-3">
-            <label class="form-label">Imagen</label>
+            <label class="form-label">Imagen <span class="text-danger">*</span></label>
             <div th:if="${modoVer}" class="border rounded py-2 px-3 text-center">
               <img th:if="${imagenDataUrl != null}" th:src="${imagenDataUrl}" alt="Foto del cliente" style="max-width: 200px; height: auto;">
               <span th:if="${imagenDataUrl == null}">Sin imagen disponible</span>
             </div>
-            <select th:unless="${modoVer}" class="form-select" th:field="*{imagenId}" required>
-              <option value="">Seleccione una imagen</option>
-              <option th:each="imagen : ${imagenesDisponibles}"
-                      th:value="${imagen.value}"
-                      th:text="${imagen.label}"></option>
-            </select>
+            <div th:if="${!modoVer}">
+              <div th:if="${mostrarRelacionesInline}" class="border rounded p-3" th:object="${nuevaImagen}">
+                <div class="mb-2">
+                  <label class="form-label">Nombre de la imagen</label>
+                  <input type="text"
+                         class="form-control"
+                         name="nuevaImagen.nombre"
+                         th:value="${nuevaImagen != null ? nuevaImagen.nombre : ''}"
+                         placeholder="Foto documento"
+                         required>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Tipo</label>
+                  <select class="form-select" th:field="*{tipoImagen}" required>
+                    <option value="">Seleccione...</option>
+                    <option th:each="tipo : ${tiposImagen}"
+                            th:value="${tipo}"
+                            th:text="${tipo}"></option>
+                  </select>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Archivo</label>
+                  <input type="file"
+                         class="form-control"
+                         name="imagenArchivo"
+                         accept="image/*"
+                         th:attr="required=${esAltaCliente} ? 'required' : null">
+                </div>
+                <small class="text-muted">La imagen se asociará automáticamente al guardar el cliente.</small>
+              </div>
+              <div th:if="${!mostrarRelacionesInline}">
+                <select class="form-select" th:field="*{imagenId}" required>
+                  <option value="">Seleccione una imagen</option>
+                  <option th:each="imagen : ${imagenesDisponibles}"
+                          th:value="${imagen.value}"
+                          th:text="${imagen.label}"></option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -126,5 +298,26 @@
     </footer>
   </div>
 </div>
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+    const selector = document.getElementById('tipoContactoNuevoSelect');
+    if (!selector) {
+      return;
+    }
+    const sections = document.querySelectorAll('.contacto-nuevo');
+    const updateSections = () => {
+      sections.forEach(section => {
+        const isActive = section.dataset.contactoSection === selector.value;
+        section.classList.toggle('d-none', !isActive);
+        section.querySelectorAll('input, select, textarea').forEach(field => {
+          const mustRequire = field.dataset.required === 'true';
+          field.required = isActive && mustRequire;
+        });
+      });
+    };
+    updateSections();
+    selector.addEventListener('change', updateSections);
+  });
+</script>
 </body>
 </html>

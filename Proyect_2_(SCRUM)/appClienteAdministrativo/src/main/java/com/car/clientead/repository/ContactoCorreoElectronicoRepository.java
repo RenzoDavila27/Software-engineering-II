@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -41,6 +42,42 @@ public class ContactoCorreoElectronicoRepository {
             return restTemplate.getForObject(baseUrl + "/" + id, ContactoCorreoElectronicoDto.class);
         } catch (RestClientException ex) {
             throw new ApiClientException("No se pudo obtener el contacto de correo con ID: " + id, ex);
+        }
+    }
+
+    public ContactoCorreoElectronicoDto create(ContactoCorreoElectronicoDto dto) {
+        try {
+            ResponseEntity<ContactoCorreoElectronicoDto> response = restTemplate.postForEntity(
+                    baseUrl,
+                    dto,
+                    ContactoCorreoElectronicoDto.class
+            );
+            return response.getBody();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo crear el contacto de correo.", ex);
+        }
+    }
+
+    public ContactoCorreoElectronicoDto update(String id, ContactoCorreoElectronicoDto dto) {
+        try {
+            HttpEntity<ContactoCorreoElectronicoDto> requestEntity = new HttpEntity<>(dto);
+            ResponseEntity<ContactoCorreoElectronicoDto> response = restTemplate.exchange(
+                    baseUrl + "/" + id,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    ContactoCorreoElectronicoDto.class
+            );
+            return response.getBody();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo actualizar el contacto de correo con ID: " + id, ex);
+        }
+    }
+
+    public void delete(String id) {
+        try {
+            restTemplate.delete(baseUrl + "/" + id);
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo eliminar el contacto de correo con ID: " + id, ex);
         }
     }
 }

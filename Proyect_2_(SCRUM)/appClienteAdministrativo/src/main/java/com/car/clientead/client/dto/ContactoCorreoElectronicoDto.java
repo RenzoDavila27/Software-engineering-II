@@ -1,5 +1,7 @@
 package com.car.clientead.client.dto;
 
+import com.car.clientead.client.dto.enums.TipoContacto;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,6 +10,6 @@ import lombok.EqualsAndHashCode;
 public class ContactoCorreoElectronicoDto extends BaseDto<String> {
 
     private String email;
-    private String tipoContacto;
+    private TipoContacto tipoContacto;
     private String observacion;
 }

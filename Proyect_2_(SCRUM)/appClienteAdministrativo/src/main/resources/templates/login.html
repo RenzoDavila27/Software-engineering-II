@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso | FioriRentCar</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+</head>
+<body class="login-body">
+  <main class="login-layout">
+    <section class="login-card">
+      <div class="login-card-header">
+        <span class="login-eyebrow">Panel administrativo</span>
+        <h2>Iniciar sesión</h2>
+        <p>Usá las credenciales entregadas por el equipo de operaciones.</p>
+      </div>
+
+      <div class="login-alert error" th:if="${param.error}">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>Usuario o contraseña incorrectos. Verificá la información e intentá nuevamente.</span>
+      </div>
+
+      <div class="login-alert success" th:if="${param.logout}">
+        <i class="bi bi-check-circle"></i>
+        <span>La sesión se cerró correctamente. Podés identificarte otra vez cuando lo necesites.</span>
+      </div>
+
+      <form class="login-form" th:action="@{/login}" method="post">
+        <div th:replace="~{fragments/fragments :: csrfInput}"></div>
+
+        <div class="login-field">
+          <label for="username">Usuario</label>
+          <input id="username"
+                 class="login-input"
+                 type="text"
+                 name="username"
+                 placeholder="Ingresá tu usuario"
+                 th:value="${param.username}"
+                 autocomplete="username"
+                 required>
+        </div>
+
+        <div class="login-field">
+          <label for="password">Contraseña</label>
+          <input id="password"
+                 class="login-input"
+                 type="password"
+                 name="password"
+                 placeholder="••••••••"
+                 autocomplete="current-password"
+                 required>
+        </div>
+
+        <div class="login-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-box-arrow-in-right"></i>
+            Ingresar
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
