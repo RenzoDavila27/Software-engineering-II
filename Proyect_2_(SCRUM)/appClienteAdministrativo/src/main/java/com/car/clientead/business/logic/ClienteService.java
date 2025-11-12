@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -53,7 +54,10 @@ import com.car.clientead.repository.DireccionRepository;
 import com.car.clientead.repository.ImagenRepository;
 import com.car.clientead.repository.VehiculoRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ClienteService {
 
     @Autowired
@@ -295,17 +299,20 @@ public class ClienteService {
                 .filter(StringUtils::hasText)
                 .collect(Collectors.toSet());
 
-        datos.alquileresPorCliente = alquilerRepository.findAll().stream()
+        List<AlquilerDto> alquileres = safeListFetch(alquilerRepository::findAll, "alquileres");
+        datos.alquileresPorCliente = alquileres.stream()
                 .filter(Objects::nonNull)
                 .filter(a -> clienteIds.contains(a.getClienteId()))
                 .collect(Collectors.groupingBy(AlquilerDto::getClienteId));
 
-        datos.vehiculosPorId = vehiculoRepository.findAll().stream()
+        List<VehiculoDto> vehiculos = safeListFetch(vehiculoRepository::findAll, "vehículos");
+        datos.vehiculosPorId = vehiculos.stream()
                 .filter(Objects::nonNull)
                 .filter(v -> StringUtils.hasText(v.getId()))
                 .collect(Collectors.toMap(VehiculoDto::getId, Function.identity(), (a, b) -> a));
 
-        datos.montoPorAlquiler = detalleFacturaRepository.findAll().stream()
+        List<DetalleFacturaDto> detalles = safeListFetch(detalleFacturaRepository::findAll, "detalles de factura");
+        datos.montoPorAlquiler = detalles.stream()
                 .filter(Objects::nonNull)
                 .filter(det -> StringUtils.hasText(det.getAlquilerId()))
                 .collect(Collectors.groupingBy(
@@ -313,7 +320,8 @@ public class ClienteService {
                         Collectors.summingDouble(det -> det.getSubtotal() != null ? det.getSubtotal() : 0d)
                 ));
 
-        datos.nacionalidades = nacionalidadService.listar().stream()
+        List<NacionalidadDto> nacionalidades = safeListFetch(nacionalidadService::listar, "nacionalidades");
+        datos.nacionalidades = nacionalidades.stream()
                 .filter(Objects::nonNull)
                 .filter(n -> StringUtils.hasText(n.getId()))
                 .collect(Collectors.toMap(NacionalidadDto::getId, NacionalidadDto::getNombre, (a, b) -> a));
@@ -341,6 +349,16 @@ public class ClienteService {
                         .filter(Objects::nonNull)
                         .collect(Collectors.toMap(DireccionDto::getId, Function.identity(), (a, b) -> a));
         return datos;
+    }
+
+    private <T> List<T> safeListFetch(Supplier<List<T>> supplier, String descripcion) {
+        try {
+            List<T> result = supplier.get();
+            return result != null ? result : Collections.emptyList();
+        } catch (ApiClientException ex) {
+            log.warn("No se pudo obtener {}: {}. Se continuará con datos vacíos.", descripcion, ex.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private ClienteResumenView armarResumen(ClienteDto cliente, DatosClienteRelacionado datos) {

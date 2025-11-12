@@ -10,9 +10,9 @@
 </head>
 <body>
 <div class="app">
-  <aside th:replace="fragments/fragments :: sidebar"></aside>
+  <aside th:replace="~{fragments/fragments :: sidebar}"></aside>
   <div class="main">
-    <header th:replace="fragments/fragments :: topnav"></header>
+    <header th:replace="~{fragments/fragments :: topnav}"></header>
 
     <main class="content container mt-4">
       <h2 th:text="${titleForm}">Alta / Modificación de Cliente</h2>
@@ -22,6 +22,7 @@
       <form th:action="@{${item.id} != null ? '/clientes/modificar/' + ${item.id} : '/clientes/alta'}"
             th:object="${item}"
             method="post">
+        <div th:replace="~{fragments/fragments :: csrfInput}"></div>
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">Nombre</label>
@@ -75,14 +76,24 @@
             <div th:if="${modoVer}" class="form-control-plaintext border rounded py-2 px-3">
               <span th:text="${detalleContacto != null ? detalleContacto : 'Sin datos de contacto'}"></span>
             </div>
-            <input th:unless="${modoVer}" type="text" class="form-control" th:field="*{contactoId}" required>
+            <select th:unless="${modoVer}" class="form-select" th:field="*{contactoId}" required>
+              <option value="">Seleccione un contacto</option>
+              <option th:each="contacto : ${contactosDisponibles}"
+                      th:value="${contacto.value}"
+                      th:text="${contacto.label}"></option>
+            </select>
           </div>
           <div class="col-md-4 mb-3">
             <label class="form-label">Dirección (registro)</label>
             <div th:if="${modoVer}" class="form-control-plaintext border rounded py-2 px-3">
               <span th:text="${detalleDireccion != null ? detalleDireccion : 'Sin dirección registrada'}"></span>
             </div>
-            <input th:unless="${modoVer}" type="text" class="form-control" th:field="*{direccionId}" required>
+            <select th:unless="${modoVer}" class="form-select" th:field="*{direccionId}" required>
+              <option value="">Seleccione una dirección</option>
+              <option th:each="direccion : ${direccionesDisponibles}"
+                      th:value="${direccion.value}"
+                      th:text="${direccion.label}"></option>
+            </select>
           </div>
           <div class="col-md-4 mb-3">
             <label class="form-label">Imagen</label>
@@ -90,7 +101,12 @@
               <img th:if="${imagenDataUrl != null}" th:src="${imagenDataUrl}" alt="Foto del cliente" style="max-width: 200px; height: auto;">
               <span th:if="${imagenDataUrl == null}">Sin imagen disponible</span>
             </div>
-            <input th:unless="${modoVer}" type="text" class="form-control" th:field="*{imagenId}" required>
+            <select th:unless="${modoVer}" class="form-select" th:field="*{imagenId}" required>
+              <option value="">Seleccione una imagen</option>
+              <option th:each="imagen : ${imagenesDisponibles}"
+                      th:value="${imagen.value}"
+                      th:text="${imagen.label}"></option>
+            </select>
           </div>
         </div>
 

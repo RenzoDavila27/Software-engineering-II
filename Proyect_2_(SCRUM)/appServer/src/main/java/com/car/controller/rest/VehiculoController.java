@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vehiculos")
+@RequestMapping("/api/vehiculos")
 public class VehiculoController extends BaseController<Vehiculo, VehiculoDto, String> {
 
     private final VehiculoService vehiculoService;

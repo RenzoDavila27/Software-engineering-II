@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.car.clientead.business.logic.ClienteCatalogoService;
 import com.car.clientead.business.logic.ClienteService;
 import com.car.clientead.business.logic.NacionalidadService;
 import com.car.clientead.business.logic.view.ClienteResumenView;
@@ -39,6 +40,9 @@ public class ClienteController {
 
     @Autowired
     private NacionalidadService nacionalidadService;
+
+    @Autowired
+    private ClienteCatalogoService clienteCatalogoService;
 
     @GetMapping
     public String listar(Model model) {
@@ -159,6 +163,7 @@ public class ClienteController {
         model.addAttribute("modoVer", modoVer);
         model.addAttribute("tiposDocumento", TipoDocumento.values());
         cargarNacionalidades(model);
+        cargarCatalogosCliente(model);
 
         if (modoVer) {
             ClienteResumenView view = resumen != null ? resumen : clienteService.obtenerResumen(dto.getId());
@@ -181,11 +186,36 @@ public class ClienteController {
             model.addAttribute("nacionalidades", nacionalidadService.listar());
         } catch (ApiClientException ex) {
             model.addAttribute("nacionalidades", Collections.<NacionalidadDto>emptyList());
-            Object existing = model.asMap().get("errorMessage");
-            String message = existing != null
-                    ? existing.toString() + " " + ex.getMessage()
-                    : ex.getMessage();
-            model.addAttribute("errorMessage", message);
+            appendError(model, ex.getMessage());
         }
+    }
+
+    private void cargarCatalogosCliente(Model model) {
+        try {
+            model.addAttribute("contactosDisponibles", clienteCatalogoService.listarContactos());
+        } catch (ApiClientException ex) {
+            model.addAttribute("contactosDisponibles", Collections.emptyList());
+            appendError(model, ex.getMessage());
+        }
+        try {
+            model.addAttribute("direccionesDisponibles", clienteCatalogoService.listarDirecciones());
+        } catch (ApiClientException ex) {
+            model.addAttribute("direccionesDisponibles", Collections.emptyList());
+            appendError(model, ex.getMessage());
+        }
+        try {
+            model.addAttribute("imagenesDisponibles", clienteCatalogoService.listarImagenes());
+        } catch (ApiClientException ex) {
+            model.addAttribute("imagenesDisponibles", Collections.emptyList());
+            appendError(model, ex.getMessage());
+        }
+    }
+
+    private void appendError(Model model, String newMessage) {
+        Object existing = model.asMap().get("errorMessage");
+        String message = existing != null
+                ? existing.toString() + " " + newMessage
+                : newMessage;
+        model.addAttribute("errorMessage", message);
     }
 }

@@ -11,9 +11,9 @@
 </head>
 <body>
 <div class="app">
-  <aside th:replace="fragments/fragments :: sidebar"></aside>
+  <aside th:replace="~{fragments/fragments :: sidebar}"></aside>
   <div class="main">
-    <header th:replace="fragments/fragments :: topnav"></header>
+    <header th:replace="~{fragments/fragments :: topnav}"></header>
 
     <main class="content container mt-4">
       <div class="page-header">
@@ -30,6 +30,7 @@
 
       <form th:action="@{${item.id} != null ? '/promociones/modificar/' + ${item.id} : '/promociones/alta'}"
             th:object="${item}" method="post">
+        <div th:replace="~{fragments/fragments :: csrfInput}"></div>
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">Código</label>

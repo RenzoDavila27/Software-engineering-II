@@ -11,9 +11,9 @@
 </head>
 <body>
 <div class="app">
-  <aside th:replace="fragments/fragments :: sidebar"></aside>
+  <aside th:replace="~{fragments/fragments :: sidebar}"></aside>
   <div class="main">
-    <header th:replace="fragments/fragments :: topnav"></header>
+    <header th:replace="~{fragments/fragments :: topnav}"></header>
 
     <main class="content container mt-4">
       <h2 th:text="${titleForm}">Alta/Modificación de Usuario</h2>
@@ -23,6 +23,7 @@
       <form th:action="@{${item.id} != null ? '/usuarios/modificar/' + ${item.id} : '/usuarios/alta'}"
             th:object="${item}"
             method="post">
+        <div th:replace="~{fragments/fragments :: csrfInput}"></div>
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label">Nombre de Usuario</label>

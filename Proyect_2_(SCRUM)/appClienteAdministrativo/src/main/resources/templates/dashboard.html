@@ -98,10 +98,10 @@
 </head>
 <body>
 <div class="app">
-  <aside th:replace="fragments/fragments :: sidebar"></aside>
+  <aside th:replace="~{fragments/fragments :: sidebar}"></aside>
 
   <div class="main">
-    <header th:replace="fragments/fragments :: topnav"></header>
+    <header th:replace="~{fragments/fragments :: topnav}"></header>
 
     <main class="content">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">

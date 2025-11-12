@@ -33,6 +33,16 @@ public class AlquilerService {
                 .collect(Collectors.toList());
     }
 
+    public List<AlquilerDto> listarPorCliente(String clienteId) {
+        if (!StringUtils.hasText(clienteId)) {
+            return Collections.emptyList();
+        }
+        return repository.findAll().stream()
+                .filter(this::registroValido)
+                .filter(dto -> clienteId.equals(dto.getClienteId()))
+                .collect(Collectors.toList());
+    }
+
     public AlquilerDto consultar(String id) {
         return repository.findById(id);
     }

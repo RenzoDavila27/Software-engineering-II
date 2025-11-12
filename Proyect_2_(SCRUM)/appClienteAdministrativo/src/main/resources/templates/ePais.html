@@ -10,9 +10,9 @@
 </head>
 <body>
 <div class="app">
-  <aside th:replace="fragments/fragments :: sidebar"></aside>
+  <aside th:replace="~{fragments/fragments :: sidebar}"></aside>
   <div class="main">
-    <header th:replace="fragments/fragments :: topnav"></header>
+    <header th:replace="~{fragments/fragments :: topnav}"></header>
 
     <main class="content container mt-4">
       <h2 th:text="${titleForm}">Alta/Modificación de País</h2>
@@ -22,6 +22,7 @@
       <form th:action="@{${item.id} != null ? '/paises/modificar/' + ${item.id} : '/paises/alta'}"
             th:object="${item}"
             method="post">
+        <div th:replace="~{fragments/fragments :: csrfInput}"></div>
         <div class="mb-3">
           <label class="form-label">Nombre</label>
           <input type="text" class="form-control" th:field="*{nombre}" th:disabled="${modoVer}" required>

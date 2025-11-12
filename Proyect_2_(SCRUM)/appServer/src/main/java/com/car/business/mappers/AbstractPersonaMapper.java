@@ -5,6 +5,9 @@ import com.car.business.domain.Direccion;
 import com.car.business.domain.Imagen;
 import com.car.business.domain.Persona;
 import com.car.business.dto.PersonaDto;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.util.StringUtils;
 
 public abstract class AbstractPersonaMapper<E extends Persona, D extends PersonaDto> implements BaseMapper<E, D, String> {
 
@@ -46,7 +49,17 @@ public abstract class AbstractPersonaMapper<E extends Persona, D extends Persona
         entity.setTipoDocumento(dto.getTipoDocumento());
         entity.setNumeroDocumento(dto.getNumeroDocumento());
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
-        // entity.setContactos(resolver.getReferences(Contacto.class, dto.getContactoIds())); // Assuming PersonaDto will have getContactoIds()
+        if (StringUtils.hasText(dto.getContactoId())) {
+            Contacto contacto = resolver.getReference(Contacto.class, dto.getContactoId());
+            if (contacto != null) {
+                contacto.setPersona(entity);
+                List<Contacto> contactos = new ArrayList<>();
+                contactos.add(contacto);
+                entity.setContactos(contactos);
+            }
+        } else {
+            entity.setContactos(new ArrayList<>());
+        }
         entity.setDireccion(resolver.getReference(Direccion.class, dto.getDireccionId()));
         entity.setImagen(resolver.getReference(Imagen.class, dto.getImagenId()));
     }
@@ -63,7 +76,9 @@ public abstract class AbstractPersonaMapper<E extends Persona, D extends Persona
         dto.setFechaNacimiento(entity.getFechaNacimiento());
         dto.setTipoDocumento(entity.getTipoDocumento());
         dto.setNumeroDocumento(entity.getNumeroDocumento());
-        // dto.setContactoIds(MapperUtils.toIds(entity.getContactos())); // Assuming PersonaDto will have setContactoIds()
+        if (entity.getContactos() != null && !entity.getContactos().isEmpty()) {
+            dto.setContactoId(entity.getContactos().get(0).getId());
+        }
         dto.setDireccionId(entity.getDireccion() != null ? entity.getDireccion().getId() : null);
         dto.setImagenId(entity.getImagen() != null ? entity.getImagen().getId() : null);
     }

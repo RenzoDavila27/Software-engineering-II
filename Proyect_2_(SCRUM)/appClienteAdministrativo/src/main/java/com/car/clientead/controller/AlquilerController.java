@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,14 +29,17 @@ import com.car.clientead.client.dto.AlquilerDto;
 import com.car.clientead.client.dto.ClienteDto;
 import com.car.clientead.client.dto.DocumentacionDto;
 import com.car.clientead.client.dto.VehiculoDto;
+import com.car.clientead.client.dto.enums.RolUsuario;
 import com.car.clientead.client.dto.enums.TipoDocumentacion;
 import com.car.clientead.client.exception.ApiClientException;
+import com.car.clientead.web.session.UserSession;
 
 @Controller
 @RequestMapping("/alquileres")
 public class AlquilerController {
 
     private static final String LIST_VIEW = "lAlquiler.html";
+    private static final String CLIENT_LIST_VIEW = "lAlquilerCliente.html";
     private static final String FORM_VIEW = "eAlquiler.html";
     private static final String REDIRECT_LISTA = "redirect:/alquileres";
 
@@ -49,9 +53,17 @@ public class AlquilerController {
     private DocumentacionService documentacionService;
     @Autowired
     private FacturaService facturaService;
+    @Autowired
+    private UserSession userSession;
 
     @GetMapping
     public String listar(Model model) {
+        if (esRolCliente()) {
+            return "redirect:/alquileres/historial";
+        }
+        if (!puedeGestionarAlquileres()) {
+            return "redirect:/";
+        }
         try {
             List<AlquilerDto> alquileres = alquilerService.listar();
             Map<String, ClienteDto> clienteMap = clienteService.listarClientesBasicos().stream()
@@ -75,9 +87,50 @@ public class AlquilerController {
         return LIST_VIEW;
     }
 
+    @GetMapping("/historial")
+    public String listarHistorialCliente(@RequestParam(value = "clienteId", required = false) String clienteIdParam,
+                                         Model model) {
+        if (!esRolCliente()) {
+            return REDIRECT_LISTA;
+        }
+        String clienteId = userSession.getClienteId().orElse(clienteIdParam);
+        if (!StringUtils.hasText(clienteId)) {
+            model.addAttribute("items", Collections.emptyList());
+            model.addAttribute("vehiculoMap", Collections.emptyMap());
+            model.addAttribute("facturas", Collections.emptyMap());
+            model.addAttribute("clienteActual", null);
+            model.addAttribute("errorMessage", "No se pudo determinar el cliente asociado a la sesión.");
+            model.addAttribute("titleList", "Historial de alquileres");
+            return CLIENT_LIST_VIEW;
+        }
+        try {
+            List<AlquilerDto> alquileres = alquilerService.listarPorCliente(clienteId);
+            Map<String, VehiculoDto> vehiculoMap = vehiculoService.listar().stream()
+                    .collect(Collectors.toMap(VehiculoDto::getId, v -> v));
+            Map<String, String> facturasPorAlquiler = facturaService.mapearFacturaPorAlquiler();
+            ClienteDto cliente = clienteService.consultar(clienteId);
+
+            model.addAttribute("items", alquileres);
+            model.addAttribute("vehiculoMap", vehiculoMap);
+            model.addAttribute("facturas", facturasPorAlquiler);
+            model.addAttribute("clienteActual", cliente);
+        } catch (ApiClientException ex) {
+            model.addAttribute("items", Collections.emptyList());
+            model.addAttribute("vehiculoMap", Collections.emptyMap());
+            model.addAttribute("facturas", Collections.emptyMap());
+            model.addAttribute("clienteActual", null);
+            model.addAttribute("errorMessage", ex.getMessage());
+        }
+        model.addAttribute("titleList", "Historial de alquileres");
+        return CLIENT_LIST_VIEW;
+    }
+
     @GetMapping("/alta")
     public String alta(@RequestParam(value = "clienteId", required = false) String clienteId,
                        Model model) {
+        if (!puedeGestionarAlquileres()) {
+            return redireccionSegunRol();
+        }
         AlquilerDto dto = new AlquilerDto();
         if (StringUtils.hasText(clienteId)) {
             dto.setClienteId(clienteId);
@@ -92,6 +145,9 @@ public class AlquilerController {
                         @RequestParam(value = "observacionDocumentacion", required = false) String observacion,
                         @RequestParam("documentos") MultipartFile[] archivos,
                         Model model) {
+        if (!puedeGestionarAlquileres()) {
+            return redireccionSegunRol();
+        }
         try {
             alquilerService.crear(dto, tipoDocumentacion, observacion, archivos);
             return REDIRECT_LISTA;
@@ -104,6 +160,9 @@ public class AlquilerController {
 
     @GetMapping("/consultar/{id}")
     public String consultar(@PathVariable String id, Model model) {
+        if (!puedeGestionarAlquileres()) {
+            return redireccionSegunRol();
+        }
         try {
             AlquilerDto dto = alquilerService.consultar(id);
             prepararFormulario(model, dto, "Detalle del alquiler", true);
@@ -116,6 +175,9 @@ public class AlquilerController {
 
     @GetMapping("/modificar/{id}")
     public String editar(@PathVariable String id, Model model) {
+        if (!puedeGestionarAlquileres()) {
+            return redireccionSegunRol();
+        }
         try {
             AlquilerDto dto = alquilerService.consultar(id);
             prepararFormulario(model, dto, "Modificar alquiler", false);
@@ -133,6 +195,9 @@ public class AlquilerController {
                             @RequestParam(value = "observacionDocumentacion", required = false) String observacion,
                             @RequestParam(value = "documentos", required = false) MultipartFile[] archivos,
                             Model model) {
+        if (!puedeGestionarAlquileres()) {
+            return redireccionSegunRol();
+        }
         try {
             alquilerService.modificar(id, dto, tipoDocumentacion, observacion, archivos);
             return REDIRECT_LISTA;
@@ -145,6 +210,9 @@ public class AlquilerController {
 
     @GetMapping("/baja/{id}")
     public String eliminar(@PathVariable String id) {
+        if (!puedeGestionarAlquileres()) {
+            return redireccionSegunRol();
+        }
         try {
             AlquilerDto dto = alquilerService.consultar(id);
             if (dto != null && StringUtils.hasText(dto.getDocumentacionId())) {
@@ -162,12 +230,15 @@ public class AlquilerController {
         try {
             FacturaDetalleView vista = facturaService.buscarPorAlquiler(alquilerId)
                     .orElseThrow(() -> new ApiClientException("El alquiler seleccionado no tiene una factura asociada."));
+            if (!puedeVisualizarFactura(vista)) {
+                throw new ApiClientException("No tiene permisos para acceder a la factura solicitada.");
+            }
             model.addAttribute("vista", vista);
             model.addAttribute("title", "Factura del alquiler");
             return "vFactura.html";
         } catch (ApiClientException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
-            return REDIRECT_LISTA;
+            return esRolCliente() ? "redirect:/alquileres/historial" : REDIRECT_LISTA;
         }
     }
 
@@ -175,6 +246,9 @@ public class AlquilerController {
     public ResponseEntity<byte[]> descargarFactura(@PathVariable String alquilerId) {
         return facturaService.buscarPorAlquiler(alquilerId)
                 .map(vista -> {
+                    if (!puedeVisualizarFactura(vista)) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body((byte[]) null);
+                    }
                     byte[] pdf = facturaService.generarPdf(vista);
                     String nombre = "factura-" + vista.getFactura().getNumeroFactura() + ".pdf";
                     return ResponseEntity.ok()
@@ -184,6 +258,31 @@ public class AlquilerController {
                             .body(pdf);
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    private boolean puedeGestionarAlquileres() {
+        RolUsuario rol = userSession.getRolActual();
+        return rol == RolUsuario.ADMINISTRATIVO || rol == RolUsuario.JEFE;
+    }
+
+    private boolean esRolCliente() {
+        return userSession.getRolActual() == RolUsuario.CLIENTE;
+    }
+
+    private boolean puedeVisualizarFactura(FacturaDetalleView vista) {
+        if (vista == null) {
+            return false;
+        }
+        if (!esRolCliente()) {
+            return true;
+        }
+        return vista.getCliente() != null
+                && StringUtils.hasText(vista.getCliente().getId())
+                && vista.getCliente().getId().equals(userSession.getClienteId().orElse(null));
+    }
+
+    private String redireccionSegunRol() {
+        return esRolCliente() ? "redirect:/alquileres/historial" : "redirect:/";
     }
 
     private void prepararFormulario(Model model, AlquilerDto dto, String titulo, boolean modoVer) {

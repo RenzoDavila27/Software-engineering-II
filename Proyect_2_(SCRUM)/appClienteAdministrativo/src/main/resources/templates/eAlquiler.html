@@ -11,9 +11,9 @@
 </head>
 <body>
 <div class="app">
-  <aside th:replace="fragments/fragments :: sidebar"></aside>
+  <aside th:replace="~{fragments/fragments :: sidebar}"></aside>
   <div class="main">
-    <header th:replace="fragments/fragments :: topnav"></header>
+    <header th:replace="~{fragments/fragments :: topnav}"></header>
 
     <main class="content container mt-4">
       <div class="page-header">
@@ -39,6 +39,7 @@
 
       <form th:action="@{${item.id} != null ? '/alquileres/modificar/' + ${item.id} : '/alquileres/alta'}"
             th:object="${item}" method="post" enctype="multipart/form-data">
+        <div th:replace="~{fragments/fragments :: csrfInput}"></div>
         <input type="hidden" th:field="*{documentacionId}">
         <div class="row">
           <div class="col-md-4 mb-3">
