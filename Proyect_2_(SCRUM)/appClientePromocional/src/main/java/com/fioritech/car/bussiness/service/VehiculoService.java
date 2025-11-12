@@ -16,7 +16,7 @@ public class VehiculoService {
     public Flux<VehiculoDto> findAll() {
         return webClientBuilder.build()
                 .get()
-                .uri("http://localhost:8081/vehiculos")
+                .uri("http://localhost:8081/api/vehiculos/disponibles")
                 .retrieve()
                 .bodyToFlux(VehiculoDto.class);
     }

@@ -1,6 +1,7 @@
 package com.car.business.domain;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class CostoVehiculo extends BaseEntity<String> {
     private LocalDate fechaHasta = LocalDate.of(9999, 1, 1);
     private Double costo;
 
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private CaracteristicaVehiculo caracteristicaVehiculo;
     
     @Override

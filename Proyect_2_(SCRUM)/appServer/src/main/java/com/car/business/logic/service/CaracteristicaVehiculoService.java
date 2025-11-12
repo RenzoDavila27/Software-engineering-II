@@ -8,6 +8,7 @@ import com.car.business.percistence.repository.CaracteristicaVehiculoRepository;
 
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -81,5 +82,10 @@ public class CaracteristicaVehiculoService extends BaseService<CaracteristicaVeh
             throw new BusinessException("Error de sistema");
         }
 
+    }
+
+    @Override
+    public List<CaracteristicaVehiculo> listarActivos() throws BusinessException {
+        return super.listarActivos();
     }
 }

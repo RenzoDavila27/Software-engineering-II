@@ -11,5 +11,6 @@ public class VehiculoDto extends BaseDto<String> {
     private EstadoVehiculo estadoVehiculo;
     private String patente;
     private CaracteristicaVehiculoDto caracteristicaVehiculo;
+    private CostoVehiculoDto costoVehiculo;
 
 }

@@ -13,7 +13,7 @@ public class VehiculoController {
 
     private final VehiculoService vehiculoService;
 
-    @GetMapping("/vehiculos")
+    @GetMapping("/vehicle")
     public String findAll(Model model, HttpServletRequest request) {
         model.addAttribute("vehiculos", vehiculoService.findAll().collectList().block());
         model.addAttribute("requestURI", request.getRequestURI());

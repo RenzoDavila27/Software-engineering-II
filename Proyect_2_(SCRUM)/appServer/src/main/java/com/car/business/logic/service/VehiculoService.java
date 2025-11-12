@@ -1,13 +1,16 @@
 package com.car.business.logic.service;
 
-import com.car.business.domain.CaracteristicaVehiculo;
+import com.car.business.domain.CostoVehiculo;
 import com.car.business.domain.Vehiculo;
 import com.car.business.domain.enums.EstadoVehiculo;
 import com.car.business.dto.VehiculoDto;
 import com.car.business.logic.error.BusinessException;
+import com.car.business.mappers.CostoVehiculoMapper;
 import com.car.business.mappers.VehiculoMapper;
+import com.car.business.percistence.repository.CostoVehiculoRepository;
 import com.car.business.percistence.repository.VehiculoRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +23,10 @@ public class VehiculoService extends BaseService<Vehiculo, VehiculoDto, String> 
 
     @Autowired
     private CaracteristicaVehiculoService caracteristicaVehiculoService;
+    @Autowired
+    private CostoVehiculoRepository costoVehiculoRepository;
+    @Autowired
+    private CostoVehiculoMapper costoVehiculoMapper;
 
     private final VehiculoRepository vehiculoRepository;
 
@@ -31,7 +38,14 @@ public class VehiculoService extends BaseService<Vehiculo, VehiculoDto, String> 
     public List<VehiculoDto> findAvailable() {
         return vehiculoRepository.findAllByEstadoVehiculo(EstadoVehiculo.DISPONIBLE)
                 .stream()
-                .map(mapper::toDto)
+                .map(vehiculo -> {
+                    VehiculoDto vehiculoDto = mapper.toDto(vehiculo);
+                    CostoVehiculo costoVehiculo = costoVehiculoRepository.buscarCostoVehiculoActual(vehiculo.getCaracteristicaVehiculo().getId(), LocalDate.of(9999, 1, 1));
+                    if (costoVehiculo != null) {
+                        vehiculoDto.setCostoVehiculo(costoVehiculoMapper.toDto(costoVehiculo));
+                    }
+                    return vehiculoDto;
+                })
                 .toList();
     }
 

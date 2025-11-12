@@ -39,7 +39,7 @@
                     <div class="navbar-nav mx-auto py-0">
                         <a th:href="@{/}" class="nav-item nav-link" th:classappend="${requestURI == '/' ? 'active' : ''}">Inicio</a>
                         <a th:href="@{/about}" class="nav-item nav-link" th:classappend="${requestURI == '/about' ? 'active' : ''}">Nosotros</a>
-                        <a th:href="@{/vehiculos}" class="nav-item nav-link" th:classappend="${requestURI == '/vehiculos' ? 'active' : ''}">Vehículos</a>
+                        <a th:href="@{/vehicle}" class="nav-item nav-link" th:classappend="${requestURI == '/vehicle' ? 'active' : ''}">Vehículos</a>
                     </div>
                     <div class="navbar-nav me-auto py-0">
                         <div sec:authorize="!isAuthenticated()">

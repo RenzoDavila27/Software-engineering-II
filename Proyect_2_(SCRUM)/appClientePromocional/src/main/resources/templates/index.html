@@ -50,7 +50,7 @@
                                             <div class="text-start">
                                                 <h1 class="display-5 text-white">¡Planifica tu viaje ahora con los mejores precios!</h1>
                                                 <p>Disfruta en tu destino</p>
-                                                <a th:href="@{/vehiculos}" class="btn btn-primary rounded-pill py-3 px-5 animated slideInRight">Ver Vehículos Disponibles</a>
+                                                <a th:href="@{/vehicle}" class="btn btn-primary rounded-pill py-3 px-5 animated slideInRight">Ver Vehículos Disponibles</a>
                                                 <div class="row mt-4">
                                                     <div class="col-md-6">
                                                         <div class="bg-light rounded p-3">
@@ -194,26 +194,26 @@
                         <div class="categories-item p-4" th:each="vehiculo : ${vehiculos}">
                             <div class="categories-item-inner">
                                 <div class="categories-img rounded-top">
-                                    <img th:if="${vehiculo.imagenBase64 != null}" th:src="'data:image/png;base64,' + ${vehiculo.imagenBase64}" class="img-fluid w-100 rounded-top" alt="">
-                                    <img th:if="${vehiculo.imagenBase64 == null}" th:src="@{/img/car-1.png}" class="img-fluid w-100 rounded-top" alt="">
+                                    <img th:if="${vehiculo.caracteristicaVehiculo.imagenDto != null && vehiculo.caracteristicaVehiculo.imagenDto.contenido != null}" th:src="'data:image/png;base64,' + ${vehiculo.caracteristicaVehiculo.imagenDto.getContenidoAsBase64()}" class="img-fluid w-100 rounded-top" alt="">
+                                    <img th:if="${vehiculo.caracteristicaVehiculo.imagenDto == null || vehiculo.caracteristicaVehiculo.imagenDto.contenido == null}" th:src="@{/img/car-1.png}" class="img-fluid w-100 rounded-top" alt="">
                                 </div>
                                 <div class="categories-content rounded-bottom p-4">
-                                    <h4 th:text="${vehiculo.marca + ' ' + vehiculo.modelo}"></h4>
+                                    <h4 th:text="${vehiculo.caracteristicaVehiculo.marca + ' ' + vehiculo.caracteristicaVehiculo.modelo}"></h4>
                                     <div class="mb-4">
-                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0" th:text="${'$' + vehiculo.costo + '/Dia'}"></h4>
+                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0" th:text="${'$' + vehiculo.costoVehiculo.costo + '/Dia'}"></h4>
                                     </div>
                                     <div class="row gy-2 gx-0 text-center mb-4">
                                         <div class="col-4 border-end border-white">
-                                            <i class="fa fa-users text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.cantidadAsientos + ' Seat'}"></span>
+                                            <i class="fa fa-users text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.caracteristicaVehiculo.cantidadAsientos + ' Seat'}"></span>
                                         </div>
                                         <div class="col-4 border-end border-white">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.cantidadPuertas + ' Doors'}"></span>
+                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.caracteristicaVehiculo.cantidadPuertas + ' Doors'}"></span>
                                         </div>
                                         <div class="col-4">
-                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.anio}"></span>
+                                            <i class="fa fa-car text-dark"></i> <span class="text-body ms-1" th:text="${vehiculo.caracteristicaVehiculo.anio}"></span>
                                         </div>
                                     </div>
-                                    <a th:href="@{/book(vehiculoId=${vehiculo.id})}" class="btn btn-primary rounded-pill d-flex justify-content-center py-3">Book Now</a>
+                                    <a th:href="@{/book(vehiculoId=${vehiculo.id})}" class="btn btn-primary rounded-pill d-flex justify-content-center py-3">Reserva</a>
                                 </div>
                             </div>
                         </div>
