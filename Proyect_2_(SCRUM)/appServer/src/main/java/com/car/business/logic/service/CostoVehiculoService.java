@@ -8,9 +8,9 @@ import com.car.business.mappers.CostoVehiculoMapper;
 import com.car.business.percistence.repository.CostoVehiculoRepository;
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class CostoVehiculoService extends BaseService<CostoVehiculo, CostoVehiculoDto, String> {
@@ -58,6 +58,18 @@ public class CostoVehiculoService extends BaseService<CostoVehiculo, CostoVehicu
     public List<CostoVehiculo> listarCostosPorVehiculo(String id) throws BusinessException{
         return costoVehiculoRepository.listarCostosPorVehiculo(id);
 
+    }
+
+    public CostoVehiculo obtenerCostoVigente(String caracteristicaVehiculoId) {
+        if (!StringUtils.hasText(caracteristicaVehiculoId)) {
+            throw new BusinessException("El identificador de la característica es obligatorio.");
+        }
+        CostoVehiculo costo = costoVehiculoRepository.buscarCostoVehiculoActual(
+            caracteristicaVehiculoId, LocalDate.of(9999, 1, 1));
+        if (costo == null || Boolean.TRUE.equals(costo.getEliminado())) {
+            throw new BusinessException("No se encontró un costo vigente para el vehículo seleccionado.");
+        }
+        return costo;
     }
 
 
