@@ -1,6 +1,5 @@
 package com.car.controller.rest.api.dto;
 
-import com.car.business.domain.enums.TipoPago;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -16,6 +15,5 @@ public record MercadoPagoPreferenceRequest(
     String notificationUrl,
     @NotBlank String vehiculoId,
     @NotNull LocalDate fechaDesde,
-    @NotNull LocalDate fechaHasta,
-    @NotNull TipoPago formaDePago) {
+    @NotNull LocalDate fechaHasta) {
 }
