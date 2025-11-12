@@ -40,33 +40,63 @@
       <form th:action="@{${item.id} != null ? '/alquileres/modificar/' + ${item.id} : '/alquileres/alta'}"
             th:object="${item}" method="post" enctype="multipart/form-data">
         <div th:replace="~{fragments/fragments :: csrfInput}"></div>
+        <input type="hidden" th:field="*{entregado}">
         <input type="hidden" th:field="*{documentacionId}">
         <div class="row">
           <div class="col-md-4 mb-3">
             <label class="form-label">Cliente</label>
-            <select class="form-select" th:field="*{clienteId}" th:disabled="${modoVer}" required>
+            <select id="clienteSelect" class="form-select" th:field="*{clienteId}" th:disabled="${modoVer}" required>
               <option value="" disabled th:selected="${item.clienteId == null}">Seleccione</option>
               <option th:each="cliente : ${clientes}"
                       th:value="${cliente.id}"
+                      th:data-nombre="${cliente.nombre + ' ' + cliente.apellido}"
+                      th:data-tipodoc="${cliente.tipoDocumento}"
+                      th:data-nrodoc="${cliente.numeroDocumento}"
                       th:text="${cliente.nombre + ' ' + cliente.apellido}"></option>
             </select>
           </div>
           <div class="col-md-4 mb-3">
-            <label class="form-label">Vehículo</label>
-            <select class="form-select" th:field="*{vehiculoId}" th:disabled="${modoVer}" required>
-              <option value="" disabled th:selected="${item.vehiculoId == null}">Seleccione</option>
-              <option th:each="vehiculo : ${vehiculos}"
-                      th:value="${vehiculo.id}"
-                      th:text="${vehiculo.patente + ' - ' + vehiculo.estadoVehiculo}"></option>
+            <label class="form-label">Característica</label>
+            <select id="caracteristicaSelect" class="form-select" th:field="*{caracteristicaVehiculoId}" th:disabled="${modoVer}" required>
+              <option value="" disabled th:selected="${item.caracteristicaVehiculoId == null}">Seleccione</option>
+              <option th:each="car : ${caracteristicas}"
+                      th:value="${car.id}"
+                      th:selected="${caracteristicaSeleccionadaId == car.id}"
+                      th:text="${car.marca + ' ' + car.modelo + ' (' + car.anio + ')'}">
+              </option>
             </select>
           </div>
-          <div class="col-md-2 mb-3">
-            <label class="form-label">Fecha desde</label>
-            <input type="date" class="form-control" th:field="*{fechaDesde}" th:disabled="${modoVer}" required>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Vehículo</label>
+            <select id="vehiculoSelect" class="form-select" th:field="*{vehiculoId}" th:disabled="${modoVer}" required>
+              <option value="" disabled th:selected="${item.vehiculoId == null}">Seleccione</option>
+              <option th:each="vehiculo : ${vehiculosSelector}"
+                      th:value="${vehiculo.id}"
+                      th:data-caracteristica="${vehiculo.caracteristicaVehiculoId}"
+                      th:selected="${item.vehiculoId == vehiculo.id}"
+                      th:text="${vehiculo.patente}"></option>
+            </select>
+            <small id="vehiculoAlert" class="text-danger d-none">No hay vehículos disponibles para la característica seleccionada.</small>
           </div>
-          <div class="col-md-2 mb-3">
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Fecha desde</label>
+            <input type="date" class="form-control" th:field="*{fechaDesde}" id="fechaDesde" th:disabled="${modoVer}" required>
+          </div>
+          <div class="col-md-3 mb-3">
             <label class="form-label">Fecha hasta</label>
-            <input type="date" class="form-control" th:field="*{fechaHasta}" th:disabled="${modoVer}" required>
+            <input type="date" class="form-control" th:field="*{fechaHasta}" id="fechaHasta" th:disabled="${modoVer}" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="alert alert-secondary h-100 d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div>
+                <small class="text-uppercase text-muted d-block">Costo diario</small>
+                <span class="fs-5 fw-semibold" id="costoDiario">-</span>
+              </div>
+              <div>
+                <small class="text-uppercase text-muted d-block">Total estimado</small>
+                <span class="fs-4 fw-bold" id="costoTotal">-</span>
+              </div>
+            </div>
           </div>
 
           <div class="col-12 mt-3">
@@ -85,7 +115,7 @@
           </div>
           <div class="col-md-8 mb-3">
             <label class="form-label">Observaciones</label>
-            <input type="text" name="observacionDocumentacion" class="form-control"
+            <input type="text" id="observacionDocumentacion" name="observacionDocumentacion" class="form-control"
                    th:value="${documentacion?.observacion}" th:disabled="${modoVer}">
           </div>
 
@@ -124,5 +154,118 @@
 </div>
 <script th:src="@{/js/app.js}" src="/js/app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+    const caracteristicaSelect = document.getElementById('caracteristicaSelect');
+    const vehiculoSelect = document.getElementById('vehiculoSelect');
+    const vehiculoAlert = document.getElementById('vehiculoAlert');
+    const fechaDesde = document.getElementById('fechaDesde');
+    const fechaHasta = document.getElementById('fechaHasta');
+    const costoDiarioEl = document.getElementById('costoDiario');
+    const costoTotalEl = document.getElementById('costoTotal');
+    const clienteSelect = document.getElementById('clienteSelect');
+    const observacionInput = document.getElementById('observacionDocumentacion');
+    const costos = /*[[${costosPorCaracteristica}]]*/ {};
+    if (observacionInput) {
+      observacionInput.dataset.auto = observacionInput.value.trim() ? 'false' : 'true';
+    }
+
+    function actualizarVehiculos() {
+      if (!vehiculoSelect) {
+        return;
+      }
+      const caracteristicaId = caracteristicaSelect ? caracteristicaSelect.value : '';
+      let disponibles = 0;
+      Array.from(vehiculoSelect.options).forEach(function (option) {
+        if (!option.value) {
+          return;
+        }
+        const coincide = !caracteristicaId || option.dataset.caracteristica === caracteristicaId;
+        option.hidden = !coincide;
+        if (!coincide && option.selected) {
+          option.selected = false;
+        }
+        if (coincide) {
+          disponibles++;
+        }
+      });
+      if (vehiculoAlert) {
+        vehiculoAlert.classList.toggle('d-none', !caracteristicaId || disponibles > 0);
+      }
+      actualizarCosto();
+    }
+
+    function calcularDias() {
+      if (!fechaDesde || !fechaHasta || !fechaDesde.value || !fechaHasta.value) {
+        return 0;
+      }
+      const inicio = new Date(fechaDesde.value);
+      const fin = new Date(fechaHasta.value);
+      const diff = Math.round((fin - inicio) / (24 * 60 * 60 * 1000)) + 1;
+      return diff > 0 ? diff : 0;
+    }
+
+    function actualizarCosto() {
+      if (!costoDiarioEl || !costoTotalEl) {
+        return;
+      }
+      const caracteristicaId = caracteristicaSelect ? caracteristicaSelect.value : '';
+      const costoDiario = caracteristicaId ? costos[caracteristicaId] : null;
+      const dias = calcularDias();
+      if (costoDiario && dias > 0) {
+        costoDiarioEl.textContent = '$ ' + Number(costoDiario).toFixed(2);
+        costoTotalEl.textContent = '$ ' + (Number(costoDiario) * dias).toFixed(2);
+      } else if (costoDiario) {
+        costoDiarioEl.textContent = '$ ' + Number(costoDiario).toFixed(2);
+        costoTotalEl.textContent = '-';
+      } else {
+        costoDiarioEl.textContent = '-';
+        costoTotalEl.textContent = '-';
+      }
+    }
+
+    function sugerirObservacion(force) {
+      if (!clienteSelect || !observacionInput) {
+        return;
+      }
+      const opcion = clienteSelect.selectedOptions[0];
+      if (!opcion) {
+        return;
+      }
+      if (!force && observacionInput.dataset.auto === 'false' && observacionInput.value.trim() !== '') {
+        return;
+      }
+      const nombre = opcion.dataset.nombre || opcion.textContent.trim();
+      const tipoDoc = opcion.dataset.tipodoc || 'DOC';
+      const nroDoc = opcion.dataset.nrodoc || '';
+      const texto = `Documentación de ${nombre} (${tipoDoc} ${nroDoc})`.trim();
+      observacionInput.value = texto;
+      observacionInput.dataset.auto = 'true';
+    }
+
+    if (caracteristicaSelect) {
+      caracteristicaSelect.addEventListener('change', actualizarVehiculos);
+    }
+    if (fechaDesde) {
+      fechaDesde.addEventListener('change', actualizarCosto);
+    }
+    if (fechaHasta) {
+      fechaHasta.addEventListener('change', actualizarCosto);
+    }
+    if (clienteSelect && observacionInput) {
+      clienteSelect.addEventListener('change', function () {
+        sugerirObservacion(true);
+      });
+      observacionInput.addEventListener('input', function () {
+        if (observacionInput.value.trim().length > 0) {
+          observacionInput.dataset.auto = 'false';
+        }
+      });
+      sugerirObservacion(false);
+    }
+    actualizarVehiculos();
+    actualizarCosto();
+  });
+</script>
 </body>
 </html>

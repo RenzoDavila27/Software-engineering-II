@@ -13,4 +13,5 @@ public class AlquilerDto extends BaseDto<String> {
     private LocalDate fechaHasta;
     private String documentacionId;
     private String vehiculoId;
+    private String caracteristicaVehiculoId;
 }

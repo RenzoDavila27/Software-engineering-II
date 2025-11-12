@@ -1,10 +1,10 @@
 package com.car.business.mappers;
 
 import com.car.business.domain.CaracteristicaVehiculo;
-import com.car.business.domain.CostoVehiculo;
 import com.car.business.domain.Vehiculo;
 import com.car.business.dto.VehiculoDto;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class VehiculoMapper implements BaseMapper<Vehiculo, VehiculoDto, String> {
@@ -30,6 +30,11 @@ public class VehiculoMapper implements BaseMapper<Vehiculo, VehiculoDto, String>
         dto.setEstadoVehiculo(entity.getEstadoVehiculo());
         dto.setPatente(entity.getPatente());
         dto.setCaracteristicaVehiculo(caracteristicaVehiculoMapper.toDto(entity.getCaracteristicaVehiculo()));
+        if (entity.getCaracteristicaVehiculo() != null) {
+            dto.setCaracteristicaVehiculoId(entity.getCaracteristicaVehiculo().getId());
+        } else {
+            dto.setCaracteristicaVehiculoId(null);
+        }
         return dto;
     }
 
@@ -52,6 +57,18 @@ public class VehiculoMapper implements BaseMapper<Vehiculo, VehiculoDto, String>
         entity.setEstadoVehiculo(dto.getEstadoVehiculo());
         entity.setPatente(dto.getPatente());
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
-        entity.setCaracteristicaVehiculo(resolver.getReference(CaracteristicaVehiculo.class, dto.getCaracteristicaVehiculo().getId()));
+
+        String caracteristicaId = null;
+        if (dto.getCaracteristicaVehiculo() != null && StringUtils.hasText(dto.getCaracteristicaVehiculo().getId())) {
+            caracteristicaId = dto.getCaracteristicaVehiculo().getId();
+        } else if (StringUtils.hasText(dto.getCaracteristicaVehiculoId())) {
+            caracteristicaId = dto.getCaracteristicaVehiculoId();
+        }
+
+        entity.setCaracteristicaVehiculo(
+                StringUtils.hasText(caracteristicaId)
+                        ? resolver.getReference(CaracteristicaVehiculo.class, caracteristicaId)
+                        : null
+        );
     }
 }

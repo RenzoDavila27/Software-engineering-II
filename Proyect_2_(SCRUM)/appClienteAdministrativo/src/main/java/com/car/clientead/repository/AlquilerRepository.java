@@ -81,4 +81,12 @@ public class AlquilerRepository {
             throw new ApiClientException("No se pudo eliminar el alquiler con ID: " + id, ex);
         }
     }
+
+    public void marcarEntrega(String id) {
+        try {
+            restTemplate.postForEntity(baseUrl + "/" + id + "/entrega", null, Void.class);
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo registrar la entrega del alquiler con ID: " + id, ex);
+        }
+    }
 }

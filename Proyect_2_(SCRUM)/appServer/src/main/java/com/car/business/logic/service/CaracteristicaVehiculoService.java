@@ -1,10 +1,12 @@
 package com.car.business.logic.service;
 
 import com.car.business.domain.CaracteristicaVehiculo;
+import com.car.business.domain.Vehiculo;
 import com.car.business.dto.CaracteristicaVehiculoDto;
 import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.CaracteristicaVehiculoMapper;
 import com.car.business.percistence.repository.CaracteristicaVehiculoRepository;
+import com.car.business.percistence.repository.VehiculoRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -17,8 +19,13 @@ import org.springframework.util.StringUtils;
 @Service
 public class CaracteristicaVehiculoService extends BaseService<CaracteristicaVehiculo, CaracteristicaVehiculoDto, String> {
 
-    public CaracteristicaVehiculoService(CaracteristicaVehiculoRepository repository, CaracteristicaVehiculoMapper mapper) {
+    private final VehiculoRepository vehiculoRepository;
+
+    public CaracteristicaVehiculoService(CaracteristicaVehiculoRepository repository,
+                                         CaracteristicaVehiculoMapper mapper,
+                                         VehiculoRepository vehiculoRepository) {
         super(repository, mapper);
+        this.vehiculoRepository = vehiculoRepository;
     }
 
     @Override
@@ -40,12 +47,6 @@ public class CaracteristicaVehiculoService extends BaseService<CaracteristicaVeh
         }
         if (entidad.getCantidadPuertas() <= 0) {
             throw new BusinessException("La cantidad de puertas debe ser mayor a cero.");
-        }
-        if (entidad.getCantidadTotalVehiculos() < 0) {
-            throw new BusinessException("La cantidad total de vehículos no puede ser negativa.");
-        }
-        if (entidad.getCantidadTotalVehiculosAlquilados() < 0) {
-            throw new BusinessException("La cantidad de vehículos alquilados no puede ser negativa.");
         }
         if (entidad.getCantidadTotalVehiculosAlquilados() > entidad.getCantidadTotalVehiculos()) {
             throw new BusinessException("Los vehículos alquilados no pueden superar los existentes.");
@@ -69,6 +70,32 @@ public class CaracteristicaVehiculoService extends BaseService<CaracteristicaVeh
 
     }
 
+    @Transactional
+    public void sumarCantVehiculoAlquilado(String idCaracteristica) throws BusinessException {
+         Optional<CaracteristicaVehiculo> carac = repository.findById(idCaracteristica);
+        if (carac.isPresent()) {
+            CaracteristicaVehiculo caracteristica = carac.get();
+            caracteristica.setCantidadTotalVehiculosAlquilados(caracteristica.getCantidadTotalVehiculosAlquilados() +1);
+            repository.save(caracteristica);
+            
+        }else{
+            throw new BusinessException("Error de sistema");
+        }
+    }
+
+    @Transactional
+    public void restarCantVehiculoAlquilado(String idCaracteristica) throws BusinessException {
+         Optional<CaracteristicaVehiculo> carac = repository.findById(idCaracteristica);
+        if (carac.isPresent()) {
+            CaracteristicaVehiculo caracteristica = carac.get();
+            caracteristica.setCantidadTotalVehiculosAlquilados(caracteristica.getCantidadTotalVehiculosAlquilados() -1);
+            repository.save(caracteristica);
+            
+        }else{
+            throw new BusinessException("Error de sistema");
+        }
+    }
+
 
     @Transactional
     public void restarAuto(String id) throws BusinessException{
@@ -87,5 +114,18 @@ public class CaracteristicaVehiculoService extends BaseService<CaracteristicaVeh
     @Override
     public List<CaracteristicaVehiculo> listarActivos() throws BusinessException {
         return super.listarActivos();
+    }
+
+    @Override
+    protected void postBaja(CaracteristicaVehiculo entidad) throws BusinessException {
+        if (entidad == null || !StringUtils.hasText(entidad.getId())) {
+            return;
+        }
+        List<Vehiculo> asociados = vehiculoRepository
+                .findAllByCaracteristicaVehiculo_IdAndEliminadoFalse(entidad.getId());
+        for (Vehiculo vehiculo : asociados) {
+            vehiculo.setEliminado(true);
+            vehiculoRepository.save(vehiculo);
+        }
     }
 }

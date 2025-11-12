@@ -67,12 +67,18 @@
             <input type="number" class="form-control" th:field="*{cantidadAsientos}" th:disabled="${modoVer}">
             </div>
             <div class="col-md-6 mb-3">
-            <label class="form-label">Total Vehículos</label>
-            <input type="number" class="form-control" th:field="*{cantidadTotalVehiculos}" th:disabled="${modoVer}">
+              <label class="form-label">Total de vehículos</label>
+              <div class="form-control-plaintext fw-semibold py-2 px-3 bg-light rounded border"
+                   th:text="${item.cantidadTotalVehiculos} ?: 0">0</div>
+              <input type="hidden" th:field="*{cantidadTotalVehiculos}">
+              <small class="text-muted">Este valor se gestiona automáticamente.</small>
             </div>
             <div class="col-md-6 mb-3">
-            <label class="form-label">Vehículos Alquilados</label>
-            <input type="number" class="form-control" th:field="*{cantidadTotalVehiculosAlquilados}" th:disabled="${modoVer}">
+              <label class="form-label">Vehículos alquilados</label>
+              <div class="form-control-plaintext fw-semibold py-2 px-3 bg-light rounded border"
+                   th:text="${item.cantidadTotalVehiculosAlquilados} ?: 0">0</div>
+              <input type="hidden" th:field="*{cantidadTotalVehiculosAlquilados}">
+              <small class="text-muted">Se actualiza según los alquileres activos.</small>
             </div>
 
             <div class="col-md-6 mb-3" th:if="${item.imagenDataUri != null}">

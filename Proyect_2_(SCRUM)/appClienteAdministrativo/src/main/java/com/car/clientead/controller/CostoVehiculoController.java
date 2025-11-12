@@ -38,16 +38,19 @@ public class CostoVehiculoController {
             List<CostoVehiculoDto> costos = StringUtils.hasText(caracteristicaId)
                     ? service.listarPorCaracteristica(caracteristicaId)
                     : service.listar();
+            List<CaracteristicaVehiculoDto> caracteristicas = caracteristicaService.listar();
             CaracteristicaVehiculoDto caracteristicaSeleccionada = null;
             if (StringUtils.hasText(caracteristicaId)) {
                 caracteristicaSeleccionada = caracteristicaService.consultar(caracteristicaId);
             }
             model.addAttribute("items", costos);
+            model.addAttribute("caracteristicasFiltro", caracteristicas);
             model.addAttribute("caracteristicaSeleccionada", caracteristicaSeleccionada);
             model.addAttribute("caracteristicaIdFiltro", caracteristicaId);
         } catch (ApiClientException ex) {
             model.addAttribute("items", Collections.emptyList());
             model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("caracteristicasFiltro", Collections.emptyList());
             model.addAttribute("caracteristicaSeleccionada", null);
             model.addAttribute("caracteristicaIdFiltro", caracteristicaId);
         }

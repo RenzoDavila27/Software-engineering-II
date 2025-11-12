@@ -1,6 +1,8 @@
 package com.car.clientead.controller;
 
+import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,18 +19,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.car.clientead.business.logic.AlquilerService;
+import com.car.clientead.business.logic.CaracteristicaVehiculoService;
 import com.car.clientead.business.logic.ClienteService;
+import com.car.clientead.business.logic.CostoVehiculoService;
 import com.car.clientead.business.logic.DocumentacionService;
 import com.car.clientead.business.logic.FacturaService;
 import com.car.clientead.business.logic.VehiculoService;
 import com.car.clientead.business.logic.view.FacturaDetalleView;
 import com.car.clientead.client.dto.AlquilerDto;
+import com.car.clientead.client.dto.CaracteristicaVehiculoDto;
 import com.car.clientead.client.dto.ClienteDto;
+import com.car.clientead.client.dto.CostoVehiculoDto;
 import com.car.clientead.client.dto.DocumentacionDto;
 import com.car.clientead.client.dto.VehiculoDto;
+import com.car.clientead.client.dto.enums.EstadoVehiculo;
 import com.car.clientead.client.dto.enums.RolUsuario;
 import com.car.clientead.client.dto.enums.TipoDocumentacion;
 import com.car.clientead.client.exception.ApiClientException;
@@ -48,7 +56,11 @@ public class AlquilerController {
     @Autowired
     private ClienteService clienteService;
     @Autowired
+    private CaracteristicaVehiculoService caracteristicaVehiculoService;
+    @Autowired
     private VehiculoService vehiculoService;
+    @Autowired
+    private CostoVehiculoService costoVehiculoService;
     @Autowired
     private DocumentacionService documentacionService;
     @Autowired
@@ -127,6 +139,7 @@ public class AlquilerController {
 
     @GetMapping("/alta")
     public String alta(@RequestParam(value = "clienteId", required = false) String clienteId,
+                       @RequestParam(value = "caracteristicaId", required = false) String caracteristicaId,
                        Model model) {
         if (!puedeGestionarAlquileres()) {
             return redireccionSegunRol();
@@ -134,6 +147,9 @@ public class AlquilerController {
         AlquilerDto dto = new AlquilerDto();
         if (StringUtils.hasText(clienteId)) {
             dto.setClienteId(clienteId);
+        }
+        if (StringUtils.hasText(caracteristicaId)) {
+            dto.setCaracteristicaVehiculoId(caracteristicaId);
         }
         prepararFormulario(model, dto, "Registrar alquiler", false);
         return FORM_VIEW;
@@ -225,6 +241,20 @@ public class AlquilerController {
         return REDIRECT_LISTA;
     }
 
+    @PostMapping("/{id}/entrega")
+    @ResponseBody
+    public ResponseEntity<?> registrarEntrega(@PathVariable String id) {
+        if (!puedeGestionarAlquileres()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tiene permisos para esta acción.");
+        }
+        try {
+            alquilerService.marcarEntrega(id);
+            return ResponseEntity.ok().build();
+        } catch (ApiClientException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
     @GetMapping("/factura/{alquilerId}")
     public String verFactura(@PathVariable String alquilerId, Model model) {
         try {
@@ -285,34 +315,115 @@ public class AlquilerController {
         return esRolCliente() ? "redirect:/alquileres/historial" : "redirect:/";
     }
 
+    private List<CaracteristicaVehiculoDto> listarCaracteristicas() {
+        try {
+            return caracteristicaVehiculoService.listar();
+        } catch (ApiClientException ex) {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<VehiculoDto> vehiculosDisponiblesParaSelector(List<VehiculoDto> vehiculos, AlquilerDto dto) {
+        String vehiculoActual = dto != null ? dto.getVehiculoId() : null;
+        return vehiculos.stream()
+                .filter(v -> v != null && (!Boolean.TRUE.equals(v.getEliminado())))
+                .filter(v -> v.getEstadoVehiculo() == EstadoVehiculo.DISPONIBLE
+                        || (StringUtils.hasText(vehiculoActual) && vehiculoActual.equals(v.getId())))
+                .collect(Collectors.toList());
+    }
+
+    private ClienteDto buscarCliente(List<ClienteDto> clientes, String id) {
+        if (!StringUtils.hasText(id)) {
+            return null;
+        }
+        return clientes.stream()
+                .filter(c -> id.equals(c.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private VehiculoDto buscarVehiculo(List<VehiculoDto> vehiculos, String id) {
+        if (!StringUtils.hasText(id)) {
+            return null;
+        }
+        return vehiculos.stream()
+                .filter(v -> id.equals(v.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Map<String, Double> obtenerCostosVigentes() {
+        try {
+            List<CostoVehiculoDto> costos = costoVehiculoService.listar();
+            Map<String, CostoVehiculoDto> ultimoCosto = new HashMap<>();
+            for (CostoVehiculoDto costo : costos) {
+                if (costo.getCaracteristicaVehiculoDto() == null
+                        || !StringUtils.hasText(costo.getCaracteristicaVehiculoDto().getId())) {
+                    continue;
+                }
+                String caracteristicaId = costo.getCaracteristicaVehiculoDto().getId();
+                CostoVehiculoDto actual = ultimoCosto.get(caracteristicaId);
+                if (actual == null || esMasReciente(costo, actual)) {
+                    ultimoCosto.put(caracteristicaId, costo);
+                }
+            }
+            return ultimoCosto.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getCosto()));
+        } catch (ApiClientException ex) {
+            return Collections.emptyMap();
+        }
+    }
+
+    private boolean esMasReciente(CostoVehiculoDto candidato, CostoVehiculoDto actual) {
+        LocalDate hastaNuevo = normalizarFecha(candidato.getFechaHasta());
+        LocalDate hastaActual = normalizarFecha(actual.getFechaHasta());
+        if (hastaNuevo.isAfter(hastaActual)) {
+            return true;
+        }
+        if (hastaNuevo.isBefore(hastaActual)) {
+            return false;
+        }
+        LocalDate desdeNuevo = candidato.getFechaDesde();
+        LocalDate desdeActual = actual.getFechaDesde();
+        if (desdeNuevo == null) {
+            return false;
+        }
+        if (desdeActual == null) {
+            return true;
+        }
+        return desdeNuevo.isAfter(desdeActual);
+    }
+
+    private LocalDate normalizarFecha(LocalDate fecha) {
+        return fecha != null ? fecha : LocalDate.of(9999, 1, 1);
+    }
+
     private void prepararFormulario(Model model, AlquilerDto dto, String titulo, boolean modoVer) {
         List<ClienteDto> clientes = obtenerClientes();
         List<VehiculoDto> vehiculos = vehiculoService.listar();
-        ClienteDto clienteSeleccionado = null;
-        if (dto != null && StringUtils.hasText(dto.getClienteId())) {
-            String id = dto.getClienteId();
-            clienteSeleccionado = clientes.stream()
-                    .filter(c -> id.equals(c.getId()))
-                    .findFirst()
-                    .orElse(null);
-        }
-        VehiculoDto vehiculoSeleccionado = null;
-        if (dto != null && StringUtils.hasText(dto.getVehiculoId())) {
-            String id = dto.getVehiculoId();
-            vehiculoSeleccionado = vehiculos.stream()
-                    .filter(v -> id.equals(v.getId()))
-                    .findFirst()
-                    .orElse(null);
+        List<CaracteristicaVehiculoDto> caracteristicas = listarCaracteristicas();
+        List<VehiculoDto> vehiculosSelector = vehiculosDisponiblesParaSelector(vehiculos, dto);
+        Map<String, Double> costosPorCaracteristica = obtenerCostosVigentes();
+
+        ClienteDto clienteSeleccionado = buscarCliente(clientes, dto != null ? dto.getClienteId() : null);
+        VehiculoDto vehiculoSeleccionado = buscarVehiculo(vehiculos, dto != null ? dto.getVehiculoId() : null);
+        String caracteristicaSeleccionadaId = dto != null ? dto.getCaracteristicaVehiculoId() : null;
+        if (!StringUtils.hasText(caracteristicaSeleccionadaId) && vehiculoSeleccionado != null) {
+            caracteristicaSeleccionadaId = vehiculoSeleccionado.getCaracteristicaVehiculoId();
+            dto.setCaracteristicaVehiculoId(caracteristicaSeleccionadaId);
         }
 
         model.addAttribute("item", dto);
         model.addAttribute("titleForm", titulo);
         model.addAttribute("modoVer", modoVer);
         model.addAttribute("clientes", clientes);
-        model.addAttribute("vehiculos", vehiculos);
+        model.addAttribute("caracteristicas", caracteristicas);
+        model.addAttribute("vehiculosSelector", vehiculosSelector);
+        model.addAttribute("caracteristicaSeleccionadaId", caracteristicaSeleccionadaId);
         model.addAttribute("clienteSeleccionado", clienteSeleccionado);
         model.addAttribute("vehiculoSeleccionado", vehiculoSeleccionado);
         model.addAttribute("tiposDocumentacion", TipoDocumentacion.values());
+        model.addAttribute("costosPorCaracteristica", costosPorCaracteristica);
 
         if (dto != null && StringUtils.hasText(dto.getDocumentacionId())) {
             try {

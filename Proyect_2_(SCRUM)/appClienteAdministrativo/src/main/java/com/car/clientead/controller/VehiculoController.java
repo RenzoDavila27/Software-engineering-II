@@ -40,6 +40,7 @@ public class VehiculoController {
                          Model model) {
         try {
             List<VehiculoDto> vehiculos = vehiculoService.listar();
+            List<CaracteristicaVehiculoDto> caracteristicas = caracteristicaService.listar();
             CaracteristicaVehiculoDto caracteristicaSeleccionada = null;
             if (StringUtils.hasText(caracteristicaId)) {
                 caracteristicaSeleccionada = caracteristicaService.consultar(caracteristicaId);
@@ -48,12 +49,15 @@ public class VehiculoController {
                         .collect(Collectors.toList());
             }
             model.addAttribute("items", vehiculos);
-            model.addAttribute("caracteristicasMap", obtenerMapaCaracteristicas());
+            model.addAttribute("caracteristicasMap", caracteristicas.stream()
+                    .collect(Collectors.toMap(CaracteristicaVehiculoDto::getId, this::descripcionCaracteristica)));
+            model.addAttribute("caracteristicasFiltro", caracteristicas);
             model.addAttribute("caracteristicaSeleccionada", caracteristicaSeleccionada);
             model.addAttribute("caracteristicaIdFiltro", caracteristicaId);
         } catch (ApiClientException ex) {
             model.addAttribute("items", Collections.emptyList());
             model.addAttribute("caracteristicasMap", Collections.emptyMap());
+            model.addAttribute("caracteristicasFiltro", Collections.emptyList());
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("caracteristicaSeleccionada", null);
             model.addAttribute("caracteristicaIdFiltro", caracteristicaId);
@@ -169,15 +173,6 @@ public class VehiculoController {
             if (!model.containsAttribute("errorMessage")) {
                 model.addAttribute("errorMessage", ex.getMessage());
             }
-        }
-    }
-
-    private Map<String, String> obtenerMapaCaracteristicas() {
-        try {
-            return caracteristicaService.listar().stream()
-                    .collect(Collectors.toMap(CaracteristicaVehiculoDto::getId, this::descripcionCaracteristica));
-        } catch (ApiClientException ex) {
-            return Collections.emptyMap();
         }
     }
 

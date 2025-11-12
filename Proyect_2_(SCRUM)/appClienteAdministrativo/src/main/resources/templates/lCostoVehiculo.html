@@ -64,14 +64,38 @@
           <h1 th:text="${titleList}">Listado de Costos de Vehículo</h1>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-          <a th:href="@{/vehiculos}" class="btn btn-light">
-            <i class="fa-solid fa-angles-left"></i> Volver a vehículos
+          <a th:href="@{/vehiculos}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-angles-left"></i> Vehículos
           </a>
           <a th:href="${caracteristicaIdFiltro} != null ? @{|/costos-vehiculo/alta?caracteristicaId=${caracteristicaIdFiltro}|} : @{/costos-vehiculo/alta}"
              class="btn btn-primary">
             <i class="fa-solid fa-plus"></i> Registrar costo
           </a>
         </div>
+      </div>
+
+      <div class="bg-white border rounded p-3 mb-4">
+        <form class="row g-3 align-items-end" th:action="@{/costos-vehiculo}" method="get">
+          <div class="col-md-8">
+            <label class="form-label mb-1">Filtrar por característica</label>
+            <select class="form-select" name="caracteristicaId">
+              <option value="" th:selected="${caracteristicaIdFiltro == null}">Todas las características</option>
+              <option th:each="car : ${caracteristicasFiltro}"
+                      th:value="${car.id}"
+                      th:selected="${caracteristicaIdFiltro == car.id}"
+                      th:text="${car.marca + ' ' + car.modelo + ' (' + car.anio + ')'}">
+              </option>
+            </select>
+          </div>
+          <div class="col-md-4 d-flex gap-2 justify-content-md-end">
+            <button type="submit" class="btn btn-dark w-100 w-md-auto">
+              <i class="fa-solid fa-filter"></i> Aplicar
+            </button>
+            <a th:href="@{/costos-vehiculo}" class="btn btn-outline-secondary w-100 w-md-auto">
+              Limpiar
+            </a>
+          </div>
+        </form>
       </div>
 
       <div class="alert alert-info d-flex align-items-center justify-content-between flex-wrap gap-2"
@@ -89,32 +113,6 @@
             <i class="fa-solid fa-rotate-left"></i> Ver todos
           </a>
         </div>
-      </div>
-
-      <div class="workflow-tabs">
-        <a th:href="${caracteristicaSeleccionada != null} ? @{|/caracteristicas-vehiculo/consultar/${caracteristicaSeleccionada.id}|} : @{/caracteristicas-vehiculo}"
-           class="step completed">
-          <i class="fa-solid fa-circle-check"></i> 1. Características
-        </a>
-        <a th:href="${caracteristicaSeleccionada != null} ? @{|/vehiculos?caracteristicaId=${caracteristicaSeleccionada.id}|} : @{/vehiculos}"
-           class="step completed">
-          <i class="fa-solid fa-car"></i> 2. Vehículos
-        </a>
-        <a th:href="${caracteristicaSeleccionada != null} ? @{|/costos-vehiculo?caracteristicaId=${caracteristicaSeleccionada.id}|} : @{/costos-vehiculo}"
-           class="step active">
-          <i class="fa-solid fa-dollar-sign"></i> 3. Costos
-        </a>
-      </div>
-
-      <div class="quick-actions">
-        <a th:href="@{/caracteristicas-vehiculo}" class="card-link">
-          <strong>Volver a características</strong>
-          <span>Revisa el detalle de cada modelo</span>
-        </a>
-        <a th:href="@{/vehiculos}" class="card-link">
-          <strong>Revisar vehículos</strong>
-          <span>Confirma disponibilidad antes de actualizar costos</span>
-        </a>
       </div>
 
       <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>

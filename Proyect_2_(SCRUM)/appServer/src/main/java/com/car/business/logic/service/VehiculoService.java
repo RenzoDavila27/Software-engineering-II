@@ -85,4 +85,17 @@ public class VehiculoService extends BaseService<Vehiculo, VehiculoDto, String> 
         }
     }
 
+    public void cambiarEstadoVehiculo(String idVehiculo, EstadoVehiculo estado) throws BusinessException{
+        Optional<Vehiculo> vehiculo = repository.findById(idVehiculo);
+        if (vehiculo.isPresent() ) {
+            Vehiculo v = vehiculo.get();
+            if (v.getEliminado()!=false) {
+                throw new BusinessException("Este vehiculo esta eliminado");
+            }
+            v.setEstadoVehiculo(estado);
+            repository.save(v);
+            
+        }
+    }
+
 }

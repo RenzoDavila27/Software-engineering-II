@@ -12,5 +12,10 @@ public class VehiculoDto extends BaseDto<String> {
     private String patente;
     private CaracteristicaVehiculoDto caracteristicaVehiculo;
     private CostoVehiculoDto costoVehiculo;
+    /**
+     * Identificador plano de la característica asociado al vehículo. Se expone para
+     * clientes que solo manejan el id y no requieren todo el objeto embebido.
+     */
+    private String caracteristicaVehiculoId;
 
 }

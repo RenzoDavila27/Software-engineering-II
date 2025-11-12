@@ -4,12 +4,14 @@ import com.car.business.domain.CaracteristicaVehiculo;
 import com.car.business.domain.CostoVehiculo;
 import com.car.business.dto.CaracteristicaVehiculoDto;
 import com.car.business.dto.CostoVehiculoDto;
+import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehiculoDto, String> {
 
     private final EntityReferenceResolver resolver;
+    private static final LocalDate FECHA_POR_DEFECTO = LocalDate.of(9999, 1, 1);
 
     public CostoVehiculoMapper(EntityReferenceResolver resolver){
         this.resolver = resolver;
@@ -24,7 +26,7 @@ public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehic
         dto.setId(entity.getId());
         dto.setEliminado(entity.getEliminado());
         dto.setFechaDesde(entity.getFechaDesde());
-        dto.setFechaHasta(entity.getFechaHasta());
+        dto.setFechaHasta(entity.getFechaHasta() != null ? entity.getFechaHasta() : FECHA_POR_DEFECTO);
         dto.setCosto(entity.getCosto());
         if (entity.getCaracteristicaVehiculo() != null) {
             CaracteristicaVehiculoDto caracteristicaDto = new CaracteristicaVehiculoDto();
@@ -52,7 +54,8 @@ public class CostoVehiculoMapper implements BaseMapper<CostoVehiculo, CostoVehic
             return;
         }
         entity.setFechaDesde(dto.getFechaDesde());
-        entity.setFechaHasta(dto.getFechaHasta());
+        LocalDate fechaHasta = dto.getFechaHasta() != null ? dto.getFechaHasta() : FECHA_POR_DEFECTO;
+        entity.setFechaHasta(fechaHasta);
         entity.setCosto(dto.getCosto());
         entity.setEliminado(Boolean.TRUE.equals(dto.getEliminado()));
         if (dto.getCaracteristicaVehiculoDto() != null && dto.getCaracteristicaVehiculoDto().getId() != null) {

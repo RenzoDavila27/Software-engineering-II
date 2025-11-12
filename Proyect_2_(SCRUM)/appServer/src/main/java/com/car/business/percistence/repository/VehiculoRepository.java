@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface VehiculoRepository extends BaseRepository<Vehiculo, String> {
     List<Vehiculo> findAllByEstadoVehiculo(EstadoVehiculo estado);
+    List<Vehiculo> findAllByCaracteristicaVehiculo_IdAndEliminadoFalse(String caracteristicaId);
 }

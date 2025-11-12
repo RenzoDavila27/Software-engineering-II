@@ -1,6 +1,7 @@
 package com.car.business.logic.service;
 
 import com.car.business.domain.Alquiler;
+import com.car.business.domain.enums.EstadoVehiculo;
 import com.car.business.dto.AlquilerDto;
 import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.AlquilerMapper;
@@ -17,6 +18,12 @@ import org.springframework.stereotype.Service;
 public class AlquilerService extends BaseService<Alquiler, AlquilerDto, String> {
 
     @Autowired 
+    private VehiculoService vehiculoService;
+
+    @Autowired
+    private CaracteristicaVehiculoService caracteristicaVehiculoService;
+
+    @Autowired 
     private AlquilerRepository alquilerRepository;
 
     public AlquilerService(AlquilerRepository repository, AlquilerMapper mapper) {
@@ -30,6 +37,9 @@ public class AlquilerService extends BaseService<Alquiler, AlquilerDto, String> 
         }
         if (entidad.getCliente() == null) {
             throw new BusinessException("El cliente del alquiler es obligatorio.");
+        }
+        if (entidad.getVehiculo().getEstadoVehiculo()==EstadoVehiculo.ALQUILADO) {
+            throw new BusinessException("El Vehiculo ya esta alquilado");
         }
         LocalDate fechaDesde = entidad.getFechaDesde();
         if (fechaDesde == null) {
@@ -50,9 +60,35 @@ public class AlquilerService extends BaseService<Alquiler, AlquilerDto, String> 
         }
     }
 
+    @Override
+    protected void postAlta(Alquiler alquiler) throws BusinessException{
+        try{
+            vehiculoService.cambiarEstadoVehiculo(alquiler.getVehiculo().getId(),EstadoVehiculo.ALQUILADO);
+            caracteristicaVehiculoService.sumarCantVehiculoAlquilado(alquiler.getVehiculo().getCaracteristicaVehiculo().getId());
+        }catch(BusinessException e){
+            throw e;
+        }
+    }
 
     public List<Alquiler> buscarAlquileresVecManiana(LocalDate maniana) throws BusinessException{
         return alquilerRepository.buscarAlquilerVecManiana(maniana);
     }
+
+      public void marcarEntrega(String alquilerId) throws BusinessException {
+        Alquiler alquiler = repository.findById(alquilerId)
+                .orElseThrow(() -> new BusinessException("No existe el alquiler solicitado."));
+
+        vehiculoService.cambiarEstadoVehiculo(alquiler.getVehiculo().getId(),EstadoVehiculo.DISPONIBLE);
+        caracteristicaVehiculoService.restarCantVehiculoAlquilado(alquiler.getVehiculo().getCaracteristicaVehiculo().getId());
+    }
+
+    public void marcarEntregaError(String alquilerId) throws BusinessException{
+         Alquiler alquiler = repository.findById(alquilerId)
+                .orElseThrow(() -> new BusinessException("No existe el alquiler solicitado."));
+
+        vehiculoService.cambiarEstadoVehiculo(alquiler.getVehiculo().getId(),EstadoVehiculo.NO_DISPONIBLE);
+        caracteristicaVehiculoService.restarCantVehiculoAlquilado(alquiler.getVehiculo().getCaracteristicaVehiculo().getId());   
+    }
+
 
 }

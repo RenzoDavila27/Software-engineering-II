@@ -23,7 +23,7 @@ public class CaracteristicaVehiculo extends BaseEntity<String> {
     private int cantidadAsientos;
     private int cantidadPuertas;
     private int cantidadTotalVehiculos = 0;
-    private int cantidadTotalVehiculosAlquilados;
+    private int cantidadTotalVehiculosAlquilados = 0;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "imagen_id", referencedColumnName = "id")

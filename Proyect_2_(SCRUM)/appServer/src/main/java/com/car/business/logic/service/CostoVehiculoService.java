@@ -7,7 +7,6 @@ import com.car.business.logic.error.BusinessException;
 import com.car.business.mappers.CostoVehiculoMapper;
 import com.car.business.percistence.repository.CostoVehiculoRepository;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,6 @@ public class CostoVehiculoService extends BaseService<CostoVehiculo, CostoVehicu
             throw new BusinessException("La fecha desde es obligatoria.");
         }
         LocalDate hasta = entidad.getFechaHasta();
-        if (hasta == null) {
-            throw new BusinessException("La fecha hasta es obligatoria.");
-        }
         if (hasta.isBefore(desde)) {
             throw new BusinessException("La fecha hasta no puede ser anterior a la fecha desde.");
         }
@@ -48,7 +44,12 @@ public class CostoVehiculoService extends BaseService<CostoVehiculo, CostoVehicu
     protected void preAlta(CostoVehiculo costoVehiculo) throws BusinessException{
         CostoVehiculo oldCostoVehiculo = costoVehiculoRepository.buscarCostoVehiculoActual(costoVehiculo.getCaracteristicaVehiculo().getId(),LocalDate.of(9999,1,1));
         if (oldCostoVehiculo!=null){
-            oldCostoVehiculo.setFechaHasta(LocalDate.now());
+
+            if (costoVehiculo.getFechaHasta()!=LocalDate.of(9999,1,1)) {
+                oldCostoVehiculo.setFechaHasta(costoVehiculo.getFechaHasta());
+            }else{
+                oldCostoVehiculo.setFechaHasta(LocalDate.now());
+            }
             repository.save(oldCostoVehiculo);
         }
 

@@ -81,6 +81,10 @@ public class AlquilerService {
         repository.delete(id);
     }
 
+    public void marcarEntrega(String id) {
+        repository.marcarEntrega(id);
+    }
+
     private DocumentacionDto registrarDocumentacion(TipoDocumentacion tipo,
                                                     String observacion,
                                                     MultipartFile[] archivosDocumentacion) {

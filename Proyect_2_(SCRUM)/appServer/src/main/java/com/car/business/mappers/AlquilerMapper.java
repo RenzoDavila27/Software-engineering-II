@@ -29,6 +29,10 @@ public class AlquilerMapper implements BaseMapper<Alquiler, AlquilerDto, String>
         dto.setFechaHasta(entity.getFechaHasta());
         dto.setDocumentacionId(entity.getDocumentacion() != null ? entity.getDocumentacion().getId() : null);
         dto.setVehiculoId(entity.getVehiculo() != null ? entity.getVehiculo().getId() : null);
+        dto.setCaracteristicaVehiculoId(entity.getVehiculo() != null
+                && entity.getVehiculo().getCaracteristicaVehiculo() != null
+                ? entity.getVehiculo().getCaracteristicaVehiculo().getId()
+                : null);
         return dto;
     }
 
