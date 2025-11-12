@@ -25,7 +25,6 @@ public interface UsuarioMapper {
         if (file == null || file.isEmpty()) {
             return null;
         }
-        // Convierte el archivo a Base64
         return Base64.getEncoder().encodeToString(file.getBytes());
     }
 

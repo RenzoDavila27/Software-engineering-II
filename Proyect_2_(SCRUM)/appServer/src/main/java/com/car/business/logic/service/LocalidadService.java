@@ -1,5 +1,6 @@
 package com.car.business.logic.service;
 
+import com.car.business.domain.Departamento;
 import com.car.business.domain.Localidad;
 import com.car.business.dto.LocalidadDto;
 import com.car.business.logic.error.BusinessException;
@@ -8,11 +9,16 @@ import com.car.business.percistence.repository.LocalidadRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 @Service
 public class LocalidadService extends BaseService<Localidad, LocalidadDto, String> {
 
+    private final LocalidadRepository localidadRepository;
+
     public LocalidadService(LocalidadRepository repository, LocalidadMapper mapper) {
         super(repository, mapper);
+        this.localidadRepository = repository;
     }
 
     @Override
@@ -29,5 +35,9 @@ public class LocalidadService extends BaseService<Localidad, LocalidadDto, Strin
         if (entidad.getDepartamento() == null) {
             throw new BusinessException("El departamento asociado es obligatorio.");
         }
+    }
+
+    public Optional<Localidad> findByNombreAndCodigoPostalAndDepartamento(String nombre, String codigoPostal, Departamento departamento) {
+        return localidadRepository.findByNombreAndCodigoPostalAndDepartamento(nombre, codigoPostal, departamento);
     }
 }

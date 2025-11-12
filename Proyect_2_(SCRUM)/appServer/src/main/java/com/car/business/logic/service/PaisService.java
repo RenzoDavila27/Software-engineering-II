@@ -8,11 +8,16 @@ import com.car.business.percistence.repository.PaisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 @Service
 public class PaisService extends BaseService<Pais, PaisDto, String> {
 
+    private final PaisRepository paisRepository;
+
     public PaisService(PaisRepository repository, PaisMapper mapper) {
         super(repository, mapper);
+        this.paisRepository = repository;
     }
 
     @Override
@@ -23,5 +28,9 @@ public class PaisService extends BaseService<Pais, PaisDto, String> {
         if (!StringUtils.hasText(entidad.getNombre())) {
             throw new BusinessException("El nombre del país es obligatorio.");
         }
+    }
+
+    public Optional<Pais> findByNombre(String nombre) {
+        return paisRepository.findByNombre(nombre);
     }
 }

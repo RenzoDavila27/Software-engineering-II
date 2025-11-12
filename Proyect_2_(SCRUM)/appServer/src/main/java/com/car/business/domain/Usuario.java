@@ -1,6 +1,7 @@
 package com.car.business.domain;
 
 import com.car.business.domain.enums.RolUsuario;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -25,7 +26,7 @@ public class Usuario extends BaseEntity<String> {
     @Column(nullable = false)
     private RolUsuario rolUsuario;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Persona persona;
 
     @Override

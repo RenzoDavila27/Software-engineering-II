@@ -16,12 +16,16 @@ import com.fioritech.car.bussiness.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
+    @Autowired
     private final UsuarioRepository usuarioRepository;
-    UsuarioMapper usuarioMapper;
 
     @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    UsuarioMapper usuarioMapper;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+
         this.usuarioRepository = usuarioRepository;
+        this.usuarioMapper = usuarioMapper;
     }
 
     public String getEmailFromAuthentication(Authentication authentication) {
@@ -47,7 +51,7 @@ public class UsuarioService {
         try {
             apiDto = usuarioMapper.registrationFormToApiDto(form);
         } catch (Exception e) {
-            // Manejar error de conversión de archivo (IOException)
+            System.out.println("Error procesando la foto: " + e.getMessage());
             return Mono.error(new RuntimeException("Error procesando la foto", e));
         }
 

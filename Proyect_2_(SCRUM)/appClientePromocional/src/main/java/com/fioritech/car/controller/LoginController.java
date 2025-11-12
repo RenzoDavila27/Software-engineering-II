@@ -2,6 +2,7 @@ package com.fioritech.car.controller;
 
 import com.fioritech.car.bussiness.dto.RegistrationForm;
 import com.fioritech.car.bussiness.service.UsuarioService;
+import com.fioritech.car.components.RegistrationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
@@ -25,7 +26,11 @@ public class LoginController {
 
     @Autowired
     private WebClient.Builder webClientBuilder;
+
+    @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private RegistrationFilter registrationFilter;
 
     @GetMapping("/login")
     public String login(Model model, HttpServletRequest request) {
@@ -40,12 +45,14 @@ public class LoginController {
             return Mono.just("redirect:/login");
         }
 
+        RegistrationForm registrationForm = new RegistrationForm();
         String email = usuarioService.getEmailFromAuthentication(authentication);
+        registrationForm.setEmail(email);
 
         return usuarioService.processUserLogin(email)
-                .map(user -> "redirect:/index") // En éxito, redirige a index
+                .map(user -> "redirect:/") // En éxito, redirige a index
                 .onErrorResume(e -> {
-                    model.addAttribute("email", email);
+                    model.addAttribute("registrationForm", registrationForm);
                     return Mono.just("register");
                 });
     }

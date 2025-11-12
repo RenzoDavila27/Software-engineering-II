@@ -1,28 +1,29 @@
 package com.fioritech.car.components;
 
 import com.fioritech.car.bussiness.service.UsuarioService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.net.URI;
+import java.io.IOException;
 import java.util.List;
 
 @Component
-public class RegistrationFilter implements WebFilter {
+public class RegistrationFilter extends OncePerRequestFilter {
 
     private final UsuarioService usuarioService;
 
     private final List<String> allowedPaths = List.of(
             "/login", "/register", "/exitAccess",
-            "/css", "/js", "/img", "/lib", "/api"
+            "/css", "/js", "/img", "/lib", "/api", "/"
     );
 
     @Autowired
@@ -31,43 +32,38 @@ public class RegistrationFilter implements WebFilter {
     }
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        String path = exchange.getRequest().getURI().getPath();
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
 
-        // 1. Si la ruta es pública dejar pasar
+        String path = request.getServletPath();
+
+        // Si la ruta es pública, dejar pasar
         boolean isAllowed = allowedPaths.stream().anyMatch(path::startsWith);
         if (isAllowed) {
-            return chain.filter(exchange);
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        // 2. Obtener la autenticación del contexto de seguridad
-        return ReactiveSecurityContextHolder.getContext()
-                .map(SecurityContext::getAuthentication)
-                .flatMap(authentication -> {
-                    // 3. Si no hay autenticación, dejar pasar (Spring Security lo bloqueará)
-                    if (authentication == null || !authentication.isAuthenticated()) {
-                        return chain.filter(exchange);
-                    }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-                    // 4. Obtener el email y comprobar si el usuario existe en el backend
-                    String email = usuarioService.getEmailFromAuthentication(authentication);
-                    return usuarioService.processUserLogin(email)
-                            .then(
-                                    // 5. ÉXITO: El usuario existe. Dejarlo pasar al controlador.
-                                    chain.filter(exchange)
-                            )
-                            .onErrorResume(e -> {
-                                // 6. ERROR: El usuario no existe. Redirigir a /register
-                                return redirectToRegister(exchange);
-                            });
-                })
-                .switchIfEmpty(chain.filter(exchange)); // Si no hay contexto, dejar pasar
-    }
+        // Si no hay autenticación, dejar pasar (Spring Security lo bloqueará)
+        if (authentication == null || !(authentication instanceof OAuth2AuthenticationToken)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-    private Mono<Void> redirectToRegister(ServerWebExchange exchange) {
-        // Creamos la redirección a la página de registro
-        exchange.getResponse().setStatusCode(HttpStatus.SEE_OTHER); // 303 Redirect
-        exchange.getResponse().getHeaders().setLocation(URI.create("/register"));
-        return exchange.getResponse().setComplete();
+        String email = usuarioService.getEmailFromAuthentication(authentication);
+
+        try {
+            // Comprobar si el usuario existe.
+            usuarioService.processUserLogin(email).block();
+            filterChain.doFilter(request, response);
+
+        } catch (Exception e) {
+            // El usuario no existe
+            response.sendRedirect("/register");
+        }
     }
 }

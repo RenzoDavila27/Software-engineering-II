@@ -28,36 +28,48 @@ public class RegisterController {
 
     @GetMapping("/register")
     public Mono<String> showRegisterPage(Model model, HttpServletRequest request) {
-
         model.addAttribute("requestURI", request.getRequestURI());
+
+        // Crear el RegistrationForm una vez
         RegistrationForm registrationForm = new RegistrationForm();
 
-        // Obtenemos la autenticación del contexto
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
-                .map(authentication -> {
+                .doOnNext(authentication -> { // Usar doOnNext para modificar el formulario
                     if (authentication != null && authentication.isAuthenticated()) {
                         String email = usuarioService.getEmailFromAuthentication(authentication);
-
                         registrationForm.setEmail(email);
-                        model.addAttribute("registrationForm", registrationForm);
                     }
-                    return "register";
                 })
-                .defaultIfEmpty("register");
+                .thenReturn(registrationForm) // Devolver el formulario modificado
+                .defaultIfEmpty(registrationForm) // Si no hay contexto de seguridad, usar el formulario inicial
+                .map(form -> {
+                    model.addAttribute("registrationForm", form); // Añadir al modelo aquí
+                    return "register";
+                });
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute("registrationForm") RegistrationForm registrationForm, Model model) {
+    public Mono<String> register(@ModelAttribute("registrationForm") RegistrationForm registrationForm, Model model) {
         List<String> errors = registrationService.validate(registrationForm);
         if (!errors.isEmpty()) {
             model.addAttribute("errors", errors);
             model.addAttribute("registrationForm", registrationForm);
-            return "register";
+            return Mono.just("register");
         }
 
-        usuarioService.registerUser(registrationForm);
+        // --- 2. Llamada Asíncrona (aquí está el cambio) ---
 
-        return "redirect:/index";
+        // Llamamos al servicio, que devuelve un Mono<Void>
+        return usuarioService.registerUser(registrationForm)
+                .then(Mono.just("index")) // <-- (A) Si el Mono termina con ÉXITO, redirige a index
+                .onErrorResume(e -> {
+
+                    model.addAttribute("errors", List.of("Error en el registro: " + e.getMessage()));
+                    // Devolvemos el formulario para que el usuario no pierda sus datos
+                    model.addAttribute("registrationForm", registrationForm);
+
+                    return Mono.just("register");
+                });
     }
 }

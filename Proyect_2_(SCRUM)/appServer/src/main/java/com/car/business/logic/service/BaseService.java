@@ -51,6 +51,7 @@ public abstract class BaseService<T extends BaseEntity<ID>, D extends BaseDto<ID
             return guardado;
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new BusinessException("Error de Sistemas");
         }
     }
