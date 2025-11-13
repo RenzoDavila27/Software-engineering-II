@@ -1,6 +1,7 @@
 package com.fioritech.car.bussiness.service;
 
 import com.fioritech.car.bussiness.dto.AlquilerDto;
+import com.fioritech.car.bussiness.dto.DocumentoAdjuntoDto;
 import com.fioritech.car.bussiness.dto.MercadoPagoPreferenceRequest;
 import com.fioritech.car.bussiness.dto.MercadoPagoPreferenceResponse;
 import com.fioritech.car.bussiness.dto.VehiculoDto;
@@ -11,7 +12,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -25,10 +28,10 @@ public class PaymentService {
     private final VehiculoService vehiculoService;
     private final WebClient.Builder webClientBuilder;
 
-    @Value("${app.server.base-url:http://localhost:8081}")
+    @Value("${app.server.base-url:http://localhost:8080}")
     private String appServerBaseUrl;
 
-    @Value("${app.mercadopago.notification-url:http://localhost:8081/mercadopago/webhook}")
+    @Value("${app.mercadopago.notification-url:https://arrantly-nonperturbing-darlena.ngrok-free.dev/mercadopago/webhook}")
     private String mercadoPagoNotificationUrl;
 
     public Mono<AlquilerDto> processEfectivoPayment(String vehiculoId, int rentalDays, double totalPrice,
@@ -56,24 +59,35 @@ public class PaymentService {
     }
 
     public Mono<String> processMercadoPagoPayment(String vehiculoId, int rentalDays, double totalPrice,
-                                                  LocalDate fechaDesde, LocalDate fechaHasta, String returnBaseUrl) {
+                                                  LocalDate fechaDesde, LocalDate fechaHasta, String returnBaseUrl,
+                                                  String authorizationHeader,
+                                                  DocumentoAdjuntoDto docDni,
+                                                  DocumentoAdjuntoDto docLicencia) {
         System.out.println("Processing Mercado Pago Payment:");
         System.out.println("  Vehiculo ID: " + vehiculoId);
         System.out.println("  Rental Days: " + rentalDays);
         System.out.println("  Total Price: " + totalPrice);
         System.out.println("  Period: " + fechaDesde + " to " + fechaHasta);
         System.out.println("  Creating preference via appServer");
-
         return vehiculoService.findById(vehiculoId)
-            .switchIfEmpty(Mono.error(() -> new IllegalArgumentException("Vehículo no encontrado")))
-            .map(vehiculoDto -> buildPreferenceRequest(vehiculoDto, vehiculoId, rentalDays, fechaDesde, fechaHasta, returnBaseUrl))
+                .switchIfEmpty(Mono.error(() -> new IllegalArgumentException("Vehículo no encontrado")))
+                .map(vehiculoDto -> buildPreferenceRequest(
+                        vehiculoDto, vehiculoId, rentalDays, fechaDesde, fechaHasta, returnBaseUrl, docDni, docLicencia
+                ))
             .flatMap(request -> webClientBuilder.baseUrl(appServerBaseUrl).build()
                 .post()
                 .uri("/api/mercadopago/preferences")
+                .headers(headers -> {
+                    if (StringUtils.hasText(authorizationHeader)) {
+                        headers.set(HttpHeaders.AUTHORIZATION, authorizationHeader);
+                    }
+                })
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(MercadoPagoPreferenceResponse.class))
-            .map(response -> response.getInitPoint() != null ? response.getInitPoint() : response.getSandboxInitPoint());
+                        .bodyToMono(MercadoPagoPreferenceResponse.class))
+                .map(response -> response.getInitPoint() != null
+                        ? response.getInitPoint()
+                        : response.getSandboxInitPoint());
     }
 
     private MercadoPagoPreferenceRequest buildPreferenceRequest(VehiculoDto vehiculoDto,
@@ -81,7 +95,9 @@ public class PaymentService {
                                                                 int rentalDays,
                                                                 LocalDate fechaDesde,
                                                                 LocalDate fechaHasta,
-                                                                String returnBaseUrl) {
+                                                                String returnBaseUrl,
+                                                                DocumentoAdjuntoDto docDni,
+                                                                DocumentoAdjuntoDto docLicencia) {
         String title = vehiculoDto.getCaracteristicaVehiculo().getMarca() + " "
             + vehiculoDto.getCaracteristicaVehiculo().getModelo();
         String description = String.format("Alquiler de %s del %s al %s (%d días)",
@@ -101,7 +117,9 @@ public class PaymentService {
             mercadoPagoNotificationUrl,
             vehiculoId,
             fechaDesde,
-            fechaHasta
+            fechaHasta,
+            docDni,
+            docLicencia
         );
     }
 

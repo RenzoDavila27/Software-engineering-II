@@ -1,9 +1,9 @@
 package com.fioritech.car.controller;
 
 import com.fioritech.car.bussiness.dto.RegistrationForm;
-import com.fioritech.car.bussiness.repository.UsuarioRepository;
 import com.fioritech.car.bussiness.service.RegistrationService;
 import com.fioritech.car.bussiness.service.UsuarioService;
+import com.fioritech.car.components.JwtSessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -25,6 +25,8 @@ public class RegisterController {
 
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private JwtSessionManager jwtSessionManager;
 
     @GetMapping("/register")
     public Mono<String> showRegisterPage(Model model, HttpServletRequest request) {
@@ -50,7 +52,9 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public Mono<String> register(@ModelAttribute("registrationForm") RegistrationForm registrationForm, Model model) {
+    public Mono<String> register(@ModelAttribute("registrationForm") RegistrationForm registrationForm,
+                                 Model model,
+                                 HttpServletRequest request) {
         List<String> errors = registrationService.validate(registrationForm);
         if (!errors.isEmpty()) {
             model.addAttribute("errors", errors);
@@ -62,7 +66,9 @@ public class RegisterController {
 
         // Llamamos al servicio, que devuelve un Mono<Void>
         return usuarioService.registerUser(registrationForm)
-                .then(Mono.just("index")) // <-- (A) Si el Mono termina con ÉXITO, redirige a index
+                .then(usuarioService.obtainJwtToken(registrationForm.getEmail())
+                        .doOnNext(jwt -> jwtSessionManager.storeTokens(request, jwt))
+                        .thenReturn("index"))
                 .onErrorResume(e -> {
 
                     model.addAttribute("errors", List.of("Error en el registro: " + e.getMessage()));
