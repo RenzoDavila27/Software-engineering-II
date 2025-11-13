@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- JasperReports template for invoice PDF generation -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="factura"
+              pageWidth="595"
+              pageHeight="842"
+              columnWidth="515"
+              leftMargin="40"
+              rightMargin="40"
+              topMargin="40"
+              bottomMargin="40"
+              uuid="3d8f7c61-960c-4a9f-92a7-1b3fd530a95f">
+    <property name="net.sf.jasperreports.default.font.name" value="Helvetica"/>
+
+    <parameter name="paramTitulo" class="java.lang.String"/>
+    <parameter name="paramFecha" class="java.lang.String"/>
+    <parameter name="paramCliente" class="java.lang.String"/>
+    <parameter name="paramDocumento" class="java.lang.String"/>
+    <parameter name="paramVehiculo" class="java.lang.String"/>
+    <parameter name="paramPeriodo" class="java.lang.String"/>
+    <parameter name="paramTotal" class="java.lang.Double"/>
+
+    <field name="descripcion" class="java.lang.String"/>
+    <field name="promocion" class="java.lang.String"/>
+    <field name="subtotal" class="java.lang.Double"/>
+
+    <title>
+        <band height="80">
+            <staticText>
+                <reportElement x="0" y="0" width="515" height="22" uuid="87c7a87e-9cdd-4f88-9a5d-404c43c9d2d4"/>
+                <textElement textAlignment="Center">
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <text><![CDATA[FioriRentCar - Comprobante de Facturación]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="30" width="515" height="25" uuid="0509b9e3-a0bb-4fc4-9b86-62963359af9f"/>
+                <textElement textAlignment="Center">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{paramTitulo}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="55" width="515" height="20" uuid="8051714d-e50f-4b2a-9d04-0a5de9730abf"/>
+                <textElement textAlignment="Center">
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Emitida el " + $P{paramFecha}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <pageHeader>
+        <band height="90">
+            <textField>
+                <reportElement x="0" y="0" width="300" height="18" uuid="3b4333ca-5d12-45a0-8db4-1b826dd2c04f"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Cliente: " + $P{paramCliente}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="20" width="300" height="18" uuid="46b85fed-825a-447c-b9e7-28ba7e3d590f"/>
+                <textFieldExpression><![CDATA["Documento: " + $P{paramDocumento}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="40" width="300" height="18" uuid="ae0d5c03-fa21-4e7c-b199-51819bcbf9d1"/>
+                <textFieldExpression><![CDATA["Vehículo: " + $P{paramVehiculo}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="60" width="300" height="18" uuid="9bfbc9e2-8cd9-4c37-8946-bdb349bdabee"/>
+                <textFieldExpression><![CDATA["Período: " + $P{paramPeriodo}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+
+    <columnHeader>
+        <band height="24">
+            <rectangle>
+                <reportElement x="0" y="0" width="515" height="24" backcolor="#EFEFF0" uuid="0e12d39b-e62d-4b8a-8aad-952d9c7206ec"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="10" y="4" width="250" height="16" uuid="d4a96999-301b-4e10-874a-6dee2f85f2df"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Descripción]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="270" y="4" width="130" height="16" uuid="abd1ab7d-92e9-4a9c-a37c-30b188ce8df3"/>
+                <textElement textAlignment="Center">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Promoción]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="408" y="4" width="97" height="16" uuid="c1aa1f78-2a4d-4252-8cf3-3d9aa4c0ba62"/>
+                <textElement textAlignment="Right">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Subtotal]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="10" y="2" width="250" height="16" uuid="28a95388-0ea3-4062-a90f-02a03b13bf5c"/>
+                <textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="270" y="2" width="130" height="16" uuid="5d9a1031-6926-4fd2-8c8d-8f17f58c0957"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA[$F{promocion}]]></textFieldExpression>
+            </textField>
+            <textField pattern="$ #,##0.00">
+                <reportElement x="408" y="2" width="97" height="16" uuid="51b93aa3-20ff-43cd-a494-1db318e36069"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{subtotal}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <columnFooter>
+        <band height="1">
+            <line>
+                <reportElement x="0" y="0" width="515" height="1" forecolor="#CCCCCC" uuid="e5f38910-0c82-41a5-8788-908cb4a4e646"/>
+            </line>
+        </band>
+    </columnFooter>
+
+    <summary>
+        <band height="60">
+            <line>
+                <reportElement x="300" y="5" width="215" height="1" forecolor="#000000" uuid="1f74b37a-529b-4b0f-9865-1bf886d63d8a"/>
+            </line>
+            <staticText>
+                <reportElement x="300" y="15" width="110" height="20" uuid="2c182110-e168-4f79-9bd6-5d04a54d5c9a"/>
+                <textElement textAlignment="Right">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total:]]></text>
+            </staticText>
+            <textField pattern="$ #,##0.00">
+                <reportElement x="410" y="15" width="105" height="20" uuid="026c6f2b-3a5f-408e-ab9b-280e7ee157ce"/>
+                <textElement textAlignment="Right">
+                    <font isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{paramTotal}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="35" width="515" height="18" uuid="f85a1d1b-0a85-4008-87da-fb7278a0b2f7"/>
+                <textElement textAlignment="Center">
+                    <font size="9" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Gracias por confiar en FioriRentCar. Ante cualquier duda comuníquese con soporte@fiorirentcar.com]]></text>
+            </staticText>
+        </band>
+    </summary>
+</jasperReport>
