@@ -96,23 +96,15 @@ public class PaymentController {
         if (fechaDesde == null || fechaHasta == null) {
             throw new IllegalStateException("No se encontraron las fechas del alquiler. Volvé a realizar la reserva.");
         }
-
+        String authorizationHeader = jwtSessionManager.getAuthorizationHeader(request).orElseThrow(() -> new IllegalStateException("No se encontró la sesión de autenticación. Iniciá sesión nuevamente."));
+        DocumentoAdjuntoDto docDni = getDocumentoFromSession(request, SESSION_DOC_DNI).orElseThrow(() -> new IllegalStateException("No se adjuntó el documento DNI. Volvé a cargar la documentación."));
+        DocumentoAdjuntoDto docLicencia = getDocumentoFromSession(request, SESSION_DOC_LICENCIA).orElseThrow(() -> new IllegalStateException("No se adjuntó la licencia de conducir. Volvé a cargar la documentación."));
         switch (paymentMethod) {
-            case "efectivo":
-                paymentService.processEfectivoPayment(vehiculoId, rentalDays, totalPrice, fechaDesde, fechaHasta).block();
-                clearPaymentSession(request);
-                return "redirect:/success";
-            case "transferencia":
-                paymentService.processTransferenciaPayment(vehiculoId, rentalDays, totalPrice, fechaDesde, fechaHasta).block();
+            case "efectivo", "transferencia":
+                paymentService.processPayment(vehiculoId, rentalDays, totalPrice, fechaDesde, fechaHasta, authorizationHeader, docDni, docLicencia).block();
                 clearPaymentSession(request);
                 return "redirect:/success";
             case "mercadoPago":
-                String authorizationHeader = jwtSessionManager.getAuthorizationHeader(request)
-                        .orElseThrow(() -> new IllegalStateException("No se encontró la sesión de autenticación. Iniciá sesión nuevamente."));
-                DocumentoAdjuntoDto docDni = getDocumentoFromSession(request, SESSION_DOC_DNI)
-                        .orElseThrow(() -> new IllegalStateException("No se adjuntó el documento DNI. Volvé a cargar la documentación."));
-                DocumentoAdjuntoDto docLicencia = getDocumentoFromSession(request, SESSION_DOC_LICENCIA)
-                        .orElseThrow(() -> new IllegalStateException("No se adjuntó la licencia de conducir. Volvé a cargar la documentación."));
                 String initPoint = paymentService.processMercadoPagoPayment(
                         vehiculoId, rentalDays, totalPrice, fechaDesde, fechaHasta,
                         MERCADO_PAGO_RETURN_BASE_URL, authorizationHeader, docDni, docLicencia)

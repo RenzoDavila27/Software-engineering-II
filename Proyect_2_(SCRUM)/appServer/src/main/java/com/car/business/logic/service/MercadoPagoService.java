@@ -56,7 +56,7 @@ public class MercadoPagoService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MercadoPagoService.class);
     private static final String REFERENCE_PREFIX = "ALQUILER";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
-    private static final String MP_DOCUMENT_PATH = "/home/f4cul3ll4/documentacion";
+    private static final String MP_DOCUMENT_PATH = "/home/renzo";
 
     private final String accessToken;
     private final VehiculoService vehiculoService;

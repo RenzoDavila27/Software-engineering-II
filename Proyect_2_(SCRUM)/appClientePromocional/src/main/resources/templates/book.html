@@ -79,8 +79,6 @@
                 <div class="bg-secondary p-5 rounded">
                     <h3 class="text-white text-center mb-4">Formulario de Reserva</h3>
                     <form id="bookingForm" th:action="@{/payment}" method="post" enctype="multipart/form-data">
-                        <input type="hidden" th:if="${_csrf != null}"
-                               th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                         <input type="hidden" name="vehiculoId" th:value="${vehiculo.id}">
                         <input type="hidden" name="costPerDay" th:value="${vehiculo.costoVehiculo.costo}">
                         <input type="hidden" name="rentalDays" id="rentalDaysInput">
@@ -107,13 +105,11 @@
                                 <h4 class="text-white mt-4">Documentación</h4>
                                 <div class="mb-3">
                                     <label for="docDni" class="form-label text-white">DNI (PDF o Word)</label>
-                                    <input class="form-control" type="file" id="docDni" name="docDni" accept=".pdf,.doc,.docx">
-                                    <small id="docDniLabel" class="form-text text-white-50"></small>
+                                    <input class="form-control" type="file" id="docDni" name = "docDni" accept=".pdf,.doc,.docx" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="docLicencia" class="form-label text-white">Licencia de Conducir (PDF o Word)</label>
-                                    <input class="form-control" type="file" id="docLicencia" name="docLicencia" accept=".pdf,.doc,.docx">
-                                    <small id="docLicenciaLabel" class="form-text text-white-50"></small>
+                                    <input class="form-control" type="file" id="docLicencia" name = "docLicencia" accept=".pdf,.doc,.docx" required>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -141,35 +137,7 @@
 <!-- Template Javascript -->
 <script th:src="@{/js/main.js}"></script>
 <script>
-    const docDniInput = document.getElementById('docDni');
-    const docLicInput = document.getElementById('docLicencia');
-    const docDniLabel = document.getElementById('docDniLabel');
-    const docLicLabel = document.getElementById('docLicenciaLabel');
-
-    const updateFileLabel = (input, label) => {
-        if (input.files && input.files.length > 0) {
-            label.textContent = input.files[0].name;
-        } else {
-            label.textContent = '';
-        }
-    };
-
-    docDniInput.addEventListener('change', () => updateFileLabel(docDniInput, docDniLabel));
-    docLicInput.addEventListener('change', () => updateFileLabel(docLicInput, docLicLabel));
-
     document.getElementById('bookingForm').addEventListener('submit', function(event) {
-        if (!docDniInput.files || docDniInput.files.length === 0) {
-            alert('Subí el archivo del DNI para continuar con la reserva.');
-            event.preventDefault();
-            docDniInput.focus();
-            return;
-        }
-        if (!docLicInput.files || docLicInput.files.length === 0) {
-            alert('Subí el archivo de la Licencia de Conducir para continuar con la reserva.');
-            event.preventDefault();
-            docLicInput.focus();
-            return;
-        }
         const fechaRetiro = new Date(document.getElementById('fechaRetiro').value);
         const fechaEntrega = new Date(document.getElementById('fechaEntrega').value);
 

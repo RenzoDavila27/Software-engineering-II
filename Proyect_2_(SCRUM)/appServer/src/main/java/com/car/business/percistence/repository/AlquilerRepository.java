@@ -14,4 +14,8 @@ public interface AlquilerRepository extends BaseRepository<Alquiler, String> {
 
     @Query("SELECT a FROM Alquiler a WHERE a.eliminado = false AND a.fechaHasta = :maniana")
     List<Alquiler> buscarAlquilerVecManiana(@Param("maniana") LocalDate maniana);
+
+    @Query("SELECT a FROM Alquiler a WHERE a.eliminado = false AND a.fechaDesde = :hoy")
+    List<Alquiler> buscarAlquilerEmpHoy(@Param("hoy") LocalDate hoy);
+
 }

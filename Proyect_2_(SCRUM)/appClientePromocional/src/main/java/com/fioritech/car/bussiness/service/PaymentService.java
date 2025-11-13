@@ -1,10 +1,6 @@
 package com.fioritech.car.bussiness.service;
 
-import com.fioritech.car.bussiness.dto.AlquilerDto;
-import com.fioritech.car.bussiness.dto.DocumentoAdjuntoDto;
-import com.fioritech.car.bussiness.dto.MercadoPagoPreferenceRequest;
-import com.fioritech.car.bussiness.dto.MercadoPagoPreferenceResponse;
-import com.fioritech.car.bussiness.dto.VehiculoDto;
+import com.fioritech.car.bussiness.dto.*;
 import com.fioritech.car.bussiness.repository.AlquilerRepository;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -34,8 +30,11 @@ public class PaymentService {
     @Value("${app.mercadopago.notification-url:https://arrantly-nonperturbing-darlena.ngrok-free.dev/mercadopago/webhook}")
     private String mercadoPagoNotificationUrl;
 
-    public Mono<AlquilerDto> processEfectivoPayment(String vehiculoId, int rentalDays, double totalPrice,
-                                                    LocalDate fechaDesde, LocalDate fechaHasta) {
+    public Mono<AlquilerDto> processPayment(String vehiculoId, int rentalDays, double totalPrice,
+                                                    LocalDate fechaDesde, LocalDate fechaHasta,
+                                                    String authorizationHeader,
+                                                    DocumentoAdjuntoDto docDni,
+                                                    DocumentoAdjuntoDto docLicencia) {
         System.out.println("Processing Efectivo Payment:");
         System.out.println("  Vehiculo ID: " + vehiculoId);
         System.out.println("  Rental Days: " + rentalDays);
@@ -43,19 +42,19 @@ public class PaymentService {
         System.out.println("  Period: " + fechaDesde + " to " + fechaHasta);
         System.out.println("  Order registered. Payment due on pickup day.");
 
-        return createAndSaveAlquiler(vehiculoId, fechaDesde, fechaHasta);
-    }
+        PaymentRequest request = new PaymentRequest(vehiculoId, fechaDesde, fechaHasta, totalPrice, docDni, docLicencia);
 
-    public Mono<AlquilerDto> processTransferenciaPayment(String vehiculoId, int rentalDays, double totalPrice,
-                                                         LocalDate fechaDesde, LocalDate fechaHasta) {
-        System.out.println("Processing Transferencia Bancaria Payment:");
-        System.out.println("  Vehiculo ID: " + vehiculoId);
-        System.out.println("  Rental Days: " + rentalDays);
-        System.out.println("  Total Price: " + totalPrice);
-        System.out.println("  Period: " + fechaDesde + " to " + fechaHasta);
-        System.out.println("  Transfer details: Alias: mycar.mp, CBU: 123456789, Banco: BancoFioriTech");
-
-        return createAndSaveAlquiler(vehiculoId, fechaDesde, fechaHasta);
+        return webClientBuilder.baseUrl(appServerBaseUrl).build()
+                .post()
+                .uri("/api/payment")
+                .headers(headers -> {
+                    if (StringUtils.hasText(authorizationHeader)) {
+                        headers.set(HttpHeaders.AUTHORIZATION, authorizationHeader);
+                    }
+                })
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(AlquilerDto.class);
     }
 
     public Mono<String> processMercadoPagoPayment(String vehiculoId, int rentalDays, double totalPrice,
@@ -121,21 +120,5 @@ public class PaymentService {
             docDni,
             docLicencia
         );
-    }
-
-    private Mono<AlquilerDto> createAndSaveAlquiler(String vehiculoId, LocalDate fechaDesde, LocalDate fechaHasta) {
-        return vehiculoService.findById(vehiculoId)
-            .flatMap(vehiculoDto -> {
-                AlquilerDto alquilerDto = new AlquilerDto();
-                alquilerDto.setFechaInicio(toDate(fechaDesde));
-                alquilerDto.setFechaFin(toDate(fechaHasta));
-                alquilerDto.setVehiculo(vehiculoDto);
-                System.out.println("Attempting to save AlquilerDto: " + alquilerDto);
-                return alquilerRepository.saveAlquiler(alquilerDto);
-            });
-    }
-
-    private Date toDate(LocalDate date) {
-        return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }
