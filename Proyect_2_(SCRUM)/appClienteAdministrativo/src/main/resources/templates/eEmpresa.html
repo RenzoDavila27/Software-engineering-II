@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titleForm}">Gestionar Empresa</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+</head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments/fragments :: sidebar}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments/fragments :: topnav}"></header>
+
+    <main class="content container mt-4">
+      <h2 th:text="${titleForm}">Alta/Modificación de Empresa</h2>
+
+      <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+      <form th:action="@{${item.id} != null ? '/empresas/modificar/' + ${item.id} : '/empresas/alta'}"
+            th:object="${item}"
+            method="post"
+            class="row g-3">
+        <div th:replace="~{fragments/fragments :: csrfInput}"></div>
+        <input type="hidden" th:field="*{contactoId}">
+
+        <div class="col-12">
+          <label class="form-label">Nombre de la empresa</label>
+          <input type="text" class="form-control" th:field="*{nombre}" th:disabled="${modoVer}" required>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label">Persona responsable</label>
+          <select class="form-select" th:field="*{personaId}" th:disabled="${modoVer}" required>
+            <option value="">Seleccione una persona</option>
+            <option th:each="persona : ${personas}"
+                    th:value="${persona.id}"
+                    th:text="${persona.nombre + ' ' + persona.apellido}"></option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label">Tipo de contacto</label>
+          <select class="form-select"
+                  name="contactoCorreo.tipoContacto"
+                  th:disabled="${modoVer}">
+            <option th:each="tipo : ${tiposContacto}"
+                    th:value="${tipo}"
+                    th:selected="${contactoCorreo.tipoContacto == tipo}"
+                    th:text="${tipo}"></option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email"
+                 class="form-control"
+                 name="contactoCorreo.email"
+                 th:value="${contactoCorreo.email}"
+                 th:attr="readonly=${modoVer}? 'readonly' : null"
+                 required>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Observación del contacto</label>
+          <textarea class="form-control"
+                    name="contactoCorreo.observacion"
+                    rows="3"
+                    th:text="${contactoCorreo.observacion}"
+                    th:attr="readonly=${modoVer}? 'readonly' : null"></textarea>
+        </div>
+
+        <input type="hidden" name="contactoCorreo.id" th:value="${contactoCorreo.id}">
+
+        <div class="d-flex justify-content-between mt-3">
+          <a th:href="@{/empresas}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Volver
+          </a>
+          <button type="submit" class="btn btn-primary" th:if="${!modoVer}">
+            <i class="fa-solid fa-save"></i> Guardar
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <footer class="footer mt-4">
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> FioriRentCar
+    </footer>
+  </div>
+</div>
+</body>
+</html>

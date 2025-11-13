@@ -166,7 +166,7 @@ public class DashboardService {
                             formatearMonto(vehiculo.getTotalGenerado()),
                             vehiculo.getAlquileres().size()));
                     for (VehiculoAlquilerInfo alquiler : vehiculo.getAlquileres()) {
-                        writer.writeBullet(String.format("%s (%s) | %s → %s | %s",
+                        writer.writeBullet(String.format("%s (%s) | %s -> %s | %s",
                                 alquiler.getClienteNombre(),
                                 alquiler.getClienteDocumento(),
                                 formatearFecha(alquiler.getFechaDesde()),

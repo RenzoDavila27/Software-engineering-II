@@ -85,6 +85,10 @@ public class AlquilerService {
         repository.marcarEntrega(id);
     }
 
+    public void marcarEntregaError(String id) {
+        repository.marcarEntregaError(id);
+    }
+
     private DocumentacionDto registrarDocumentacion(TipoDocumentacion tipo,
                                                     String observacion,
                                                     MultipartFile[] archivosDocumentacion) {

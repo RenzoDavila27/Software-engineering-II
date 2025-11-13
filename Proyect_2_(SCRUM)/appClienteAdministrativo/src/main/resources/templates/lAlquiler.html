@@ -87,12 +87,22 @@
               <span th:if="${item.entregado}" class="badge bg-success">
                 <i class="fa-solid fa-circle-check me-1"></i> Entregado
               </span>
-              <button type="button"
-                      th:if="${!item.entregado}"
-                      class="btn btn-sm btn-outline-success btn-entrega"
-                      th:data-id="${item.id}">
-                <i class="fa-solid fa-box-open me-1"></i> Entrega
-              </button>
+              <div th:if="${!item.entregado}" class="entrega-actions d-flex flex-column gap-2 flex-md-row">
+                <button type="button"
+                        class="btn btn-sm btn-outline-success entrega-action"
+                        th:data-id="${item.id}"
+                        data-endpoint="entrega"
+                        data-confirm="¿Confirmás la entrega de este vehículo?">
+                  <i class="fa-solid fa-box-open me-1"></i> Entrega
+                </button>
+                <button type="button"
+                        class="btn btn-sm btn-outline-warning text-dark entrega-action"
+                        th:data-id="${item.id}"
+                        data-endpoint="entrega-error"
+                        data-confirm="¡Advertencia! Esta acción marcará la entrega con inconvenientes. ¿Desea continuar?">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </button>
+              </div>
             </td>
             <td class="actions-column">
               <a th:href="@{|/alquileres/consultar/${item.id}|}" class="btn-action btn-view" title="Ver">
@@ -108,7 +118,7 @@
             </td>
           </tr>
           <tr th:if="${#lists.isEmpty(items)}">
-            <td colspan="6" class="text-center">No hay alquileres registrados.</td>
+            <td colspan="7" class="text-center">No hay alquileres registrados.</td>
           </tr>
           </tbody>
         </table>
@@ -129,33 +139,48 @@
     const csrfHeader = headerInput ? headerInput.value : 'X-CSRF-TOKEN';
     const csrfToken = tokenInput ? tokenInput.value : '';
 
-    document.querySelectorAll('.btn-entrega').forEach(function (button) {
+    document.querySelectorAll('.entrega-action').forEach(function (button) {
       button.addEventListener('click', function () {
         const alquilerId = button.dataset.id;
-        if (!alquilerId) {
+        const endpoint = button.dataset.endpoint;
+        const confirmMessage = button.dataset.confirm || '¿Desea continuar con la acción?';
+        if (!alquilerId || !endpoint) {
           return;
         }
-        if (!confirm('¿Confirmás la entrega de este vehículo?')) {
+        if (!confirm(confirmMessage)) {
           return;
         }
-        button.disabled = true;
-        fetch(`/alquileres/${alquilerId}/entrega`, {
+        toggleEntregaButtons(button, true);
+        fetch(`/alquileres/${alquilerId}/${endpoint}`, {
           method: 'POST',
           headers: Object.assign({'Content-Type': 'application/json'}, csrfToken ? {[csrfHeader]: csrfToken} : {})
         }).then(function (response) {
           if (!response.ok) {
             return response.text().then(function (text) { throw new Error(text || 'No se pudo registrar la entrega.'); });
           }
-          const badge = document.createElement('span');
-          badge.className = 'badge bg-success';
-          badge.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Entregado';
-          button.replaceWith(badge);
+          const contenedor = button.closest('.entrega-actions');
+          if (contenedor) {
+            contenedor.innerHTML = construirBadge(endpoint);
+          }
         }).catch(function (error) {
           alert(error.message);
-          button.disabled = false;
+          toggleEntregaButtons(button, false);
         });
       });
     });
+
+    function toggleEntregaButtons(button, disabled) {
+      const contenedor = button.closest('.entrega-actions');
+      const botones = contenedor ? contenedor.querySelectorAll('.entrega-action') : [button];
+      botones.forEach(function (btn) { btn.disabled = disabled; });
+    }
+
+    function construirBadge(endpoint) {
+      if (endpoint === 'entrega-error') {
+        return '<span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i> Entrega con error</span>';
+      }
+      return '<span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i> Entregado</span>';
+    }
   });
 </script>
 </body>

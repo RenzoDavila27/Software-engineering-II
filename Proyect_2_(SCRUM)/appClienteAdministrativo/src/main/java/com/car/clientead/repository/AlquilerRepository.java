@@ -84,7 +84,15 @@ public class AlquilerRepository {
 
     public void marcarEntrega(String id) {
         try {
-            restTemplate.postForEntity(baseUrl + "/" + id + "/entrega", null, Void.class);
+            restTemplate.postForEntity(baseUrl + "/entrega/" + id, null, Void.class);
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo registrar la entrega del alquiler con ID: " + id, ex);
+        }
+    }
+
+    public void marcarEntregaError(String id) {
+        try {
+            restTemplate.postForEntity(baseUrl + "/entregaerror/" + id, null, Void.class);
         } catch (RestClientException ex) {
             throw new ApiClientException("No se pudo registrar la entrega del alquiler con ID: " + id, ex);
         }

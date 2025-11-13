@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titleList}">Empresas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+  <style>
+    .table-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+    .styled-table { width: 100%; border-collapse: collapse; }
+    .styled-table th, .styled-table td { padding: 12px 14px; text-align: left; }
+    .styled-table th { background: #111827; color: #fff; }
+    .styled-table tbody tr:nth-of-type(even) { background: #f8fafc; }
+    .actions-column { text-align: center; }
+    .btn-action { font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; margin: 0 2px; display: inline-block; text-decoration: none; }
+    .btn-view { background-color: #198754; color: #fff; }
+    .btn-edit { background-color: #ffc107; color: #000; }
+    .btn-delete { background-color: #dc3545; color: #fff; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside th:replace="~{fragments/fragments :: sidebar}"></aside>
+  <div class="main">
+    <header th:replace="~{fragments/fragments :: topnav}"></header>
+
+    <main class="content">
+      <div class="page-header">
+        <div>
+          <p class="page-subtitle">Operaciones</p>
+          <h1 th:text="${titleList}">Empresas</h1>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a th:href="@{/empresas/alta}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nueva empresa
+          </a>
+        </div>
+      </div>
+
+      <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+      <div class="table-card">
+        <table class="styled-table">
+          <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Persona asociada</th>
+            <th>Correo electrónico</th>
+            <th>Tipo de contacto</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="item : ${items}">
+            <td th:text="${item.nombre}">Nombre</td>
+            <td>
+              <span th:text="${personaMap[item.personaId] != null ? personaMap[item.personaId].nombre + ' ' + personaMap[item.personaId].apellido : 'Sin persona'}"></span>
+            </td>
+            <td>
+              <span th:text="${contactoMap[item.contactoId] != null ? contactoMap[item.contactoId].email : 'Sin correo'}"></span>
+            </td>
+            <td>
+              <span th:text="${contactoMap[item.contactoId] != null && contactoMap[item.contactoId].tipoContacto != null ? contactoMap[item.contactoId].tipoContacto : '-'}"></span>
+            </td>
+            <td class="actions-column">
+              <a th:href="@{|/empresas/consultar/${item.id}|}" class="btn-action btn-view" title="Ver">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+              <a th:href="@{|/empresas/modificar/${item.id}|}" class="btn-action btn-edit" title="Editar">
+                <i class="fa-solid fa-pen"></i>
+              </a>
+              <a th:href="@{|/empresas/baja/${item.id}|}" class="btn-action btn-delete" title="Eliminar"
+                 onclick="return confirm('¿Desea eliminar esta empresa?');">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(items)}">
+            <td colspan="5" class="text-center text-muted">No hay empresas registradas.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="footer">
+      © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> FioriRentCar
+    </footer>
+  </div>
+</div>
+
+<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

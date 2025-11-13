@@ -83,6 +83,7 @@ public class AlquilerController {
             Map<String, VehiculoDto> vehiculoMap = vehiculoService.listar().stream()
                     .collect(Collectors.toMap(VehiculoDto::getId, v -> v));
             Map<String, String> facturasPorAlquiler = facturaService.mapearFacturaPorAlquiler();
+            marcarEntregadosSegunVehiculo(alquileres, vehiculoMap);
 
             model.addAttribute("items", alquileres);
             model.addAttribute("clienteMap", clienteMap);
@@ -121,6 +122,7 @@ public class AlquilerController {
                     .collect(Collectors.toMap(VehiculoDto::getId, v -> v));
             Map<String, String> facturasPorAlquiler = facturaService.mapearFacturaPorAlquiler();
             ClienteDto cliente = clienteService.consultar(clienteId);
+            marcarEntregadosSegunVehiculo(alquileres, vehiculoMap);
 
             model.addAttribute("items", alquileres);
             model.addAttribute("vehiculoMap", vehiculoMap);
@@ -255,6 +257,20 @@ public class AlquilerController {
         }
     }
 
+    @PostMapping("/{id}/entrega-error")
+    @ResponseBody
+    public ResponseEntity<?> registrarEntregaConError(@PathVariable String id) {
+        if (!puedeGestionarAlquileres()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tiene permisos para esta acción.");
+        }
+        try {
+            alquilerService.marcarEntregaError(id);
+            return ResponseEntity.ok().build();
+        } catch (ApiClientException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
     @GetMapping("/factura/{alquilerId}")
     public String verFactura(@PathVariable String alquilerId, Model model) {
         try {
@@ -297,6 +313,18 @@ public class AlquilerController {
 
     private boolean esRolCliente() {
         return userSession.getRolActual() == RolUsuario.CLIENTE;
+    }
+
+    private void marcarEntregadosSegunVehiculo(List<AlquilerDto> alquileres, Map<String, VehiculoDto> vehiculoMap) {
+        if (alquileres == null || vehiculoMap == null) {
+            return;
+        }
+        alquileres.forEach(alquiler -> {
+            VehiculoDto vehiculo = vehiculoMap.get(alquiler.getVehiculoId());
+            boolean entregado = vehiculo == null
+                    || (vehiculo.getEstadoVehiculo() != null && vehiculo.getEstadoVehiculo() != EstadoVehiculo.ALQUILADO);
+            alquiler.setEntregado(entregado);
+        });
     }
 
     private boolean puedeVisualizarFactura(FacturaDetalleView vista) {

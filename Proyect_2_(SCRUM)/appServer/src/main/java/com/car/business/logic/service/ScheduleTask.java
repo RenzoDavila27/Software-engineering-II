@@ -1,4 +1,3 @@
-/* 
 package com.car.business.logic.service;
 
 import java.time.LocalDate;
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import com.car.business.domain.Alquiler;
 
+import jakarta.transaction.Transactional;
+
 @Component
 public class ScheduleTask {
 
@@ -20,7 +21,8 @@ public class ScheduleTask {
     @Autowired
     private AlquilerService alquilerService;
     
-    @Scheduled(cron = "0 0 9 * * *", zone = "America/Argentina/Mendoza")
+    @Scheduled(cron = "0 07 22 * * *", zone = "America/Argentina/Mendoza")
+    @Transactional
     public void enviarRecordatios(){
         LocalDate hoyMza = LocalDate.now(ZoneId.of("America/Argentina/Mendoza"));
         LocalDate maniana = hoyMza.plusDays(1);
@@ -35,4 +37,4 @@ public class ScheduleTask {
 
     }
 }
-*/
+
