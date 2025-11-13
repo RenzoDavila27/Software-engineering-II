@@ -1,7 +1,6 @@
 package com.fioritech.car.bussiness.dto;
 
 import java.time.LocalDate;
-
 public class MercadoPagoPreferenceRequest {
 
     private String title;
@@ -15,6 +14,8 @@ public class MercadoPagoPreferenceRequest {
     private String vehiculoId;
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
+    private DocumentoAdjuntoDto docDni;
+    private DocumentoAdjuntoDto docLicencia;
 
     public MercadoPagoPreferenceRequest() {
     }
@@ -22,7 +23,8 @@ public class MercadoPagoPreferenceRequest {
     public MercadoPagoPreferenceRequest(String title, String description, String currencyId,
                                         String successUrl, String failureUrl, String pendingUrl,
                                         String autoReturn, String notificationUrl, String vehiculoId,
-                                        LocalDate fechaDesde, LocalDate fechaHasta) {
+                                        LocalDate fechaDesde, LocalDate fechaHasta,
+                                        DocumentoAdjuntoDto docDni, DocumentoAdjuntoDto docLicencia) {
         this.title = title;
         this.description = description;
         this.currencyId = currencyId;
@@ -34,6 +36,8 @@ public class MercadoPagoPreferenceRequest {
         this.vehiculoId = vehiculoId;
         this.fechaDesde = fechaDesde;
         this.fechaHasta = fechaHasta;
+        this.docDni = docDni;
+        this.docLicencia = docLicencia;
     }
 
     public String getTitle() {
@@ -122,5 +126,21 @@ public class MercadoPagoPreferenceRequest {
 
     public void setFechaHasta(LocalDate fechaHasta) {
         this.fechaHasta = fechaHasta;
+    }
+
+    public DocumentoAdjuntoDto getDocDni() {
+        return docDni;
+    }
+
+    public void setDocDni(DocumentoAdjuntoDto docDni) {
+        this.docDni = docDni;
+    }
+
+    public DocumentoAdjuntoDto getDocLicencia() {
+        return docLicencia;
+    }
+
+    public void setDocLicencia(DocumentoAdjuntoDto docLicencia) {
+        this.docLicencia = docLicencia;
     }
 }

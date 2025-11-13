@@ -78,7 +78,7 @@
             <div class="col-lg-7 wow fadeInUp" data-wow-delay="0.3s">
                 <div class="bg-secondary p-5 rounded">
                     <h3 class="text-white text-center mb-4">Formulario de Reserva</h3>
-                    <form id="bookingForm" th:action="@{/payment}" method="get">
+                    <form id="bookingForm" th:action="@{/payment}" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="vehiculoId" th:value="${vehiculo.id}">
                         <input type="hidden" name="costPerDay" th:value="${vehiculo.costoVehiculo.costo}">
                         <input type="hidden" name="rentalDays" id="rentalDaysInput">
@@ -105,11 +105,11 @@
                                 <h4 class="text-white mt-4">Documentación</h4>
                                 <div class="mb-3">
                                     <label for="docDni" class="form-label text-white">DNI (PDF o Word)</label>
-                                    <input class="form-control" type="file" id="docDni" accept=".pdf,.doc,.docx">
+                                    <input class="form-control" type="file" id="docDni" name = "docDni" accept=".pdf,.doc,.docx" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="docLicencia" class="form-label text-white">Licencia de Conducir (PDF o Word)</label>
-                                    <input class="form-control" type="file" id="docLicencia" accept=".pdf,.doc,.docx">
+                                    <input class="form-control" type="file" id="docLicencia" name = "docLicencia" accept=".pdf,.doc,.docx" required>
                                 </div>
                             </div>
                             <div class="col-12">

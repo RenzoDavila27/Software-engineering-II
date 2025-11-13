@@ -9,6 +9,7 @@ import com.car.seguridad.authentication.UserPrincipal;
 import com.car.seguridad.jwt.JwtTokenService;
 import com.car.seguridad.web.dto.JwtResponse;
 import com.car.seguridad.web.dto.LoginRequest;
+import com.car.seguridad.web.dto.OAuthLoginRequest;
 import com.car.seguridad.web.dto.RefreshTokenRequest;
 import com.car.seguridad.web.dto.RegisterRequest;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,6 +78,16 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/oauth-login")
+    public ResponseEntity<JwtResponse> oauthLogin(@Valid @RequestBody OAuthLoginRequest request) {
+        try {
+            UserPrincipal principal = (UserPrincipal) userDetailsService.loadUserByUsername(request.getUsername());
+            return ResponseEntity.ok(buildResponse(principal));
+        } catch (UsernameNotFoundException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado", ex);
+        }
     }
 
     private JwtResponse buildResponse(UserPrincipal principal) {

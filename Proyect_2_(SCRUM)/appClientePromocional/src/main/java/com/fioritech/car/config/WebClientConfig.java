@@ -9,7 +9,7 @@ public class WebClientConfig {
 
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
-        String apiBaseUrl = "http://localhost:8081";
+        String apiBaseUrl = "http://localhost:8080";
         return builder
                 .baseUrl(apiBaseUrl)
                 .build();
