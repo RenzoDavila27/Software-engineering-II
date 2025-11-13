@@ -98,4 +98,8 @@ public class VehiculoService extends BaseService<Vehiculo, VehiculoDto, String> 
         }
     }
 
+    public Optional<Vehiculo> obtenerVehiculo(String id) throws BusinessException{
+        return repository.findById(id);
+    }
+
 }

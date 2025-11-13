@@ -30,6 +30,9 @@ public class ClienteService extends BaseService<Cliente, ClienteDto, String> {
     private ContactoTelefonicoRepository contactoTelefonicoRepository;
 
     @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
     private ContactoCorreoElectronicoRepository contactoCorreoElectronicoRepository;
 
     @Override
@@ -109,5 +112,11 @@ public class ClienteService extends BaseService<Cliente, ClienteDto, String> {
         }
         return contactoCorreoElectronicoRepository.findById(id)
                 .map(c -> (Contacto) c);
+    }
+
+    public Optional<Cliente> findByUserId(String id) {
+
+        return clienteRepository.findByUserId(id);
+
     }
 }

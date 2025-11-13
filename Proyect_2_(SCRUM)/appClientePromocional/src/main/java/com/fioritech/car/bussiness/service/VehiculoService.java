@@ -1,6 +1,7 @@
 package com.fioritech.car.bussiness.service;
 
 import com.fioritech.car.bussiness.dto.VehiculoDto;
+import com.fioritech.car.bussiness.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,13 +13,10 @@ import reactor.core.publisher.Mono;
 public class VehiculoService {
 
     private final WebClient.Builder webClientBuilder;
+    private final VehiculoRepository vehiculoRepository;
 
     public Flux<VehiculoDto> findAll() {
-        return webClientBuilder.build()
-                .get()
-                .uri("http://localhost:8081/api/vehiculos/disponibles")
-                .retrieve()
-                .bodyToFlux(VehiculoDto.class);
+        return vehiculoRepository.findAll().map(this::validate);
     }
 
     public Mono<VehiculoDto> findById(String id) {

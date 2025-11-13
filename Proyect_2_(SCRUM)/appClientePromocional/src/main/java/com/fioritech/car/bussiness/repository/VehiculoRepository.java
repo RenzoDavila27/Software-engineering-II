@@ -17,7 +17,7 @@ public class VehiculoRepository {
     }
 
     public Flux<VehiculoDto> findAll() {
-        return this.webClient.get().uri("/api/vehiculos").retrieve().bodyToFlux(VehiculoDto.class);
+        return this.webClient.get().uri("/api/vehiculos/disponibles").retrieve().bodyToFlux(VehiculoDto.class);
     }
 
 }

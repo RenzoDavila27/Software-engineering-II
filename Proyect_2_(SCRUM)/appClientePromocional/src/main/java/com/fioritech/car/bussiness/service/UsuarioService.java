@@ -1,30 +1,35 @@
 package com.fioritech.car.bussiness.service;
 
+import com.fioritech.car.bussiness.dto.JwtResponse;
+import com.fioritech.car.bussiness.dto.OAuthLoginRequest;
 import com.fioritech.car.bussiness.dto.RegistrationForm;
 import com.fioritech.car.bussiness.dto.UsuarioApiDto;
 import com.fioritech.car.bussiness.mapper.UsuarioMapper;
+import com.fioritech.car.bussiness.repository.UsuarioRepository;
+import com.fioritech.car.bussiness.repository.AuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
-
-// Asumo que tu cliente API se llama UsuarioApiClient
-import com.fioritech.car.bussiness.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
 
     @Autowired
     private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private final AuthRepository authRepository;
 
     @Autowired
     UsuarioMapper usuarioMapper;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+    public UsuarioService(UsuarioRepository usuarioRepository, AuthRepository authRepository, UsuarioMapper usuarioMapper) {
 
         this.usuarioRepository = usuarioRepository;
+        this.authRepository = authRepository;
         this.usuarioMapper = usuarioMapper;
     }
 
@@ -42,6 +47,14 @@ public class UsuarioService {
 
     public Mono<String> processUserLogin(String email) {
         return usuarioRepository.loginUserApi(email);
+    }
+
+    public Mono<JwtResponse> obtainJwtToken(String email) {
+        if (!StringUtils.hasText(email)) {
+            return Mono.error(() -> new IllegalArgumentException("El email es obligatorio para solicitar el token JWT"));
+        }
+        OAuthLoginRequest request = new OAuthLoginRequest(email);
+        return authRepository.oauthLogin(request);
     }
 
     public Mono<Void> registerUser(RegistrationForm form) {

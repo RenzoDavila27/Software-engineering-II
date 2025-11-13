@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
+import com.car.business.domain.enums.EstadoVehiculo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,6 @@ public class ScheduleTask {
             emailService.sendEmail(alquiler);
             
         }
-
 
     }
 }
