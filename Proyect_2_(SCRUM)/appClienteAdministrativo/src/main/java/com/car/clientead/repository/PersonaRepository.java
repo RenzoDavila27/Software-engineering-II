@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -44,6 +45,42 @@ public class PersonaRepository {
             return response.getBody();
         } catch (RestClientException ex) {
             throw new ApiClientException("No se pudo obtener la persona con ID: " + id, ex);
+        }
+    }
+
+    public PersonaDto create(PersonaDto dto) {
+        try {
+            ResponseEntity<PersonaDto> response = restTemplate.postForEntity(
+                    baseUrl,
+                    dto,
+                    PersonaDto.class
+            );
+            return response.getBody();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo crear la persona.", ex);
+        }
+    }
+
+    public PersonaDto update(String id, PersonaDto dto) {
+        try {
+            HttpEntity<PersonaDto> request = new HttpEntity<>(dto);
+            ResponseEntity<PersonaDto> response = restTemplate.exchange(
+                    baseUrl + "/" + id,
+                    HttpMethod.PUT,
+                    request,
+                    PersonaDto.class
+            );
+            return response.getBody();
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo actualizar la persona con ID: " + id, ex);
+        }
+    }
+
+    public void delete(String id) {
+        try {
+            restTemplate.delete(baseUrl + "/" + id);
+        } catch (RestClientException ex) {
+            throw new ApiClientException("No se pudo eliminar la persona con ID: " + id, ex);
         }
     }
 }

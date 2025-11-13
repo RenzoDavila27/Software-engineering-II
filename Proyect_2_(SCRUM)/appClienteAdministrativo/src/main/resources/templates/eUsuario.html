@@ -22,8 +22,10 @@
 
       <form th:action="@{${item.id} != null ? '/usuarios/modificar/' + ${item.id} : '/usuarios/alta'}"
             th:object="${item}"
-            method="post">
+            method="post"
+            enctype="multipart/form-data">
         <div th:replace="~{fragments/fragments :: csrfInput}"></div>
+        <input type="hidden" th:field="*{personaId}">
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label">Nombre de Usuario</label>
@@ -46,15 +48,210 @@
                       th:text="${rol}"></option>
             </select>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Persona asociada</label>
-            <select class="form-select" th:field="*{personaId}" th:disabled="${modoVer}" required>
-              <option value="" disabled th:selected="${item.personaId == null}">Seleccione una persona</option>
-              <option th:each="persona : ${personas}"
-                      th:value="${persona.id}"
-                      th:text="${persona.nombre + ' ' + persona.apellido + ' (' + persona.numeroDocumento + ')'}"></option>
-            </select>
+        </div>
+        <div class="card mt-4 p-3" th:if="${mostrarFormularioPersona}">
+          <h5 class="mb-3">Datos de la persona</h5>
+          <div th:object="${personaForm}">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombre</label>
+                <input type="text"
+                       class="form-control"
+                       th:field="*{nombre}"
+                       th:disabled="${modoVer}"
+                       th:attr="required=${!modoVer} ? 'required' : null">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Apellido</label>
+                <input type="text"
+                       class="form-control"
+                       th:field="*{apellido}"
+                       th:disabled="${modoVer}"
+                       th:attr="required=${!modoVer} ? 'required' : null">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Fecha de nacimiento</label>
+                <input type="date"
+                       class="form-control"
+                       th:field="*{fechaNacimiento}"
+                       th:disabled="${modoVer}"
+                       th:attr="required=${!modoVer} ? 'required' : null">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tipo de documento</label>
+                <select class="form-select"
+                        th:field="*{tipoDocumento}"
+                        th:disabled="${modoVer}"
+                        th:attr="required=${!modoVer} ? 'required' : null">
+                  <option value="">Seleccione...</option>
+                  <option th:each="tipo : ${tiposDocumento}"
+                          th:value="${tipo}"
+                          th:text="${tipo}"></option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Número de documento</label>
+                <input type="text"
+                       class="form-control"
+                       th:field="*{numeroDocumento}"
+                       th:disabled="${modoVer}"
+                       th:attr="required=${!modoVer} ? 'required' : null">
+              </div>
+            </div>
           </div>
+          <div class="row g-3 mt-3">
+            <div class="col-md-4">
+              <label class="form-label">Tipo de contacto preferido</label>
+              <select class="form-select"
+                      id="tipoContactoPersonaSelect"
+                      name="tipoContactoNuevo"
+                      th:value="${tipoContactoNuevo}"
+                      th:disabled="${modoVer}">
+                <option value="TELEFONO" th:selected="${tipoContactoNuevo == null || tipoContactoNuevo == 'TELEFONO'}">Teléfono</option>
+                <option value="CORREO" th:selected="${tipoContactoNuevo == 'CORREO'}">Correo electrónico</option>
+              </select>
+            </div>
+          </div>
+          <div class="row g-3 mt-2 contacto-persona" data-contacto-section="TELEFONO"
+               th:classappend="${tipoContactoNuevo != null && tipoContactoNuevo == 'CORREO'} ? ' d-none' : ''"
+               th:object="${nuevoContactoTelefonico}">
+            <div class="col-md-4">
+              <label class="form-label">Teléfono</label>
+              <input type="text"
+                     class="form-control"
+                     th:field="*{telefono}"
+                     data-required="true">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tipo de teléfono</label>
+              <select class="form-select"
+                      th:field="*{tipoTelefono}"
+                      data-required="true">
+                <option value="">Seleccione...</option>
+                <option th:each="tipo : ${tiposTelefono}"
+                        th:value="${tipo}"
+                        th:text="${tipo}"></option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tipo de contacto</label>
+              <select class="form-select"
+                      th:field="*{tipoContacto}"
+                      data-required="true">
+                <option value="">Seleccione...</option>
+                <option th:each="tipo : ${tiposContacto}"
+                        th:value="${tipo}"
+                        th:text="${tipo}"></option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Observación</label>
+              <input type="text" class="form-control" th:field="*{observacion}">
+            </div>
+          </div>
+          <div class="row g-3 mt-2 contacto-persona" data-contacto-section="CORREO"
+               th:classappend="${tipoContactoNuevo == null || tipoContactoNuevo == 'TELEFONO'} ? ' d-none' : ''"
+               th:object="${nuevoContactoCorreo}">
+            <div class="col-md-6">
+              <label class="form-label">Correo electrónico</label>
+              <input type="email"
+                     class="form-control"
+                     th:field="*{email}"
+                     data-required="true">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Tipo de contacto</label>
+              <select class="form-select"
+                      th:field="*{tipoContacto}"
+                      data-required="true">
+                <option value="">Seleccione...</option>
+                <option th:each="tipo : ${tiposContacto}"
+                        th:value="${tipo}"
+                        th:text="${tipo}"></option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Observación</label>
+              <input type="text" class="form-control" th:field="*{observacion}">
+            </div>
+          </div>
+          <div class="mt-4 border rounded p-3" th:object="${nuevaDireccion}">
+            <h6>Dirección</h6>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Calle</label>
+                <input type="text" class="form-control" th:field="*{calle}" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Número</label>
+                <input type="text" class="form-control" th:field="*{numeracion}" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Barrio</label>
+                <input type="text" class="form-control" th:field="*{barrio}">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Manzana / Piso</label>
+                <input type="text" class="form-control" th:field="*{manzanaPiso}">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Casa / Depto</label>
+                <input type="text" class="form-control" th:field="*{casaDepartamento}">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Referencia</label>
+                <input type="text" class="form-control" th:field="*{referencia}">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Localidad</label>
+                <select class="form-select" th:field="*{localidadId}" required>
+                  <option value="">Seleccione...</option>
+                  <option th:each="loc : ${localidades}"
+                          th:value="${loc.id}"
+                          th:text="${loc.nombre + ' (' + loc.codigoPostal + ')'}"></option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 border rounded p-3" th:object="${nuevaImagen}">
+            <h6>Imagen</h6>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombre de la imagen</label>
+                <input type="text" class="form-control" th:field="*{nombre}" placeholder="Foto de perfil">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Tipo</label>
+                <select class="form-select" th:field="*{tipoImagen}" required>
+                  <option value="">Seleccione...</option>
+                  <option th:each="tipo : ${tiposImagen}"
+                          th:value="${tipo}"
+                          th:text="${tipo}"
+                          th:selected="${tipo == nuevaImagen.tipoImagen}"></option>
+                </select>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Archivo</label>
+                <input type="file"
+                       class="form-control"
+                       name="personaImagenArchivo"
+                       accept="image/*"
+                       required>
+              </div>
+            </div>
+            <small class="text-muted">La imagen se asociará automáticamente al crear el usuario.</small>
+          </div>
+        </div>
+        <div class="card mt-4 p-3" th:if="${!mostrarFormularioPersona}">
+          <h5 class="mb-2">Persona asociada</h5>
+          <p class="mb-1">
+            <strong>Nombre:</strong>
+            <span th:text="${personaDetalle != null ? personaDetalle.nombre + ' ' + personaDetalle.apellido : 'Sin información'}"></span>
+          </p>
+          <p class="mb-1">
+            <strong>Documento:</strong>
+            <span th:text="${personaDetalle != null ? personaDetalle.numeroDocumento : 'Sin información'}"></span>
+          </p>
         </div>
 
         <div class="d-flex justify-content-between mt-4">
@@ -73,5 +270,26 @@
     </footer>
   </div>
 </div>
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+    const selector = document.getElementById('tipoContactoPersonaSelect');
+    if (!selector) {
+      return;
+    }
+    const sections = document.querySelectorAll('.contacto-persona');
+    const updateSections = () => {
+      sections.forEach(section => {
+        const isActive = section.dataset.contactoSection === selector.value;
+        section.classList.toggle('d-none', !isActive);
+        section.querySelectorAll('input, select, textarea').forEach(field => {
+          const mustRequire = field.dataset.required === 'true';
+          field.required = isActive && mustRequire;
+        });
+      });
+    };
+    updateSections();
+    selector.addEventListener('change', updateSections);
+  });
+</script>
 </body>
 </html>

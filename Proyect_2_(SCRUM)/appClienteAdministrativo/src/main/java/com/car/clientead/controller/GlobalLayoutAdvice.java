@@ -20,6 +20,16 @@ public class GlobalLayoutAdvice {
         return userSession.getRolActual();
     }
 
+    @ModelAttribute("esRolAdministrativo")
+    public boolean esRolAdministrativo() {
+        return userSession.getRolActual() == RolUsuario.ADMINISTRATIVO;
+    }
+
+    @ModelAttribute("esRolJefe")
+    public boolean esRolJefe() {
+        return userSession.getRolActual() == RolUsuario.JEFE;
+    }
+
     @ModelAttribute("clienteSesionId")
     public String exponerClienteSesion() {
         return userSession.getClienteId().orElse(null);
@@ -28,5 +38,11 @@ public class GlobalLayoutAdvice {
     @ModelAttribute("esRolCliente")
     public boolean esRolCliente() {
         return userSession.getRolActual() == RolUsuario.CLIENTE;
+    }
+
+    @ModelAttribute("esRolOperativo")
+    public boolean esRolOperativo() {
+        RolUsuario rol = userSession.getRolActual();
+        return rol == RolUsuario.ADMINISTRATIVO || rol == RolUsuario.JEFE;
     }
 }

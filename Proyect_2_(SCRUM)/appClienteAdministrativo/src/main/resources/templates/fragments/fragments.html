@@ -35,21 +35,21 @@
             </a>
           </li>
 
-          <li class="menu-item">
+          <li class="menu-item" th:if="${esRolJefe}">
             <a th:href="@{/dashboard}" href="/dashboard">
               <i class="fa-solid fa-chart-line"></i>
               <span>Dashboard</span>
             </a>
           </li>
 
-          <li class="menu-item">
+          <li class="menu-item" th:if="${esRolOperativo}">
             <a th:href="@{/clientes}" href="/clientes">
               <i class="fa-solid fa-user-group"></i>
               <span>Cliente</span>
             </a>
           </li>
 
-          <li class="menu-item">
+          <li class="menu-item" th:if="${esRolOperativo}">
             <a th:href="@{/empresas}" href="/empresas">
               <i class="fa-solid fa-location-dot"></i>
               <span>Empresa</span>
@@ -57,7 +57,7 @@
           </li>
 
           <!-- Dirección - submenu -->
-          <li class="menu-item has-sub">
+          <li class="menu-item has-sub" th:if="${esRolOperativo}">
             <a href="#!" class="submenu-toggle">
               <i class="fa-solid fa-map-location"></i>
               <span>Dirección</span>
@@ -71,7 +71,7 @@
             </ul>
           </li>
 
-          <li class="menu-item has-sub">
+          <li class="menu-item has-sub" th:if="${esRolOperativo}">
             <a href="#!" class="submenu-toggle">
               <i class="bi bi-ev-front"></i>
               <span>Flota</span>
@@ -89,14 +89,14 @@
             </a>
           </li>
 
-          <li class="menu-item">
+          <li class="menu-item" th:if="${esRolOperativo}">
             <a th:href="@{/promociones}">
               <i class="fa-solid fa-bullhorn"></i>
               <span>Promociones</span>
             </a>
           </li>
 
-          <li class="menu-item">
+          <li class="menu-item" th:if="${esRolJefe}">
             <a th:href="@{/usuarios}" href="/usuarios">
               <i class="fa-solid fa-users"></i>
               <span>Usuarios</span>

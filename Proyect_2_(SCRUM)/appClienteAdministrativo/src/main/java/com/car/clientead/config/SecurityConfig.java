@@ -1,6 +1,7 @@
 package com.car.clientead.config;
 
 import com.car.clientead.security.RemoteAuthenticationProvider;
+import com.car.clientead.security.RoleBasedAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,16 +14,27 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   RemoteAuthenticationProvider remoteAuthenticationProvider) throws Exception {
+                                                   RemoteAuthenticationProvider remoteAuthenticationProvider,
+                                                   RoleBasedAuthenticationSuccessHandler successHandler) throws Exception {
         http
             .authenticationProvider(remoteAuthenticationProvider)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/error", "/favicon.ico").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/", "/inicio").hasAnyRole("CLIENTE", "ADMINISTRATIVO", "JEFE")
+                .requestMatchers("/alquileres/historial", "/alquileres/historial/**")
+                    .hasAnyRole("CLIENTE", "ADMINISTRATIVO", "JEFE")
+                .requestMatchers("/alquileres/**").hasAnyRole("ADMINISTRATIVO", "JEFE")
+                .requestMatchers("/caracteristicas-vehiculo/**", "/vehiculos/**", "/costo-vehiculo/**",
+                                 "/documentacion/**", "/promociones/**", "/clientes/**", "/empresas/**",
+                                 "/localidades/**", "/departamentos/**", "/provincias/**", "/paises/**",
+                                 "/imagenes/**")
+                    .hasAnyRole("ADMINISTRATIVO", "JEFE")
+                .requestMatchers("/usuarios/**", "/dashboard/**").hasRole("JEFE")
+                .anyRequest().hasAnyRole("ADMINISTRATIVO", "JEFE")
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/", true)
+                .successHandler(successHandler)
                 .permitAll()
             )
             .logout(logout -> logout
